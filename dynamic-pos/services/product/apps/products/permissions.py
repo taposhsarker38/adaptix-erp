@@ -11,6 +11,10 @@ class HasPermission(permissions.BasePermission):
 
         claims = getattr(request, "user_claims", {}) or {}
         user_perms = claims.get("permissions", [])
+        roles = claims.get("roles", [])
+
+        if "superuser" in roles:
+            return True
         
         # Super admin bypass (roles check) could optionally go here
         

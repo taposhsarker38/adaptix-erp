@@ -26,6 +26,7 @@ MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "apps.tenants.middleware.JWTCompanyMiddleware",
+    "config.audit_middleware.AuditMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
@@ -40,7 +41,17 @@ TEMPLATES = [{
     "OPTIONS": {"context_processors": ["django.template.context_processors.debug","django.template.context_processors.request","django.contrib.auth.context_processors.auth","django.contrib.messages.context_processors.messages"]},
 }]
 
-WSGI_APPLICATION = "config.wsgi.application"
+WSGI_APPLICATION = 'config.wsgi.application'
+ASGI_APPLICATION = 'config.asgi.application'
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [os.environ.get("REDIS_URL", "redis://redis:6379/1")],
+        },
+    },
+}
 
 DATABASE_URL = os.getenv("DATABASE_URL", "postgres://postgres:password@postgres_company:5432/companydb")
 DATABASES = {"default": dj_database_url.parse(DATABASE_URL, conn_max_age=600)}

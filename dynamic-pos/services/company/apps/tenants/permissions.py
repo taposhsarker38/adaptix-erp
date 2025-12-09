@@ -18,6 +18,10 @@ class HasPermission(permissions.BasePermission):
         # 2. Get permissions from request.user_claims (set by middleware)
         claims = getattr(request, "user_claims", {}) or {}
         user_perms = claims.get("permissions", [])
+        roles = claims.get("roles", [])
+
+        if "superuser" in roles:
+            return True
 
         # 3. Check if user has the permission
         # Note: In real app, you might want to handle list vs create permissions differently.

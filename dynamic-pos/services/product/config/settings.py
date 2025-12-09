@@ -37,6 +37,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'config.middleware.JWTCompanyMiddleware', # Custom middleware
+    'config.audit_middleware.AuditMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'

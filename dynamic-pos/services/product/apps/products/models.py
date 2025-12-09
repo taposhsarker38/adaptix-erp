@@ -60,22 +60,69 @@ class Unit(SoftDeleteModel):
     def __str__(self):
         return self.short_name
 
+
+class AttributeSet(SoftDeleteModel):
+    name = models.CharField(max_length=255)
+    
+    class Meta:
+        unique_together = ('company_uuid', 'name')
+    
+    def __str__(self):
+        return self.name
+
+class Attribute(SoftDeleteModel):
+    ATTRIBUTE_TYPE_CHOICES = (
+        ('text', 'Text'),
+        ('number', 'Number'),
+        ('date', 'Date'),
+        ('select', 'Select'), # Dropdown
+        ('boolean', 'Yes/No'),
+    )
+    name = models.CharField(max_length=255)
+    code = models.CharField(max_length=100) # Internal code, e.g., "fabric_type"
+    type = models.CharField(max_length=20, choices=ATTRIBUTE_TYPE_CHOICES, default='text')
+    options = models.JSONField(default=list, blank=True) # For 'select' type: ["Cotton", "Polyester"]
+    is_required = models.BooleanField(default=False)
+    
+    # Link to a Set (e.g., "Men's Clothing" set has "Fabric", "Size")
+    attribute_set = models.ForeignKey(AttributeSet, on_delete=models.CASCADE, related_name='attributes')
+
+    class Meta:
+        unique_together = ('company_uuid', 'attribute_set', 'code')
+
+    def __str__(self):
+        return f"{self.name} ({self.attribute_set.name})"
+
 class Product(SoftDeleteModel):
     TYPE_CHOICES = (
-        ('standard', 'Standard'),
-        ('service', 'Service'),
-        ('combo', 'Combo'),
+        ('standard', 'Standard Product'), # Goods
+        ('service', 'Service'),           # Doctor, Barber, Consultant
+        ('combo', 'Combo'),               # Kit
+        ('consumable', 'Consumable'),     # Stationary
     )
     TAX_METHOD_CHOICES = (
         ('exclusive', 'Exclusive'),
         ('inclusive', 'Inclusive'),
     )
 
+    APPROVAL_STATUS_CHOICES = (
+        ('pending', 'Pending'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+    )
+
     name = models.CharField(max_length=255)
-    type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='standard')
+    product_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='standard') # Renamed from type
+    
+    approval_status = models.CharField(max_length=20, choices=APPROVAL_STATUS_CHOICES, default='pending')
+    
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='products')
     brand = models.ForeignKey(Brand, on_delete=models.SET_NULL, null=True, blank=True, related_name='products')
     unit = models.ForeignKey(Unit, on_delete=models.SET_NULL, null=True, related_name='products')
+    
+    # Dynamic Attributes
+    attribute_set = models.ForeignKey(AttributeSet, on_delete=models.SET_NULL, null=True, blank=True)
+    attributes = models.JSONField(default=dict, blank=True) # {"fabric": "Cotton", "isbn": "123"}
     
     tax_type = models.CharField(max_length=50, blank=True, null=True) 
     tax_method = models.CharField(max_length=20, choices=TAX_METHOD_CHOICES, default='exclusive')
@@ -87,10 +134,27 @@ class Product(SoftDeleteModel):
     def __str__(self):
         return self.name
 
+class ApprovalRequest(SoftDeleteModel):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='approval_requests')
+    requested_by = models.UUIDField()
+    approved_by = models.UUIDField(null=True, blank=True)
+    status = models.CharField(max_length=20, choices=Product.APPROVAL_STATUS_CHOICES, default='pending')
+    comments = models.TextField(blank=True)
+    
+    class Meta:
+        unique_together = ('company_uuid', 'product', 'status')
+
+    def __str__(self):
+        return f"Request for {self.product.name} ({self.status})"
+
 class ProductVariant(SoftDeleteModel):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='variants')
     name = models.CharField(max_length=255) 
     sku = models.CharField(max_length=100, db_index=True)
+    
+    # Dynamic Variant Attributes (e.g. {"size": "L", "color": "Red"})
+    attributes = models.JSONField(default=dict, blank=True) 
+    
     price = models.DecimalField(max_digits=20, decimal_places=2, default=0)
     cost = models.DecimalField(max_digits=20, decimal_places=2, default=0)
     
@@ -105,7 +169,5 @@ class ProductVariant(SoftDeleteModel):
 
     def save(self, *args, **kwargs):
         if not self.sku:
-            # Auto-generate unique SKU: SKU-YYYYMMDD-XXXX
-            # Simple version: SKU-{UUID}
             self.sku = f"SKU-{str(uuid.uuid4())[:8].upper()}"
         super().save(*args, **kwargs)
