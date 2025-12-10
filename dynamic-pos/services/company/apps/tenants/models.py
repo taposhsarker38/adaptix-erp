@@ -3,12 +3,14 @@ from decimal import Decimal
 from django.db import models
 from django.db import transaction, connection
 from django.utils import timezone
+from .business_types import BUSINESS_TYPE_CHOICES, DEFAULT_FEATURES, FMCG
 
 class Company(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     auth_company_uuid = models.UUIDField(unique=True, db_index=True)
     name = models.CharField(max_length=255)
     code = models.CharField(max_length=50)
+    business_type = models.CharField(max_length=50, choices=BUSINESS_TYPE_CHOICES, default=FMCG)
     tax_number = models.CharField(max_length=128, blank=True, null=True)
     vat_rate = models.DecimalField(max_digits=5, decimal_places=2, default=0)
     bin_number = models.CharField(max_length=128, blank=True, null=True)
@@ -18,6 +20,21 @@ class Company(models.Model):
     timezone = models.CharField(max_length=50, default='UTC')
     metadata = models.JSONField(default=dict, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        is_new = self._state.adding
+        super().save(*args, **kwargs)
+        if is_new:
+            # Create default settings with features based on business type
+            features = DEFAULT_FEATURES.get(self.business_type, [])
+            # Convert list to dict for easier frontend checking e.g. {"pos": True}
+            feature_flags = {f: True for f in features}
+            
+            CompanySetting.objects.create(
+                company=self,
+                feature_flags=feature_flags,
+                ui_schema={} # Can be populated dynamically too
+            )
 
     class Meta:
         indexes = [models.Index(fields=["auth_company_uuid"])]

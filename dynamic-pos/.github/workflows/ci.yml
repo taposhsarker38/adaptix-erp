@@ -204,6 +204,81 @@ jobs:
           cd services/reporting
           pytest
 
+  test-promotion:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - name: Install Dependencies
+        run: |
+          pip install -r services/promotion/requirements.txt
+          pip install pytest pytest-django
+          cd services/promotion
+          pytest
+
+  test-payment:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - name: Install Dependencies
+        run: |
+          pip install -r services/payment/requirements.txt
+          pip install pytest pytest-django
+      - name: Run Tests
+        env:
+          SECRET_KEY: test-key
+          DEBUG: True
+        run: |
+          cd services/payment
+          pytest
+
+  test-hrms:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - name: Install Dependencies
+        run: |
+          pip install -r services/hrms/requirements.txt
+          pip install pytest pytest-django
+      - name: Run Tests
+        env:
+          SECRET_KEY: test-key
+          DEBUG: True
+        run: |
+          cd services/hrms
+          pytest
+
+  test-accounting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - name: Install Dependencies
+        run: |
+          pip install -r services/accounting/requirements.txt
+          pip install pytest pytest-django
+      - name: Run Tests
+        env:
+          SECRET_KEY: test-key
+          DEBUG: True
+        run: |
+          cd services/accounting
+          pytest
+
   build-images:
     needs:
       [
@@ -217,6 +292,10 @@ jobs:
         test-customer,
         test-notification,
         test-reporting,
+        test-promotion,
+        test-payment,
+        test-hrms,
+        test-accounting,
       ]
     runs-on: ubuntu-latest
     steps:

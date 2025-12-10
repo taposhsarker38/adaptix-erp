@@ -611,6 +611,174 @@ services:
     networks:
       - backend
 
+  postgres_promotion:
+    image: postgres:15
+    container_name: dynamicpos-postgres-promotion
+    environment:
+      POSTGRES_DB: promotiondb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "01713447728"
+    ports:
+      - "5445:5432"
+    volumes:
+      - pgdata_promotion:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d promotiondb"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    networks:
+      - backend
+
+  promotion:
+    build:
+      context: ./services/promotion
+      dockerfile: Dockerfile
+    container_name: dynamicpos-promotion
+    depends_on:
+      postgres_promotion:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://postgres:01713447728@postgres_promotion:5432/promotiondb
+      PUBLIC_KEY_PATH: /keys/public.pem
+      DEBUG: "True"
+      ENABLE_TRACING: "True"
+    ports:
+      - "8900:8000"
+    volumes:
+      - ./services/promotion:/app
+      - ./services/auth/keys:/keys:ro
+    command: bash -c "python manage.py migrate --noinput && gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3"
+    networks:
+      - backend
+
+  postgres_payment:
+    image: postgres:15
+    container_name: dynamicpos-postgres-payment
+    environment:
+      POSTGRES_DB: paymentdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "01713447728"
+    ports:
+      - "5446:5432"
+    volumes:
+      - pgdata_payment:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d paymentdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    networks:
+      - backend
+
+  payment:
+    build:
+      context: ./services/payment
+      dockerfile: Dockerfile
+    container_name: dynamicpos-payment
+    depends_on:
+      postgres_payment:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://postgres:01713447728@postgres_payment:5432/paymentdb
+      PUBLIC_KEY_PATH: /keys/public.pem
+      DEBUG: "True"
+      ENABLE_TRACING: "True"
+    ports:
+      - "9000:8000"
+    volumes:
+      - ./services/payment:/app
+      - ./services/auth/keys:/keys:ro
+    command: bash -c "python manage.py migrate --noinput && gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3"
+    networks:
+      - backend
+
+  postgres_hrms:
+    image: postgres:15
+    container_name: dynamicpos-postgres-hrms
+    environment:
+      POSTGRES_DB: hrmsdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "01713447728"
+    ports:
+      - "5447:5432"
+    volumes:
+      - pgdata_hrms:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d hrmsdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    networks:
+      - backend
+
+  hrms:
+    build:
+      context: ./services/hrms
+      dockerfile: Dockerfile
+    container_name: dynamicpos-hrms
+    depends_on:
+      postgres_hrms:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://postgres:01713447728@postgres_hrms:5432/hrmsdb
+      PUBLIC_KEY_PATH: /keys/public.pem
+      DEBUG: "True"
+      ENABLE_TRACING: "True"
+    ports:
+      - "9100:8000"
+    volumes:
+      - ./services/hrms:/app
+      - ./services/auth/keys:/keys:ro
+    command: bash -c "python manage.py migrate --noinput && gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3"
+    networks:
+      - backend
+
+  postgres_accounting:
+    image: postgres:15
+    container_name: dynamicpos-postgres-accounting
+    environment:
+      POSTGRES_DB: accountingdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "01713447728"
+    ports:
+      - "5448:5432"
+    volumes:
+      - pgdata_accounting:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d accountingdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    networks:
+      - backend
+
+  accounting:
+    build:
+      context: ./services/accounting
+      dockerfile: Dockerfile
+    container_name: dynamicpos-accounting
+    depends_on:
+      postgres_accounting:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://postgres:01713447728@postgres_accounting:5432/accountingdb
+      PUBLIC_KEY_PATH: /keys/public.pem
+      DEBUG: "True"
+      ENABLE_TRACING: "True"
+    ports:
+      - "9200:8000"
+    volumes:
+      - ./services/accounting:/app
+      - ./services/auth/keys:/keys:ro
+    command: bash -c "python manage.py migrate --noinput && gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3"
+    networks:
+      - backend
+
 volumes:
   pgdata_auth:
   pgdata_company:
@@ -621,6 +789,10 @@ volumes:
   pgdata_customer:
   pgdata_notification:
   pgdata_reporting:
+  pgdata_promotion:
+  pgdata_payment:
+  pgdata_hrms:
+  pgdata_accounting:
 
 networks:
   backend:
