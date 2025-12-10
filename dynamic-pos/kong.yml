@@ -109,6 +109,38 @@ services:
           - /api/reports
         strip_path: false
 
+  - name: promotion-service
+    url: http://promotion:8000
+    routes:
+      - name: promotion-routes
+        paths:
+          - /api/promotions
+        strip_path: false
+
+  - name: payment-service
+    url: http://payment:8000
+    routes:
+      - name: payment-routes
+        paths:
+          - /api/payments
+        strip_path: false
+
+  - name: hrms-service
+    url: http://hrms:8000
+    routes:
+      - name: hrms-routes
+        paths:
+          - /api/hrms
+        strip_path: false
+
+  - name: accounting-service
+    url: http://accounting:8000
+    routes:
+      - name: accounting-routes
+        paths:
+          - /api/accounting
+        strip_path: false
+
 plugins:
   - name: cors
     service: auth-service
