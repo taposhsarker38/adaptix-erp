@@ -12,4 +12,7 @@ urlpatterns = [
     path('api/hrms/employees/', include('apps.employees.urls')),
     path('api/hrms/attendance/', include('apps.attendance.urls')),
     path('api/hrms/payroll/', include('apps.payroll.urls')),
+    path('api/hrms/notices/', include('apps.noticeboard.urls')),
+    path('api/hrms/shifts/', include('apps.shifts.urls')),
+    path('api/hrms/leaves/', include('apps.leaves.urls')),
 ]

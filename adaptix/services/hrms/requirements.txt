@@ -6,6 +6,8 @@ python-dotenv
 dj-database-url>=2.0.0
 gunicorn
 drf-spectacular
+whitenoise
+pika
 
 # Observability
 opentelemetry-api
@@ -18,3 +20,5 @@ opentelemetry-exporter-otlp
 # Testing
 pytest
 pytest-django
+
+ 

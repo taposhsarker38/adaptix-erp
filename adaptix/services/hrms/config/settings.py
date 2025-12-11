@@ -26,7 +26,10 @@ INSTALLED_APPS = [
     # Local
     'apps.employees',
     'apps.attendance',
+    'apps.leaves',
+    'apps.noticeboard',
     'apps.payroll',
+    'apps.shifts',
 ]
 
 MIDDLEWARE = [

@@ -1,7 +1,7 @@
 services:
   rabbitmq:
     image: rabbitmq:3-management
-    container_name: dynamicpos-rabbitmq
+    container_name: adaptix-rabbitmq
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
@@ -19,7 +19,7 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: dynamicpos-redis
+    container_name: adaptix-redis
     ports:
       - "6380:6379"
     healthcheck:
@@ -32,7 +32,7 @@ services:
 
   kong:
     image: kong:3.0
-    container_name: dynamicpos-kong
+    container_name: adaptix-kong
     environment:
       KONG_DATABASE: "off"
       KONG_DECLARATIVE_CONFIG: /kong/kong.yml
@@ -52,7 +52,7 @@ services:
 
   postgres_auth:
     image: postgres:15
-    container_name: dynamicpos-postgres-auth
+    container_name: adaptix-postgres-auth
     environment:
       POSTGRES_DB: authdb
       POSTGRES_USER: postgres
@@ -72,7 +72,7 @@ services:
 
   postgres_company:
     image: postgres:15
-    container_name: dynamicpos-postgres-company
+    container_name: adaptix-postgres-company
     environment:
       POSTGRES_DB: companydb
       POSTGRES_USER: postgres
@@ -92,7 +92,7 @@ services:
 
   postgres_product:
     image: postgres:15
-    container_name: dynamicpos-postgres-product
+    container_name: adaptix-postgres-product
     environment:
       POSTGRES_DB: productdb
       POSTGRES_USER: postgres
@@ -114,7 +114,7 @@ services:
     build:
       context: ./services/auth
       dockerfile: Dockerfile
-    container_name: dynamicpos-auth
+    container_name: adaptix-auth
     depends_on:
       postgres_auth:
         condition: service_healthy
@@ -148,7 +148,7 @@ services:
     build:
       context: ./services/company
       dockerfile: Dockerfile
-    container_name: company
+    container_name: adaptix-company
     depends_on:
       postgres_company:
         condition: service_healthy     # <-- এখন healthcheck আছে, error আসবে না
@@ -177,7 +177,7 @@ services:
     build:
       context: ./services/product
       dockerfile: Dockerfile
-    container_name: dynamicpos-product
+    container_name: adaptix-product
     depends_on:
       postgres_product:
         condition: service_healthy
@@ -200,7 +200,7 @@ services:
 
   postgres_pos:
     image: postgres:15
-    container_name: dynamicpos-postgres-pos
+    container_name: adaptix-postgres-pos
     environment:
       POSTGRES_DB: posdb
       POSTGRES_USER: postgres
@@ -222,7 +222,7 @@ services:
     build:
       context: ./services/pos
       dockerfile: Dockerfile
-    container_name: dynamicpos-pos
+    container_name: adaptix-pos
     depends_on:
       postgres_pos:
         condition: service_healthy
@@ -244,7 +244,7 @@ services:
 
   postgres_inventory:
     image: postgres:15
-    container_name: dynamicpos-postgres-inventory
+    container_name: adaptix-postgres-inventory
     environment:
       POSTGRES_DB: inventorydb
       POSTGRES_USER: postgres
@@ -266,7 +266,7 @@ services:
     build:
       context: ./services/inventory
       dockerfile: Dockerfile
-    container_name: dynamicpos-inventory
+    container_name: adaptix-inventory
     depends_on:
       postgres_inventory:
         condition: service_healthy
@@ -287,7 +287,7 @@ services:
     build:
       context: ./services/inventory
       dockerfile: Dockerfile
-    container_name: dynamicpos-inventory-worker
+    container_name: adaptix-inventory-worker
     depends_on:
       postgres_inventory:
         condition: service_healthy
@@ -307,7 +307,7 @@ services:
 
   postgres_purchase:
     image: postgres:15
-    container_name: dynamicpos-postgres-purchase
+    container_name: adaptix-postgres-purchase
     environment:
       POSTGRES_DB: purchasedb
       POSTGRES_USER: postgres
@@ -329,7 +329,7 @@ services:
     build:
       context: ./services/purchase
       dockerfile: Dockerfile
-    container_name: dynamicpos-purchase
+    container_name: adaptix-purchase
     depends_on:
       postgres_purchase:
         condition: service_healthy
@@ -350,7 +350,7 @@ services:
     build:
       context: ./services/pos
       dockerfile: Dockerfile
-    container_name: dynamicpos-pos-worker
+    container_name: adaptix-pos-worker
     depends_on:
       postgres_pos:
         condition: service_healthy
@@ -372,7 +372,7 @@ services:
     build:
       context: ./services/purchase
       dockerfile: Dockerfile
-    container_name: dynamicpos-purchase-worker
+    container_name: adaptix-purchase-worker
     depends_on:
       postgres_purchase:
         condition: service_healthy
@@ -392,7 +392,7 @@ services:
 
   jaeger:
     image: jaegertracing/all-in-one:1.46
-    container_name: dynamicpos-jaeger
+    container_name: adaptix-jaeger
     environment:
       - COLLECTOR_ZIPKIN_HOST_PORT=:9411
     ports:
@@ -411,7 +411,7 @@ services:
     build:
       context: ./services/ws-gateway
       dockerfile: Dockerfile
-    container_name: dynamicpos-ws-gateway
+    container_name: adaptix-ws-gateway
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -435,7 +435,7 @@ services:
 
   postgres_customer:
     image: postgres:15
-    container_name: dynamicpos-postgres-customer
+    container_name: adaptix-postgres-customer
     environment:
       POSTGRES_DB: customerdb
       POSTGRES_USER: postgres
@@ -457,7 +457,7 @@ services:
     build:
       context: ./services/customer
       dockerfile: Dockerfile
-    container_name: dynamicpos-customer
+    container_name: adaptix-customer
     depends_on:
       postgres_customer:
         condition: service_healthy
@@ -477,7 +477,7 @@ services:
 
   postgres_notification:
     image: postgres:15
-    container_name: dynamicpos-postgres-notification
+    container_name: adaptix-postgres-notification
     environment:
       POSTGRES_DB: notificationdb
       POSTGRES_USER: postgres
@@ -499,7 +499,7 @@ services:
     build:
       context: ./services/notification
       dockerfile: Dockerfile
-    container_name: dynamicpos-notification
+    container_name: adaptix-notification
     depends_on:
       postgres_notification:
         condition: service_healthy
@@ -524,7 +524,7 @@ services:
     build:
       context: ./services/notification
       dockerfile: Dockerfile
-    container_name: dynamicpos-notification-worker
+    container_name: adaptix-notification-worker
     depends_on:
       postgres_notification:
         condition: service_healthy
@@ -545,7 +545,7 @@ services:
 
   postgres_reporting:
     image: postgres:15
-    container_name: dynamicpos-postgres-reporting
+    container_name: adaptix-postgres-reporting
     environment:
       POSTGRES_DB: reportingdb
       POSTGRES_USER: postgres
@@ -567,7 +567,7 @@ services:
     build:
       context: ./services/reporting
       dockerfile: Dockerfile
-    container_name: dynamicpos-reporting
+    container_name: adaptix-reporting
     depends_on:
       postgres_reporting:
         condition: service_healthy
@@ -592,7 +592,7 @@ services:
     build:
       context: ./services/reporting
       dockerfile: Dockerfile
-    container_name: dynamicpos-reporting-worker
+    container_name: adaptix-reporting-worker
     depends_on:
       postgres_reporting:
         condition: service_healthy
@@ -613,7 +613,7 @@ services:
 
   postgres_promotion:
     image: postgres:15
-    container_name: dynamicpos-postgres-promotion
+    container_name: adaptix-postgres-promotion
     environment:
       POSTGRES_DB: promotiondb
       POSTGRES_USER: postgres
@@ -635,7 +635,7 @@ services:
     build:
       context: ./services/promotion
       dockerfile: Dockerfile
-    container_name: dynamicpos-promotion
+    container_name: adaptix-promotion
     depends_on:
       postgres_promotion:
         condition: service_healthy
@@ -655,7 +655,7 @@ services:
 
   postgres_payment:
     image: postgres:15
-    container_name: dynamicpos-postgres-payment
+    container_name: adaptix-postgres-payment
     environment:
       POSTGRES_DB: paymentdb
       POSTGRES_USER: postgres
@@ -677,7 +677,7 @@ services:
     build:
       context: ./services/payment
       dockerfile: Dockerfile
-    container_name: dynamicpos-payment
+    container_name: adaptix-payment
     depends_on:
       postgres_payment:
         condition: service_healthy
@@ -697,7 +697,7 @@ services:
 
   postgres_hrms:
     image: postgres:15
-    container_name: dynamicpos-postgres-hrms
+    container_name: adaptix-postgres-hrms
     environment:
       POSTGRES_DB: hrmsdb
       POSTGRES_USER: postgres
@@ -719,7 +719,7 @@ services:
     build:
       context: ./services/hrms
       dockerfile: Dockerfile
-    container_name: dynamicpos-hrms
+    container_name: adaptix-hrms
     depends_on:
       postgres_hrms:
         condition: service_healthy
@@ -739,7 +739,7 @@ services:
 
   postgres_accounting:
     image: postgres:15
-    container_name: dynamicpos-postgres-accounting
+    container_name: adaptix-postgres-accounting
     environment:
       POSTGRES_DB: accountingdb
       POSTGRES_USER: postgres
@@ -761,7 +761,7 @@ services:
     build:
       context: ./services/accounting
       dockerfile: Dockerfile
-    container_name: dynamicpos-accounting
+    container_name: adaptix-accounting
     depends_on:
       postgres_accounting:
         condition: service_healthy
