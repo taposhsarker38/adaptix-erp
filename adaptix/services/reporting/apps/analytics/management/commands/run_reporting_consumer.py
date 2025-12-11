@@ -11,7 +11,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         broker_url = getattr(settings, "CELERY_BROKER_URL", "amqp://guest:guest@rabbitmq:5672/")
-        exchange = Exchange("events", type="fanout", durable=False)
+        exchange = Exchange("events", type="topic", durable=True)
         queue = Queue("reporting_queue", exchange=exchange, routing_key="#")
 
         self.stdout.write(self.style.SUCCESS(f"Starting Reporting Consumer on {broker_url}"))

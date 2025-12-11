@@ -139,6 +139,116 @@ services:
           - http
           - https
 
+  - name: product-service
+    url: http://product:8000
+    routes:
+      - name: product-route
+        paths:
+          - /api/product
+        strip_path: false
+        protocols:
+          - http
+          - https
+
+  - name: pos-service
+    url: http://pos:8000
+    routes:
+      - name: pos-route
+        paths:
+          - /api/pos
+        strip_path: false
+        protocols:
+          - http
+          - https
+
+  - name: inventory-service
+    url: http://inventory:8000
+    routes:
+      - name: inventory-route
+        paths:
+          - /api/inventory
+        strip_path: false
+        protocols:
+          - http
+          - https
+
+  - name: purchase-service
+    url: http://purchase:8000
+    routes:
+      - name: purchase-route
+        paths:
+          - /api/purchase
+        strip_path: false
+        protocols:
+          - http
+          - https
+
+  - name: hrms-service
+    url: http://hrms:8000
+    routes:
+      - name: hrms-route
+        paths:
+          - /api/hrms
+        strip_path: false
+        protocols:
+          - http
+          - https
+
+  - name: accounting-service
+    url: http://accounting:8000
+    routes:
+      - name: accounting-route
+        paths:
+          - /api/accounting
+        strip_path: false
+        protocols:
+          - http
+          - https
+
+  - name: notification-service
+    url: http://notification:8000
+    routes:
+      - name: notification-route
+        paths:
+          - /api/notifications
+        strip_path: false
+        protocols:
+          - http
+          - https
+
+  - name: reporting-service
+    url: http://reporting:8000
+    routes:
+      - name: reporting-route
+        paths:
+          - /api/reporting
+        strip_path: false
+        protocols:
+          - http
+          - https
+
+  - name: promotion-service
+    url: http://promotion:8000
+    routes:
+      - name: promotion-route
+        paths:
+          - /api/promotion
+        strip_path: false
+        protocols:
+          - http
+          - https
+
+  - name: payment-service
+    url: http://payment:8000
+    routes:
+      - name: payment-route
+        paths:
+          - /api/payment
+        strip_path: false
+        protocols:
+          - http
+          - https
+
 jwt_secrets:
   - id: 4ba55d53-8acb-403e-a089-edf75b355cc3
     consumer:
@@ -178,5 +288,4 @@ plugins:
       claims_to_verify: ["exp"]
       key_claim_name: iss
       uri_param_names: []
-      algorithms: ["HS256", "RS256"]
       cookie_names: []

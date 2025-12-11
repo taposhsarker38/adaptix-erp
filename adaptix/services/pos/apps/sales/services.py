@@ -24,7 +24,7 @@ class InventoryService:
         # Let's assume passed sale_data has 'company_uuid'
         
         broker_url = getattr(settings, "CELERY_BROKER_URL", "amqp://guest:guest@rabbitmq:5672//")
-        exchange = Exchange("events", type="fanout", durable=False)
+        exchange = Exchange("events", type="topic", durable=True)
 
         try:
             with Connection(broker_url) as conn:

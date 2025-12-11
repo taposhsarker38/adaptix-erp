@@ -9,7 +9,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         broker_url = getattr(settings, "CELERY_BROKER_URL", "amqp://guest:guest@rabbitmq:5672//")
-        exchange = Exchange("events", type="fanout", durable=False)
+        exchange = Exchange("events", type="topic", durable=True)
         # Using a dedicated queue for inventory updates to ensure persistence/load balancing if needed
         # But 'events' is fanout, so we need a unique queue or shared if we want load balancing.
         # Let's use exclusive=False + durable=True queue to ensure we catch messages even if consumer restarts?
