@@ -110,6 +110,34 @@ services:
           - http
           - https
 
+  - name: asset-service
+    url: http://adaptix-asset:8000
+    routes:
+      - name: asset-route
+        paths:
+          - /api/asset
+        strip_path: false
+        protocols:
+          - http
+          - https
+
+  - name: customer-service
+    url: http://customer:8000
+    routes:
+      - name: customer-profile-route
+        paths:
+          - /api/customer
+        strip_path: false
+        protocols:
+          - http
+          - https
+      - name: customer-crm-route
+        paths:
+          - /api/crm
+        strip_path: false
+        protocols:
+          - http
+          - https
 
 jwt_secrets:
   - id: 4ba55d53-8acb-403e-a089-edf75b355cc3

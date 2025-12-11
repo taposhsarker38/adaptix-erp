@@ -9,5 +9,6 @@ urlpatterns = [
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     
     # App URLs
-    path('api/customers/', include('apps.profiles.urls')),
+    path('api/customer/', include('apps.profiles.urls')),
+    path('api/crm/', include('apps.crm.urls')),
 ]
