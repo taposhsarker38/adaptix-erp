@@ -6,6 +6,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get("SECRET_KEY", "accounting-secret-key")
 
+# Observability
+OTEL_SERVICE_NAME = "accounting-service"
+ENABLE_TRACING = os.environ.get("ENABLE_TRACING", "False") == "True"
+
+if ENABLE_TRACING:
+    # OTel setup logic... (simplified for now)
+    pass
+
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "amqp://guest:guest@rabbitmq:5672/")
+
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = ["*"]

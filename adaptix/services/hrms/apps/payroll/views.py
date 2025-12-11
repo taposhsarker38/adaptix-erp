@@ -34,6 +34,21 @@ class PayslipViewSet(viewsets.ModelViewSet):
         payslip.status = 'finalized'
         payslip.save()
         
-        # TODO: Trigger Accounting Journal Entry via Messaging
+        # Trigger Accounting Journal Entry via Messaging
+        try:
+            from utils.messaging import publish_event
+            payload = {
+                "type": "payroll_finalized",
+                "payslip_id": str(payslip.id),
+                "employee_id": str(payslip.employee.id),
+                "company_uuid": str(payslip.company_uuid),
+                "net_pay": float(payslip.net_pay),
+                "period_start": str(payslip.start_date),
+                "period_end": str(payslip.end_date)
+            }
+            publish_event(exchange="events", routing_key="hrms.payroll.finalized", payload=payload)
+        except Exception as e:
+            # Log error but don't fail transaction? Or fail? For now, print.
+            print(f"Failed to publish payroll event: {e}")
         
         return Response(self.get_serializer(payslip).data)

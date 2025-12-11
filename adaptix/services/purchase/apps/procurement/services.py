@@ -11,7 +11,7 @@ class InventoryService:
         from django.conf import settings
         
         broker_url = getattr(settings, "CELERY_BROKER_URL", "amqp://guest:guest@rabbitmq:5672//")
-        exchange = Exchange("events", type="fanout", durable=False) # Same exchange as NotificationService for simplicity, or separate 'inventory_events'
+        exchange = Exchange("events", type="topic", durable=True) # Same exchange as NotificationService for simplicity, or separate 'inventory_events'
         
         payload = {
             "type": "stock.update", # Event Type

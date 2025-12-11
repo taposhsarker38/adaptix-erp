@@ -30,6 +30,43 @@ services:
     networks:
       - backend
 
+  adaptix-asset:
+    image: adaptix_asset
+    container_name: adaptix-asset
+    build: ./services/asset
+    volumes:
+      - ./services/asset:/app
+    environment:
+      - DJANGO_SECRET_KEY=dev_secret_key
+      - DEBUG=True
+      - DB_NAME=assetdb
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_HOST=postgres_asset
+      - ENABLE_TRACING=True
+    depends_on:
+      postgres_asset:
+        condition: service_healthy
+    networks:
+      - backend
+
+  postgres_asset:
+    image: postgres:15
+    container_name: adaptix-postgres-asset
+    environment:
+      - POSTGRES_DB=assetdb
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - postgres_asset_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - backend
+
   kong:
     image: kong:3.0
     container_name: adaptix-kong
@@ -779,6 +816,28 @@ services:
     networks:
       - backend
 
+  accounting-worker:
+    build:
+      context: ./services/accounting
+      dockerfile: Dockerfile
+    container_name: adaptix-accounting-worker
+    depends_on:
+      postgres_accounting:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://postgres:01713447728@postgres_accounting:5432/accountingdb
+      CELERY_BROKER_URL: amqp://guest:guest@rabbitmq:5672/
+      PUBLIC_KEY_PATH: /keys/public.pem
+      DEBUG: "True"
+    volumes:
+      - ./services/accounting:/app
+      - ./services/auth/keys:/keys:ro
+    command: python manage.py run_accounting_consumer
+    networks:
+      - backend
+
 volumes:
   pgdata_auth:
   pgdata_company:
@@ -793,6 +852,7 @@ volumes:
   pgdata_payment:
   pgdata_hrms:
   pgdata_accounting:
+  postgres_asset_data:
 
 networks:
   backend:

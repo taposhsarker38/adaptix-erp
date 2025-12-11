@@ -15,8 +15,8 @@ def run_test():
     # 1. Setup Employee
     emp = Employee.objects.first()
     if not emp:
-        dept = Department.objects.create(company_uuid=company_uuid, name="HR")
-        desig = Designation.objects.create(company_uuid=company_uuid, name="Manager")
+        dept, _ = Department.objects.get_or_create(company_uuid=company_uuid, name="HR")
+        desig, _ = Designation.objects.get_or_create(company_uuid=company_uuid, name="Manager")
         emp = Employee.objects.create(
             company_uuid=company_uuid,
             first_name="Payroll",
@@ -31,28 +31,25 @@ def run_test():
     print(f"✅ Employee: {emp}")
 
     # 2. Define Components
-    basic = SalaryComponent.objects.create(
+    basic, _ = SalaryComponent.objects.get_or_create(
         company_uuid=company_uuid,
         name="Basic Salary",
-        type="earning",
-        is_taxable=True
+        defaults={'type': "earning", 'is_taxable': True}
     )
-    hra = SalaryComponent.objects.create(
+    hra, _ = SalaryComponent.objects.get_or_create(
         company_uuid=company_uuid,
         name="House Rent Allowance",
-        type="earning",
-        is_taxable=True
+        defaults={'type': "earning", 'is_taxable': True}
     )
-    tax = SalaryComponent.objects.create(
+    tax, _ = SalaryComponent.objects.get_or_create(
         company_uuid=company_uuid,
         name="Income Tax",
-        type="deduction",
-        is_taxable=False
+        defaults={'type': "deduction", 'is_taxable': False}
     )
     print(f"✅ Components Created")
 
     # 3. Create Structure
-    structure = SalaryStructure.objects.create(
+    structure, _ = SalaryStructure.objects.get_or_create(
         company_uuid=company_uuid,
         name="Grade A"
     )
@@ -60,24 +57,30 @@ def run_test():
     print(f"✅ Structure Created: {structure.name}")
 
     # 4. Assign to Employee
-    EmployeeSalary.objects.create(
+    EmployeeSalary.objects.get_or_create(
         company_uuid=company_uuid,
         employee=emp,
-        structure=structure,
-        base_amount=50000
+        defaults={'structure': structure, 'base_amount': 50000}
     )
     print(f"✅ Assigned Structure to Employee")
 
-    # 5. Generate Mock Payslip (Logic usually goes in a Service/View, simulating here)
+    # 5. Generate Mock Payslip (Clean up old draft if exists for clean test)
+    Payslip.objects.filter(employee=emp, status='draft').delete()
+
     # Logic: Basic = 50% of Base, HRA = 20% of Base, Tax = 10% of Base
     earnings = 0
     deductions = 0
     
+    start_date = date(2025, 2, 1) # Use a future date to avoid collision with prev run if any
+    
+    # Force clean cleanup
+    Payslip.objects.filter(employee=emp, start_date=start_date).delete()
+
     payslip = Payslip.objects.create(
         company_uuid=company_uuid,
         employee=emp,
-        start_date=date(2025, 1, 1),
-        end_date=date(2025, 1, 31)
+        start_date=start_date,
+        end_date=date(2025, 2, 28)
     )
     
     # Simulate Calculation

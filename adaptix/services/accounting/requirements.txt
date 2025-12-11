@@ -6,6 +6,8 @@ python-dotenv
 dj-database-url>=2.0.0
 gunicorn
 drf-spectacular
+pika
+whitenoise
 
 # Observability
 opentelemetry-api

@@ -19,3 +19,4 @@ opentelemetry-exporter-otlp
 # Testing
 pytest
 pytest-django
+whitenoise

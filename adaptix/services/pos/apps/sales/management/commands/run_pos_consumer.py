@@ -9,7 +9,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         broker_url = getattr(settings, "CELERY_BROKER_URL", "amqp://guest:guest@rabbitmq:5672//")
-        exchange = Exchange("events", type="fanout", durable=False)
+        exchange = Exchange("events", type="topic", durable=True)
         # Bind to result events
         queue = Queue("pos_saga_updates", exchange=exchange, routing_key="stock.update.*")
 
