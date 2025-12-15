@@ -16,7 +16,7 @@
     "@opentelemetry/sdk-node": "^0.46.0",
     "@opentelemetry/auto-instrumentations-node": "^0.40.0",
     "@opentelemetry/exporter-trace-otlp-proto": "^0.46.0",
-    "jest": "^29.7.0"
+    "jest": "^30.2.0"
   },
   "scripts": {
     "start": "node app.js",
