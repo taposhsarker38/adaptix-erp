@@ -58,7 +58,7 @@ class ProductViewSet(BaseCompanyViewSet):
     serializer_class = ProductSerializer
     required_permission = "view_product"
     search_fields = ['name', 'category__name', 'brand__name']
-    filterset_fields = ['category', 'brand', 'type', 'is_active']
+    filterset_fields = ['category', 'brand', 'product_type', 'is_active']
     ordering_fields = ['name', 'created_at']
 
 

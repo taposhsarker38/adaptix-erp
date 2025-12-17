@@ -121,6 +121,8 @@ services:
       - SERVER_EMAIL=info@expotechglobal.com
       - PUBLIC_KEY_PATH=/keys/public.pem
       - PRIVATE_KEY_PATH=/keys/private.pem
+      - JWT_ALGORITHM=RS256
+      - JWT_ISSUER=auth-service
     command: bash -c "python manage.py migrate --noinput && gunicorn config.wsgi:application --bind 0.0.0.0:8000"
     volumes:
       - ./keys:/keys:ro
@@ -411,6 +413,8 @@ services:
   frontend-app:
     build: ./frontend
     container_name: adaptix-frontend-app
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8101/api
     ports:
       - "3000:3000"
     volumes:

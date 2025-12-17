@@ -37,3 +37,10 @@ class StockTransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = StockTransaction
         fields = '__all__'
+
+class StockAdjustmentSerializer(serializers.Serializer):
+    warehouse_id = serializers.IntegerField(required=True)
+    product_uuid = serializers.UUIDField(required=True)
+    quantity = serializers.DecimalField(max_digits=20, decimal_places=3, required=True)
+    type = serializers.ChoiceField(choices=[('add', 'Add'), ('sub', 'Subtract')], required=True)
+    notes = serializers.CharField(required=False, allow_blank=True)

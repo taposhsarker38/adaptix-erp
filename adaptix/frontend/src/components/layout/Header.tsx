@@ -1,8 +1,9 @@
 "use client";
 
 import { MobileSidebar } from "./Sidebar";
-import { UserNav } from "./UserNav"; // Need to create this
-import { ModeToggle } from "./ModeToggle"; // Optional dark mode toggle
+import { UserNav } from "./UserNav";
+import { NotificationBell } from "./notification-bell";
+import { ModeToggle } from "./ModeToggle";
 
 export default function Header() {
   return (
@@ -11,6 +12,7 @@ export default function Header() {
         <MobileSidebar />
         <div className="ml-auto flex items-center space-x-4">
           {/* <ModeToggle /> */}
+          <NotificationBell />
           <UserNav />
         </div>
       </div>

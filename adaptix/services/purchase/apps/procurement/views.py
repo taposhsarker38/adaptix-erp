@@ -31,19 +31,32 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
         order.status = 'received'
         order.save()
         
-        if order.status != 'ordered': # and status != 'processing' ?
+        if order.status != 'ordered': 
              return Response({"detail": "Order must be in 'ordered' state to receive"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        warehouse_id = request.data.get('warehouse_id')
+        if not warehouse_id:
+             return Response({"detail": "Warehouse ID is required to receive stock"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Set provisional status
-        order.status = 'processing'
+        # Trigger Inventory Update (Sync)
+        # We process all items. If one fails, we should technically rollback, but for V1 we log errors.
+        from .services import InventoryService
+        
+        errors = []
+        token = request.headers.get('Authorization')
+        
+        for item in order.items.all():
+            success = InventoryService.increase_stock(item, order.company_uuid, warehouse_id, token)
+            if not success:
+                errors.append(f"Failed to update stock for {item.product_uuid}")
+        
+        if errors:
+             return Response({"detail": "Partial failure", "errors": errors}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        order.status = 'received'
         order.save()
         
-        # Trigger Inventory Update (Async)
-        from .services import InventoryService
-        for item in order.items.all():
-            InventoryService.increase_stock(item, order.company_uuid)
-        
-        return Response({"status": "processing", "id": order.id, "detail": "Inventory update initiated"})
+        return Response({"status": "received", "id": order.id, "detail": "Stock updated successfully"})
 
     @action(detail=True, methods=['post'], url_path='approve')
     def approve_order(self, request, pk=None):

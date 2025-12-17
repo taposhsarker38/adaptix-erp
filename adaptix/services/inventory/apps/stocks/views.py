@@ -3,9 +3,11 @@ from rest_framework.response import Response
 from .models import Warehouse, Stock, StockTransaction, UOMConversion, StockSerial, BillOfMaterial
 from .serializers import (
     WarehouseSerializer, StockSerializer, StockTransactionSerializer,
-    UOMConversionSerializer, StockSerialSerializer, BillOfMaterialSerializer
+    UOMConversionSerializer, StockSerialSerializer, BillOfMaterialSerializer,
+    StockAdjustmentSerializer
 )
 from apps.utils.permissions import HasPermission
+from rest_framework.decorators import action
 
 class WarehouseViewSet(viewsets.ModelViewSet):
     queryset = Warehouse.objects.all()
@@ -37,12 +39,55 @@ class StockViewSet(viewsets.ReadOnlyModelViewSet):
         
         # Filters
         warehouse = self.request.query_params.get('warehouse')
-        product = self.request.query_params.get('product_uuid')
-        if warehouse:
-            qs = qs.filter(warehouse__id=warehouse)
         if product:
             qs = qs.filter(product_uuid=product)
         return qs
+
+    @action(detail=False, methods=['post'])
+    def adjust(self, request):
+        serializer = StockAdjustmentSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        data = serializer.validated_data
+        company_uuid = getattr(request, "company_uuid", None)
+        
+        if not company_uuid:
+             return Response({"detail": "Company context missing"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Get Warehouse
+        try:
+            warehouse = Warehouse.objects.get(id=data['warehouse_id'], company_uuid=company_uuid)
+        except Warehouse.DoesNotExist:
+             return Response({"detail": "Warehouse not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        # Get or Create Stock
+        stock, created = Stock.objects.get_or_create(
+            company_uuid=company_uuid,
+            warehouse=warehouse,
+            product_uuid=data['product_uuid'],
+            defaults={'quantity': 0}
+        )
+        
+        qty = data['quantity']
+        tx_type = 'adjustment_add' if data['type'] == 'add' else 'adjustment_sub'
+        change = qty if data['type'] == 'add' else -qty
+        
+        # Update Quantity
+        stock.quantity += change
+        stock.save()
+        
+        # Create Transaction Log
+        StockTransaction.objects.create(
+            company_uuid=company_uuid,
+            stock=stock,
+            type=tx_type,
+            quantity_change=change,
+            balance_after=stock.quantity,
+            notes=data.get('notes', ''),
+            created_by=request.user_claims.get('user_id', 'api') if hasattr(request, 'user_claims') else 'api'
+        )
+        
+        return Response(StockSerializer(stock).data)
 
 class TransactionViewSet(viewsets.ModelViewSet):
     queryset = StockTransaction.objects.all()

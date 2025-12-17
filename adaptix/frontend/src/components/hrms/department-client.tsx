@@ -1,0 +1,198 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { Plus, Pencil, Trash2, Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import api from "@/lib/api";
+import { toast } from "sonner";
+
+interface Department {
+  id: string;
+  name: string;
+  code: string;
+}
+
+export function DepartmentClient() {
+  const [departments, setDepartments] = useState<Department[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingDept, setEditingDept] = useState<Department | null>(null);
+  const [formData, setFormData] = useState({ name: "", code: "" });
+
+  const fetchDepartments = async () => {
+    try {
+      const response = await api.get("/hrms/employees/departments/");
+      setDepartments(response.data.results || response.data);
+    } catch (error) {
+      console.error("Failed to fetch departments", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDepartments();
+  }, []);
+
+  const handleSubmit = async () => {
+    try {
+      if (editingDept) {
+        await api.put(
+          `/hrms/employees/departments/${editingDept.id}/`,
+          formData
+        );
+        toast.success("Department updated");
+      } else {
+        await api.post("/hrms/employees/departments/", formData);
+        toast.success("Department created");
+      }
+      setIsDialogOpen(false);
+      setEditingDept(null);
+      setFormData({ name: "", code: "" });
+      fetchDepartments();
+    } catch (error) {
+      toast.error("Operation failed");
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Are you sure?")) return;
+    try {
+      await api.delete(`/hrms/employees/departments/${id}/`);
+      toast.success("Department deleted");
+      fetchDepartments();
+    } catch (error) {
+      toast.error("Failed to delete");
+    }
+  };
+
+  const openEdit = (dept: Department) => {
+    setEditingDept(dept);
+    setFormData({ name: dept.name, code: dept.code });
+    setIsDialogOpen(true);
+  };
+
+  const openCreate = () => {
+    setEditingDept(null);
+    setFormData({ name: "", code: "" });
+    setIsDialogOpen(true);
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold tracking-tight">Departments</h2>
+        <Button onClick={openCreate}>
+          <Plus className="mr-2 h-4 w-4" /> Add Department
+        </Button>
+      </div>
+
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Name</TableHead>
+              <TableHead>Code</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={3} className="text-center py-4">
+                  Loading...
+                </TableCell>
+              </TableRow>
+            ) : departments.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={3} className="text-center py-4">
+                  No departments found.
+                </TableCell>
+              </TableRow>
+            ) : (
+              departments.map((dept) => (
+                <TableRow key={dept.id}>
+                  <TableCell className="font-medium">{dept.name}</TableCell>
+                  <TableCell>{dept.code}</TableCell>
+                  <TableCell className="text-right">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => openEdit(dept)}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-red-500"
+                      onClick={() => handleDelete(dept.id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {editingDept ? "Edit Department" : "Add Department"}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="name">Name</Label>
+              <Input
+                id="name"
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="code">Code</Label>
+              <Input
+                id="code"
+                value={formData.code}
+                onChange={(e) =>
+                  setFormData({ ...formData, code: e.target.value })
+                }
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSubmit}>Save</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
