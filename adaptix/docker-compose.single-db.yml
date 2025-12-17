@@ -99,7 +99,7 @@ services:
   # ============================================
   # MICROSERVICES (All using single DB)
   # ============================================
-  
+
   auth-service:
     build: ./services/auth
     container_name: adaptix-auth-service
@@ -111,6 +111,11 @@ services:
       - REDIS_URL=redis://redis:6379/0
       - PUBLIC_KEY_PATH=/keys/public.pem
       - PRIVATE_KEY_PATH=/keys/private.pem
+      - JWT_ALGORITHM=RS256
+      - JWT_ISSUER=auth-service
+      - JWT_AUDIENCE=pos-system
+    ports:
+      - "8100:8000"
     volumes:
       - ./keys:/keys:ro
     depends_on:
@@ -157,7 +162,7 @@ services:
 
   pos:
     build: ./services/pos
-    # container_name: adaptix-pos # Removed for scaling replicas
+    container_name: adaptix-pos
     environment:
       - DATABASE_URL=postgres://${DB_USER:-adaptix}:${DB_PASSWORD:-adaptix123}@postgres:5432/adaptix
       - DB_SCHEMA=pos
@@ -174,11 +179,6 @@ services:
         condition: service_healthy
     networks:
       - backend
-    deploy:
-      replicas: 5
-      resources:
-        limits:
-          memory: 1G
 
   inventory:
     build: ./services/inventory
@@ -345,11 +345,37 @@ services:
       - SECRET_KEY=${SECRET_KEY:-your-secret-key}
       - DEBUG=True
       - PUBLIC_KEY_PATH=/keys/public.pem
+      - CELERY_BROKER_URL=amqp://${MQ_USER:-adaptix}:${MQ_PASSWORD:-adaptix123}@rabbitmq:5672/
     volumes:
       - ./keys:/keys:ro
     depends_on:
       postgres:
         condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - backend
+
+  reporting-worker:
+    build: ./services/reporting
+    container_name: adaptix-reporting-worker
+    command: python manage.py run_consumer
+    environment:
+      - DATABASE_URL=postgres://${DB_USER:-adaptix}:${DB_PASSWORD:-adaptix123}@postgres:5432/adaptix
+      - DB_SCHEMA=reporting
+      - SECRET_KEY=${SECRET_KEY:-your-secret-key}
+      - DEBUG=True
+      - PUBLIC_KEY_PATH=/keys/public.pem
+      - CELERY_BROKER_URL=amqp://${MQ_USER:-adaptix}:${MQ_PASSWORD:-adaptix123}@rabbitmq:5672/
+    volumes:
+      - ./keys:/keys:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      reporting:
+        condition: service_started
     networks:
       - backend
 
@@ -380,6 +406,8 @@ services:
   frontend-app:
     build: ./frontend
     container_name: adaptix-frontend-app
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8101/api
     ports:
       - "3000:3000"
     volumes:

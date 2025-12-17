@@ -1,8 +1,10 @@
 import axios from "axios";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8101/api";
+
 // Create Axios instance
 const api = axios.create({
-  baseURL: "http://localhost:8101/api", // Pointing to Kong Gateway on Host Port 8101
+  baseURL: API_URL,
   headers: {
     "Content-Type": "application/json",
   },
@@ -41,12 +43,9 @@ api.interceptors.response.use(
         }
 
         // Call Refresh Token Endpoint
-        const { data } = await axios.post(
-          "http://localhost:8000/api/auth/refresh/",
-          {
-            refresh: refreshToken,
-          }
-        );
+        const { data } = await axios.post(`${API_URL}/auth/refresh/`, {
+          refresh: refreshToken,
+        });
 
         localStorage.setItem("access_token", data.access);
 

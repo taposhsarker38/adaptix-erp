@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     
     # Local
     'apps.emails',
+    'apps.alerts.apps.AlertsConfig',
 ]
 
 MIDDLEWARE = [
@@ -37,6 +38,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'config.middleware.JWTCompanyMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'

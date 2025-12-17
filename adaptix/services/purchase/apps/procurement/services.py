@@ -3,37 +3,34 @@ from django.conf import settings
 
 class InventoryService:
     @staticmethod
-    def increase_stock(order_item, company_uuid):
+    def increase_stock(order_item, company_uuid, warehouse_id, token):
         """
-        Publish 'stock.update' event to async queue.
+        Call Inventory Service Synchronously to adjust stock.
         """
-        from kombu import Connection, Exchange, Producer
-        from django.conf import settings
+        import requests
         
-        broker_url = getattr(settings, "CELERY_BROKER_URL", "amqp://guest:guest@rabbitmq:5672//")
-        exchange = Exchange("events", type="topic", durable=True) # Same exchange as NotificationService for simplicity, or separate 'inventory_events'
+        # Internal URL for Inventory Service (Docker Service Name)
+        url = "http://inventory:8000/api/inventory/stocks/adjust/"
         
         payload = {
-            "type": "stock.update", # Event Type
+            "warehouse_id": warehouse_id,
             "product_uuid": str(order_item.product_uuid),
-            "variant_uuid": str(order_item.variant_uuid) if order_item.variant_uuid else None,
             "quantity": float(order_item.quantity),
-            "action": "increase",
-            "reason": f"PO #{order_item.order.reference_number}",
-            "company_uuid": str(company_uuid)
+            "type": "add",
+            "notes": f"PO #{order_item.order.reference_number}"
+        }
+        
+        headers = {
+            "Authorization": token, # Pass through the JWT
+            "Content-Type": "application/json"
         }
         
         try:
-            with Connection(broker_url) as conn:
-                producer = Producer(conn)
-                producer.publish(
-                    payload,
-                    exchange=exchange,
-                    routing_key="stock.update",
-                    declare=[exchange],
-                    retry=True
-                )
+            response = requests.post(url, json=payload, headers=headers)
+            if response.status_code >= 400:
+                print(f"Inventory Error: {response.text}")
+                return False
             return True
         except Exception as e:
-            print(f"Failed to publish stock update event: {e}")
+            print(f"Failed to call inventory service: {e}")
             return False

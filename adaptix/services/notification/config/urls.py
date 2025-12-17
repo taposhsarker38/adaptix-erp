@@ -8,5 +8,5 @@ urlpatterns = [
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     
-    # App URLs will go here
+    path('api/notification/', include('apps.alerts.urls')),
 ]

@@ -24,3 +24,4 @@ opentelemetry-exporter-otlp
 pytest
 pytest-django
 whitenoise
+PyJWT>=2.8

@@ -83,9 +83,15 @@ def resend_verification_view(request):
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all().select_related("company").prefetch_related("roles")
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        qs = User.objects.all()
+        if not user.is_superuser:
+            qs = qs.filter(company=user.company)
+        return qs.select_related("company").prefetch_related("roles")
 
     def list(self, request, *args, **kwargs):
         try:
@@ -99,6 +105,11 @@ class UserViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return api_response(message=str(e), success=False, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
+    def me(self, request):
+        serializer = self.get_serializer(request.user)
+        return api_response(data=serializer.data, message="Current user retrieved", success=True)
+
     def retrieve(self, request, *args, **kwargs):
         try:
             instance = self.get_object()
@@ -106,6 +117,13 @@ class UserViewSet(viewsets.ModelViewSet):
             return api_response(data=serializer.data, message="User retrieved", success=True, status_code=status.HTTP_200_OK)
         except Exception as e:
             return api_response(message=str(e), success=False, status_code=status.HTTP_404_NOT_FOUND)
+
+    def perform_create(self, serializer):
+        user = self.request.user
+        if not user.is_superuser and user.company:
+            serializer.save(company=user.company)
+        else:
+            serializer.save()
 
     def create(self, request, *args, **kwargs):
         try:
@@ -190,9 +208,15 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class RoleViewSet(viewsets.ModelViewSet):
-    queryset = Role.objects.all().prefetch_related("permissions")
     serializer_class = RoleSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        qs = Role.objects.all()
+        if not user.is_superuser:
+            qs = qs.filter(company=user.company)
+        return qs.prefetch_related("permissions")
 
     def list(self, request, *args, **kwargs):
         try:
@@ -223,6 +247,12 @@ class RoleViewSet(viewsets.ModelViewSet):
             return api_response(data=serializer.data, message="Role created", success=True, status_code=http_status.HTTP_201_CREATED)
         except Exception as e:
             return api_response(message=str(e), success=False, status_code=http_status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def perform_create(self, serializer):
+        if self.request.user.company:
+            serializer.save(company=self.request.user.company)
+        else:
+            serializer.save()
 
     def update(self, request, *args, **kwargs):
         try:
@@ -457,17 +487,27 @@ def login_view(request):
         else:
             roles_qs = user.roles.prefetch_related("permissions").all()
             roles_list = [r.name for r in roles_qs]
-            permissions_list = list(set([p.codename for r in roles_qs for p in r.permissions.all()]))
+            
+            # 1. Role-based permissions
+            role_perms = set([p.codename for r in roles_qs for p in r.permissions.all()])
+            
+            # 2. Direct permissions
+            direct_qs = user.direct_permissions.all()
+            direct_perms = set([p.codename for p in direct_qs])
+            
+            # 3. Merge
+            permissions_list = list(role_perms | direct_perms)
 
         # Generate tokens
         refresh = RefreshToken.for_user(user)
         access = refresh.access_token
-        access["iss"] = "prod-client-kid"
+        access["iss"] = settings.SIMPLE_JWT.get('ISSUER', 'auth-service')
         # Add company_uuid to the token payload
         access["company_uuid"] = str(user.company.uuid) if user.company else None
         # Add RBAC to token
         access["roles"] = roles_list
         access["permissions"] = permissions_list
+        access["is_superuser"] = user.is_superuser
 
         payload = {
             "access": str(access),
@@ -479,6 +519,7 @@ def login_view(request):
                 "company_uuid": str(user.company.uuid) if user.company else None,
                 "roles": roles_list,
                 "permissions": permissions_list,
+                "is_superuser": user.is_superuser,
             },
             "algorithm": "RS256"
         }
@@ -503,10 +544,37 @@ def login_view(request):
 @permission_classes([IsAuthenticated])
 def verify_view(request):
     user = request.user
-    # roles and permissions
-    roles_qs = user.roles.prefetch_related("permissions").all()
-    roles = [r.name for r in roles_qs]
-    permissions = [p.codename for r in roles_qs for p in r.permissions.all()]
+    
+    if user.is_superuser:
+        roles = ["superuser"]
+        permissions = list(Permission.objects.values_list("codename", flat=True))
+    else:
+        # roles and permissions
+        roles_qs = user.roles.prefetch_related("permissions").all()
+        roles = [r.name for r in roles_qs]
+        
+        # 1. Role-based permissions
+        role_perms = set([p.codename for r in roles_qs for p in r.permissions.all()])
+        # 2. Direct permissions
+        direct_qs = user.direct_permissions.all()
+        direct_perms = set([p.codename for p in direct_qs])
+        
+        permissions = list(role_perms | direct_perms)
+
+    return api_response(
+        message="Token is valid",
+        success=True,
+        status_code=http_status.HTTP_200_OK,
+        data={
+            "user_id": user.id,
+            "username": user.username,
+            "email": user.email,
+            "is_active": user.is_active,
+            "roles": roles,
+            "permissions": permissions,
+            "is_superuser": user.is_superuser,
+        }
+    )
 
     payload = {
         "active": True,

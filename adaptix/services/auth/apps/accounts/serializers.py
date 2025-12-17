@@ -40,14 +40,19 @@ class UserSerializer(serializers.ModelSerializer):
     company_id = serializers.PrimaryKeyRelatedField(queryset=Company.objects.all(), source="company", write_only=True, required=False)
     roles = RoleSerializer(many=True, read_only=True)
     role_ids = serializers.PrimaryKeyRelatedField(queryset=Role.objects.all(), many=True, write_only=True, required=False)
+    
+    # Direct permissions
+    direct_permissions = PermissionSerializer(many=True, read_only=True)
+    direct_permission_ids = serializers.PrimaryKeyRelatedField(queryset=Permission.objects.all(), many=True, write_only=True, required=False)
+    
     password = serializers.CharField(write_only=True, required=False)
     confirm_password = serializers.CharField(write_only=True, required=False)
     is_terminal = serializers.BooleanField(default=False)
 
     class Meta:
         model = User
-        fields = ["id", "username", "email", "first_name", "last_name", "company", "company_id", "is_terminal", "roles", "role_ids", "password","confirm_password"]
-        read_only_fields = ["id", "roles", "company"]
+        fields = ["id", "username", "email", "first_name", "last_name", "is_active", "company", "company_id", "is_terminal", "roles", "role_ids", "direct_permissions", "direct_permission_ids", "password","confirm_password"]
+        read_only_fields = ["id", "roles", "direct_permissions", "company"]
 
     def validate(self, attrs):
         pwd = attrs.get("password")
@@ -65,11 +70,15 @@ class UserSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError({"password": list(e.messages)})
         return attrs
     def validate_email(self, value):
-        if User.objects.filter(email=value).exists():
+        qs = User.objects.filter(email=value)
+        if self.instance:
+            qs = qs.exclude(pk=self.instance.pk)
+        if qs.exists():
             raise serializers.ValidationError("Email already taken.")
         return value
     def create(self, validated_data):
         roles = validated_data.pop("role_ids", [])
+        direct_perms = validated_data.pop("direct_permission_ids", [])
         password = validated_data.pop("password", None)
         # remove confirm_password if present
         validated_data.pop("confirm_password", None)
@@ -82,10 +91,13 @@ class UserSerializer(serializers.ModelSerializer):
         user.save()
         if roles:
             user.roles.set(roles)
+        if direct_perms:
+            user.direct_permissions.set(direct_perms)
         return user
 
     def update(self, instance, validated_data):
         roles = validated_data.pop("role_ids", None)
+        direct_perms = validated_data.pop("direct_permission_ids", None)
         password = validated_data.pop("password", None)
         validated_data.pop("confirm_password", None)
         for attr, val in validated_data.items():
@@ -95,6 +107,8 @@ class UserSerializer(serializers.ModelSerializer):
         instance.save()
         if roles is not None:
             instance.roles.set(roles)
+        if direct_perms is not None:
+            instance.direct_permissions.set(direct_perms)
         return instance
 
 class MenuSerializer(serializers.ModelSerializer):

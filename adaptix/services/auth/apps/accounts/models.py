@@ -32,6 +32,8 @@ class User(AbstractUser):
     company = models.ForeignKey(Company, null=True, blank=True, on_delete=models.CASCADE)
     is_terminal = models.BooleanField(default=False)
     roles = models.ManyToManyField(Role, blank=True, related_name="users")
+    # Allow assigning permissions directly to a user, overriding/augmenting roles
+    direct_permissions = models.ManyToManyField(Permission, blank=True, related_name="users_direct")
     email = models.EmailField(unique=True)
     email_verified = models.BooleanField(default=False)
     verify_email_token = models.CharField(max_length=255, blank=True, null=True)
