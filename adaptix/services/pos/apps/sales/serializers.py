@@ -35,6 +35,9 @@ class PaymentSerializer(serializers.ModelSerializer):
 class OrderSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True)
     payments = PaymentSerializer(many=True, read_only=True)
+    payment_data = serializers.ListField(
+        child=serializers.DictField(), write_only=True, required=False
+    )
     session_id = serializers.PrimaryKeyRelatedField(
         queryset=POSSession.objects.all(), source='session', required=False, allow_null=True
     )
@@ -49,7 +52,7 @@ class OrderSerializer(serializers.ModelSerializer):
             'subtotal', 'tax_total', 'discount_total', 'service_charge', 'grand_total', 
             'paid_amount', 'due_amount',
             'status', 'payment_status',
-            'metadata', 'created_at', 'updated_at', 'items', 'payments'
+            'metadata', 'created_at', 'updated_at', 'items', 'payments', 'payment_data'
         ]
         read_only_fields = [
             'order_number', 'company_uuid', 'created_by', 
@@ -58,6 +61,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         items_data = validated_data.pop('items')
+        payments_data = validated_data.pop('payment_data', [])
         
         # company_uuid and created_by should be passed in save() from the view
         
@@ -93,7 +97,25 @@ class OrderSerializer(serializers.ModelSerializer):
         service = validated_data.get('service_charge', 0)
         
         order.grand_total = calculated_subtotal - calculated_discount + calculated_tax + service
-        order.due_amount = order.grand_total
+        
+        # Process Payments
+        total_paid = 0
+        for p_data in payments_data:
+            p_data['company_uuid'] = order.company_uuid
+            p_data['created_by'] = order.created_by
+            Payment.objects.create(order=order, **p_data)
+            total_paid += float(p_data.get('amount', 0))
+            
+        order.paid_amount = total_paid
+        order.due_amount = float(order.grand_total) - total_paid
+        
+        if order.due_amount <= 0:
+            order.payment_status = 'paid'
+        elif total_paid > 0:
+            order.payment_status = 'partial'
+        else:
+            order.payment_status = 'pending'
+            
         order.save()
         
         return order

@@ -70,8 +70,13 @@ export const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
           discount_amount: 0,
         })),
         module_type: "pos",
-        status: "closed", // Directly close for now
-        // Payment details would go here
+        status: "closed",
+        payment_data: [
+          {
+            method: values.payment_method,
+            amount: values.payment_method === "cash" ? total : total, // Full payment by default for now
+          },
+        ],
       };
 
       await api.post("/pos/orders/", payload);
