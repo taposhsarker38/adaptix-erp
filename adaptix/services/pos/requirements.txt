@@ -20,5 +20,5 @@ opentelemetry-instrumentation-psycopg2
 opentelemetry-instrumentation-requests
 opentelemetry-exporter-otlp
 pytest==8.0.0
-pytest-django==4.8.0
+pytest-django==4.11.1
 whitenoise
