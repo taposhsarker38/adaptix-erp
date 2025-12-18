@@ -5,9 +5,9 @@ from django_filters.rest_framework import DjangoFilterBackend
 from .models import WorkCenter, BillOfMaterial, BOMItem, ProductionOrder
 from .serializers import (
     WorkCenterSerializer,
-    BillOfMaterialSerializer,
+    ManufacturingBillOfMaterialSerializer,
     ProductionOrderSerializer,
-    BOMItemSerializer
+    ManufacturingBOMItemSerializer
 )
 
 class WorkCenterViewSet(viewsets.ModelViewSet):
@@ -17,7 +17,7 @@ class WorkCenterViewSet(viewsets.ModelViewSet):
 
 class BillOfMaterialViewSet(viewsets.ModelViewSet):
     queryset = BillOfMaterial.objects.all()
-    serializer_class = BillOfMaterialSerializer
+    serializer_class = ManufacturingBillOfMaterialSerializer
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['product_uuid']
@@ -25,7 +25,7 @@ class BillOfMaterialViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'])
     def add_item(self, request, pk=None):
         bom = self.get_object()
-        serializer = BOMItemSerializer(data={**request.data, 'bom': bom.id})
+        serializer = ManufacturingBOMItemSerializer(data={**request.data, 'bom': bom.id})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)

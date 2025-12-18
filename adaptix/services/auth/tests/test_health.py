@@ -11,4 +11,4 @@ class HealthCheckTest(TestCase):
 
     def test_app_config(self):
         from django.apps import apps
-        self.assertTrue(apps.is_installed('apps.users'))
+        self.assertTrue(apps.is_installed('apps.accounts'))

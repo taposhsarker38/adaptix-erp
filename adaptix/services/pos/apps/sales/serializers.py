@@ -114,7 +114,8 @@ class OrderSerializer(serializers.ModelSerializer):
             if loyalty_action == 'REDEEM' and order.customer_uuid and redeemed_points > 0:
                 try:
                     # 1. Deduct points from Customer Service
-                    url = f"http://customer:8000/api/customers/{order.customer_uuid}/adjust_points/"
+                    from adaptix_core.service_registry import ServiceRegistry
+                    url = f"{ServiceRegistry.get_api_url('customer')}/customers/{order.customer_uuid}/adjust_points/"
                     resp = requests.post(url, json={'action': 'deduct', 'points': float(redeemed_points)})
                     
                     if resp.status_code == 200:
@@ -160,7 +161,8 @@ class OrderSerializer(serializers.ModelSerializer):
                     # Earn 1 point for every 10 currency units spent
                     points_to_add = order.grand_total / 10
                     if points_to_add > 0:
-                        url = f"http://customer:8000/api/customers/{order.customer_uuid}/adjust_points/"
+                        from adaptix_core.service_registry import ServiceRegistry
+                        url = f"{ServiceRegistry.get_api_url('customer')}/customers/{order.customer_uuid}/adjust_points/"
                         requests.post(url, json={'action': 'add', 'points': float(points_to_add)})
                 except Exception as e:
                     print(f"Loyalty earn error: {e}")

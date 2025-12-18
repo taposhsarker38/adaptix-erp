@@ -49,6 +49,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             # Publish Event for Accounting (Zero-Touch)
             try:
                 from kombu import Connection, Exchange, Producer
+                from django.core.serializers.json import DjangoJSONEncoder
                 import os
                 import json
                 
@@ -71,7 +72,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 }
                 
                 producer.publish(
-                    json.dumps(event_payload),
+                    json.dumps(event_payload, cls=DjangoJSONEncoder),
                     exchange=exchange,
                     routing_key="pos.sale.closed",
                     declare=[exchange],

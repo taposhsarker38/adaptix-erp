@@ -6,14 +6,14 @@ class WorkCenterSerializer(serializers.ModelSerializer):
         model = WorkCenter
         fields = '__all__'
 
-class BOMItemSerializer(serializers.ModelSerializer):
+class ManufacturingBOMItemSerializer(serializers.ModelSerializer):
     # Frontend can resolve product name using component_uuid
     class Meta:
         model = BOMItem
         fields = '__all__'
 
-class BillOfMaterialSerializer(serializers.ModelSerializer):
-    items = BOMItemSerializer(many=True, read_only=True)
+class ManufacturingBillOfMaterialSerializer(serializers.ModelSerializer):
+    items = ManufacturingBOMItemSerializer(many=True, read_only=True)
     
     class Meta:
         model = BillOfMaterial

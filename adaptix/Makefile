@@ -33,7 +33,7 @@ verify-core: ## Run the shared core verification script
 	python3 verify_all_core.py
 
 test: ## Run tests for a service (make test SERVICE=pos)
-	docker compose exec $(SERVICE) python manage.py test
+	docker compose exec $(SERVICE) pytest
 
 shell: ## Open a bash shell in a service container (make shell SERVICE=pos)
 	@echo "Entering shell for $(SERVICE)..."

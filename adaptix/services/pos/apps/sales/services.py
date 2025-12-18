@@ -1,8 +1,10 @@
 import requests
 from django.conf import settings
 
+from adaptix_core.service_registry import ServiceRegistry
+
 class InventoryService:
-    BASE_URL = "http://dynamicpos-inventory:8000/api" # Docker service name
+    BASE_URL = f"{ServiceRegistry.get_api_url('inventory')}"
 
     @staticmethod
     def deduct_stock(sale_data, sale_uuid):
