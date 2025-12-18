@@ -122,7 +122,7 @@ if database_url:
         # Add schema to search path (schema first, then public)
         db_config['OPTIONS'] = {'options': f'-c search_path={db_schema},public'}
         DATABASES = {"default": db_config}
-        print(f"✅ Loaded Single DB Config for Schema: {db_schema}")
+        pass # print(f"✅ Loaded Single DB Config for Schema: {db_schema}")
     except Exception as e:
-        print(f"⚠️ Failed to configure Single DB: {e}")
+        pass # print(f"⚠️ Failed to configure Single DB: {e}")
 # ==============================================

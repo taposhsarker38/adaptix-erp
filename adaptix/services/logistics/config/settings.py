@@ -20,10 +20,13 @@ INSTALLED_APPS = [
     # Third party
     'rest_framework',
     'corsheaders',
+    'drf_spectacular',
     
     # Local apps
     'apps.shipping',
 ]
+
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -73,6 +76,7 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 50,
     'DEFAULT_RENDERER_CLASSES': (
@@ -98,6 +102,6 @@ if database_url:
         db_config = dj_database_url.parse(database_url)
         db_config['OPTIONS'] = {'options': f'-c search_path={db_schema},public'}
         DATABASES = {"default": db_config}
-        print(f"✅ Loaded Single DB Config for Schema: {db_schema}")
+        pass # print(f"✅ Loaded Single DB Config for Schema: {db_schema}")
     except Exception as e:
-        print(f"⚠️ Failed to configure Single DB: {e}")
+        pass # print(f"⚠️ Failed to configure Single DB: {e}")

@@ -101,7 +101,9 @@ services:
   # ============================================
 
   auth-service:
-    build: ./services/auth
+    build:
+      context: .
+      dockerfile: services/auth/Dockerfile
     container_name: adaptix-auth-service
     environment:
       - DATABASE_URL=postgres://${DB_USER:-adaptix}:${DB_PASSWORD:-adaptix123}@postgres:5432/adaptix
@@ -118,6 +120,8 @@ services:
       - "8100:8000"
     volumes:
       - ./keys:/keys:ro
+      - ./services/auth:/app
+      - ./shared:/shared
     depends_on:
       postgres:
         condition: service_healthy
@@ -127,7 +131,9 @@ services:
       - backend
 
   company:
-    build: ./services/company
+    build:
+      context: .
+      dockerfile: services/company/Dockerfile
     container_name: adaptix-company
     environment:
       - DATABASE_URL=postgres://${DB_USER:-adaptix}:${DB_PASSWORD:-adaptix123}@postgres:5432/adaptix
@@ -137,6 +143,8 @@ services:
       - PUBLIC_KEY_PATH=/keys/public.pem
     volumes:
       - ./keys:/keys:ro
+      - ./services/company:/app
+      - ./shared:/shared
     depends_on:
       postgres:
         condition: service_healthy
@@ -144,7 +152,9 @@ services:
       - backend
 
   product:
-    build: ./services/product
+    build:
+      context: .
+      dockerfile: services/product/Dockerfile
     container_name: adaptix-product
     environment:
       - DATABASE_URL=postgres://${DB_USER:-adaptix}:${DB_PASSWORD:-adaptix123}@postgres:5432/adaptix
@@ -154,6 +164,8 @@ services:
       - PUBLIC_KEY_PATH=/keys/public.pem
     volumes:
       - ./keys:/keys:ro
+      - ./services/product:/app
+      - ./shared:/shared
     depends_on:
       postgres:
         condition: service_healthy
@@ -161,7 +173,9 @@ services:
       - backend
 
   pos:
-    build: ./services/pos
+    build:
+      context: .
+      dockerfile: services/pos/Dockerfile
     container_name: adaptix-pos
     environment:
       - DATABASE_URL=postgres://${DB_USER:-adaptix}:${DB_PASSWORD:-adaptix123}@postgres:5432/adaptix
@@ -172,6 +186,8 @@ services:
       - RABBITMQ_URL=amqp://${MQ_USER:-adaptix}:${MQ_PASSWORD:-adaptix123}@rabbitmq:5672/
     volumes:
       - ./keys:/keys:ro
+      - ./services/pos:/app
+      - ./shared:/shared
     depends_on:
       postgres:
         condition: service_healthy
@@ -181,7 +197,9 @@ services:
       - backend
 
   inventory:
-    build: ./services/inventory
+    build:
+      context: .
+      dockerfile: services/inventory/Dockerfile
     container_name: adaptix-inventory
     environment:
       - DATABASE_URL=postgres://${DB_USER:-adaptix}:${DB_PASSWORD:-adaptix123}@postgres:5432/adaptix
@@ -191,6 +209,8 @@ services:
       - PUBLIC_KEY_PATH=/keys/public.pem
     volumes:
       - ./keys:/keys:ro
+      - ./services/inventory:/app
+      - ./shared:/shared
     depends_on:
       postgres:
         condition: service_healthy
@@ -198,7 +218,9 @@ services:
       - backend
 
   purchase:
-    build: ./services/purchase
+    build:
+      context: .
+      dockerfile: services/purchase/Dockerfile
     container_name: adaptix-purchase
     environment:
       - DATABASE_URL=postgres://${DB_USER:-adaptix}:${DB_PASSWORD:-adaptix123}@postgres:5432/adaptix
@@ -208,6 +230,8 @@ services:
       - PUBLIC_KEY_PATH=/keys/public.pem
     volumes:
       - ./keys:/keys:ro
+      - ./services/purchase:/app
+      - ./shared:/shared
     depends_on:
       postgres:
         condition: service_healthy
@@ -215,7 +239,9 @@ services:
       - backend
 
   hrms-service:
-    build: ./services/hrms
+    build:
+      context: .
+      dockerfile: services/hrms/Dockerfile
     container_name: adaptix-hrms-service
     environment:
       - DATABASE_URL=postgres://${DB_USER:-adaptix}:${DB_PASSWORD:-adaptix123}@postgres:5432/adaptix
@@ -225,6 +251,8 @@ services:
       - PUBLIC_KEY_PATH=/keys/public.pem
     volumes:
       - ./keys:/keys:ro
+      - ./services/hrms:/app
+      - ./shared:/shared
     depends_on:
       postgres:
         condition: service_healthy
@@ -232,7 +260,9 @@ services:
       - backend
 
   accounting:
-    build: ./services/accounting
+    build:
+      context: .
+      dockerfile: services/accounting/Dockerfile
     container_name: adaptix-accounting
     environment:
       - DATABASE_URL=postgres://${DB_USER:-adaptix}:${DB_PASSWORD:-adaptix123}@postgres:5432/adaptix
@@ -242,6 +272,8 @@ services:
       - PUBLIC_KEY_PATH=/keys/public.pem
     volumes:
       - ./keys:/keys:ro
+      - ./services/accounting:/app
+      - ./shared:/shared
     depends_on:
       postgres:
         condition: service_healthy
@@ -249,7 +281,9 @@ services:
       - backend
 
   customer:
-    build: ./services/customer
+    build:
+      context: .
+      dockerfile: services/customer/Dockerfile
     container_name: adaptix-customer
     environment:
       - DATABASE_URL=postgres://${DB_USER:-adaptix}:${DB_PASSWORD:-adaptix123}@postgres:5432/adaptix
@@ -259,6 +293,8 @@ services:
       - PUBLIC_KEY_PATH=/keys/public.pem
     volumes:
       - ./keys:/keys:ro
+      - ./services/customer:/app
+      - ./shared:/shared
     depends_on:
       postgres:
         condition: service_healthy
@@ -266,7 +302,9 @@ services:
       - backend
 
   asset:
-    build: ./services/asset
+    build:
+      context: .
+      dockerfile: services/asset/Dockerfile
     container_name: adaptix-asset
     environment:
       - DATABASE_URL=postgres://${DB_USER:-adaptix}:${DB_PASSWORD:-adaptix123}@postgres:5432/adaptix
@@ -276,6 +314,8 @@ services:
       - PUBLIC_KEY_PATH=/keys/public.pem
     volumes:
       - ./keys:/keys:ro
+      - ./services/asset:/app
+      - ./shared:/shared
     depends_on:
       postgres:
         condition: service_healthy
@@ -283,7 +323,9 @@ services:
       - backend
 
   promotion:
-    build: ./services/promotion
+    build:
+      context: .
+      dockerfile: services/promotion/Dockerfile
     container_name: adaptix-promotion
     environment:
       - DATABASE_URL=postgres://${DB_USER:-adaptix}:${DB_PASSWORD:-adaptix123}@postgres:5432/adaptix
@@ -293,6 +335,8 @@ services:
       - PUBLIC_KEY_PATH=/keys/public.pem
     volumes:
       - ./keys:/keys:ro
+      - ./services/promotion:/app
+      - ./shared:/shared
     depends_on:
       postgres:
         condition: service_healthy
@@ -300,7 +344,9 @@ services:
       - backend
 
   payment:
-    build: ./services/payment
+    build:
+      context: .
+      dockerfile: services/payment/Dockerfile
     container_name: adaptix-payment
     environment:
       - DATABASE_URL=postgres://${DB_USER:-adaptix}:${DB_PASSWORD:-adaptix123}@postgres:5432/adaptix
@@ -310,6 +356,8 @@ services:
       - PUBLIC_KEY_PATH=/keys/public.pem
     volumes:
       - ./keys:/keys:ro
+      - ./services/payment:/app
+      - ./shared:/shared
     depends_on:
       postgres:
         condition: service_healthy
@@ -317,7 +365,9 @@ services:
       - backend
 
   notification:
-    build: ./services/notification
+    build:
+      context: .
+      dockerfile: services/notification/Dockerfile
     container_name: adaptix-notification
     environment:
       - DATABASE_URL=postgres://${DB_USER:-adaptix}:${DB_PASSWORD:-adaptix123}@postgres:5432/adaptix
@@ -328,6 +378,8 @@ services:
       - RABBITMQ_URL=amqp://${MQ_USER:-adaptix}:${MQ_PASSWORD:-adaptix123}@rabbitmq:5672/
     volumes:
       - ./keys:/keys:ro
+      - ./services/notification:/app
+      - ./shared:/shared
     depends_on:
       postgres:
         condition: service_healthy
@@ -337,7 +389,9 @@ services:
       - backend
 
   reporting:
-    build: ./services/reporting
+    build:
+      context: .
+      dockerfile: services/reporting/Dockerfile
     container_name: adaptix-reporting
     environment:
       - DATABASE_URL=postgres://${DB_USER:-adaptix}:${DB_PASSWORD:-adaptix123}@postgres:5432/adaptix
@@ -348,6 +402,8 @@ services:
       - CELERY_BROKER_URL=amqp://${MQ_USER:-adaptix}:${MQ_PASSWORD:-adaptix123}@rabbitmq:5672/
     volumes:
       - ./keys:/keys:ro
+      - ./services/reporting:/app
+      - ./shared:/shared
     depends_on:
       postgres:
         condition: service_healthy
@@ -357,7 +413,9 @@ services:
       - backend
 
   reporting-worker:
-    build: ./services/reporting
+    build:
+      context: .
+      dockerfile: services/reporting/Dockerfile
     container_name: adaptix-reporting-worker
     command: python manage.py run_consumer
     environment:
@@ -369,6 +427,8 @@ services:
       - CELERY_BROKER_URL=amqp://${MQ_USER:-adaptix}:${MQ_PASSWORD:-adaptix123}@rabbitmq:5672/
     volumes:
       - ./keys:/keys:ro
+      - ./services/reporting:/app
+      - ./shared:/shared
     depends_on:
       postgres:
         condition: service_healthy
@@ -380,7 +440,9 @@ services:
       - backend
 
   ai-service:
-    build: ./services/intelligence
+    build:
+      context: .
+      dockerfile: services/intelligence/Dockerfile
     container_name: adaptix-ai-service
     environment:
       - DATABASE_URL=postgres://${DB_USER:-adaptix}:${DB_PASSWORD:-adaptix123}@postgres:5432/adaptix
@@ -417,6 +479,62 @@ services:
       - backend
     depends_on:
       - kong
+
+  quality-service:
+    build:
+      context: .
+      dockerfile: services/quality/Dockerfile
+    container_name: adaptix-quality-service
+    environment:
+      - DATABASE_URL=postgres://${DB_USER:-adaptix}:${DB_PASSWORD:-adaptix123}@postgres:5432/adaptix
+      - DB_SCHEMA=quality_schema
+      - PUBLIC_KEY_PATH=/keys/public.pem
+      - JWT_ALGORITHM=RS256
+      - JWT_AUDIENCE=pos-system
+      - JWT_ISSUER=auth-service
+    volumes:
+      - ./services/quality:/app
+      - ./keys:/keys:ro
+      - ./shared:/shared
+    networks:
+      - backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "python3 -c 'import urllib.request; urllib.request.urlopen(\"http://127.0.0.1:8000/health/\")'"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  logistics-service:
+    build:
+      context: .
+      dockerfile: services/logistics/Dockerfile
+    container_name: adaptix-logistics
+    environment:
+      - DATABASE_URL=postgres://${DB_USER:-adaptix}:${DB_PASSWORD:-adaptix123}@postgres:5432/adaptix
+      - DB_SCHEMA=logistics
+      - SECRET_KEY=${SECRET_KEY:-your-secret-key}
+      - DEBUG=True
+      - PUBLIC_KEY_PATH=/keys/public.pem
+      - RABBITMQ_URL=amqp://${MQ_USER:-adaptix}:${MQ_PASSWORD:-adaptix123}@rabbitmq:5672/
+    volumes:
+      - ./services/logistics:/app
+      - ./keys:/keys:ro
+      - ./shared:/shared
+    networks:
+      - backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "python3 -c 'import urllib.request; urllib.request.urlopen(\"http://127.0.0.1:8000/health/\")'"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   postgres_data:

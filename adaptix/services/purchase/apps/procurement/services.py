@@ -9,8 +9,9 @@ class InventoryService:
         """
         import requests
         
+        from adaptix_core.service_registry import ServiceRegistry
         # Internal URL for Inventory Service (Docker Service Name)
-        url = "http://inventory:8000/api/inventory/stocks/adjust/"
+        url = f"{ServiceRegistry.get_api_url('inventory')}/inventory/stocks/adjust/"
         
         payload = {
             "warehouse_id": warehouse_id,
