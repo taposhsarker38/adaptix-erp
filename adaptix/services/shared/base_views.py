@@ -65,31 +65,7 @@ class CompanyUpdateMixin:
         serializer.save(**extra_fields)
 
 
-class HasPermission(permissions.BasePermission):
-    """
-    Standard permission class that checks JWT claims for required_permission.
-    """
-    
-    def has_permission(self, request, view):
-        # Allow if no permission required
-        required_perm = getattr(view, 'required_permission', None)
-        if not required_perm:
-            return True
-        
-        # Get permissions from request.user_claims (set by middleware)
-        claims = getattr(request, 'user_claims', {}) or {}
-        user_perms = claims.get('permissions', [])
-        roles = claims.get('roles', [])
-        
-        # Superuser/Admin bypass
-        if 'superuser' in roles or 'admin' in roles:
-            return True
-        
-        # Check specific permission
-        if required_perm in user_perms:
-            return True
-        
-        return False
+from adaptix_core.permissions import HasPermission
 
 
 class BaseCompanyViewSet(CompanyFilterMixin, CompanyCreateMixin, CompanyUpdateMixin, viewsets.ModelViewSet):

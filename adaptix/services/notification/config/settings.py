@@ -98,7 +98,7 @@ SPECTACULAR_SETTINGS = {
 CORS_ALLOW_ALL_ORIGINS = True
 
 # Celery / RabbitMQ
-CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "amqp://guest:guest@rabbitmq:5672//")
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "amqp://adaptix:adaptix123@rabbitmq:5672//")
 CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND", "redis://redis:6379/5")
 
 # Email Backend (Console for now, or SMTP via env)

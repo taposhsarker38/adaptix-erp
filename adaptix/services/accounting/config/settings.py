@@ -14,7 +14,7 @@ if ENABLE_TRACING:
     # OTel setup logic... (simplified for now)
     pass
 
-CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "amqp://guest:guest@rabbitmq:5672/")
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "amqp://adaptix:adaptix123@rabbitmq:5672/")
 
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 

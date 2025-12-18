@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from .models import Order, Payment, POSSession
 from .serializers import OrderSerializer, PaymentSerializer, POSSessionSerializer
-from .permissions import HasPermission
+from adaptix_core.permissions import HasPermission
 from .services import InventoryService
 
 class OrderViewSet(viewsets.ModelViewSet):

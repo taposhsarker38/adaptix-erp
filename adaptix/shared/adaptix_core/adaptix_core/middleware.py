@@ -116,23 +116,43 @@ class AuditMiddleware:
         return response
     
     def _log_audit(self, request, response):
-        """Log audit event (can be extended to publish to RabbitMQ)."""
+        """Log audit event with enhanced metadata."""
         try:
             claims = getattr(request, 'user_claims', {})
+            
+            # Extract client info
+            x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+            if x_forwarded_for:
+                ip = x_forwarded_for.split(',')[0]
+            else:
+                ip = request.META.get('REMOTE_ADDR')
+
+            user_agent = request.META.get('HTTP_USER_AGENT', '')
+            
             audit_data = {
                 'user_id': claims.get('sub') or claims.get('user_id'),
+                'username': claims.get('username'),
                 'company_uuid': getattr(request, 'company_uuid', None),
                 'method': request.method,
                 'path': request.path,
                 'status_code': response.status_code,
+                'ip_address': ip,
+                'user_agent': user_agent,
+                'service_name': os.environ.get('SERVICE_NAME', 'unknown'),
             }
             
-            # Publish to RabbitMQ using shared utility
-            # Service name could be injected or inferred? For now allow generic 'audit'
+            # Only include payload for small requests to avoid bloating logs
+            if request.method in ['POST', 'PUT', 'PATCH'] and len(request.body) < 10000:
+                try:
+                    import json
+                    audit_data['payload_preview'] = json.loads(request.body.decode('utf-8'))
+                except Exception:
+                    pass
+
             routing_key = f"audit.{request.method.lower()}"
             publish_event('audit_logs', routing_key, audit_data)
             
             if response.status_code < 400:
-                print(f"[Core] AUDIT SENT: {audit_data}")
+                print(f"[Core] AUDIT SENT from {ip}: {request.method} {request.path}")
         except Exception as e:
             print(f"Audit logging failed: {e}")

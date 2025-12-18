@@ -70,6 +70,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "apps.audit.middleware.AuditMiddleware",  # optional - keep if exists
+    "adaptix_core.middleware.AuditMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -232,7 +233,7 @@ if EMAIL_USE_SSL:
 # ---------------------------
 # Celery (broker + backend)
 # ---------------------------
-CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "amqp://guest:guest@rabbitmq:5672/")
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "amqp://adaptix:adaptix123@rabbitmq:5672/")
 CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", os.getenv("REDIS_URL", "redis://redis:6379/0"))
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
