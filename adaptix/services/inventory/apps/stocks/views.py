@@ -6,7 +6,7 @@ from .serializers import (
     UOMConversionSerializer, StockSerialSerializer, BillOfMaterialSerializer,
     StockAdjustmentSerializer
 )
-from apps.utils.permissions import HasPermission
+from adaptix_core.permissions import HasPermission
 from rest_framework.decorators import action
 
 class WarehouseViewSet(viewsets.ModelViewSet):

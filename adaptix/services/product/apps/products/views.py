@@ -10,7 +10,7 @@ from .serializers import (
     ProductSerializer, ProductVariantSerializer,
     AttributeSerializer, AttributeSetSerializer
 )
-from .permissions import HasPermission
+from adaptix_core.permissions import HasPermission
 
 def get_company_uuid(request):
     """Helper to get company UUID from request."""

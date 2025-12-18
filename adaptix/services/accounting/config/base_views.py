@@ -5,6 +5,7 @@ Provides automatic company_uuid filtering and injection.
 """
 
 from rest_framework import viewsets, permissions
+from adaptix_core.permissions import HasPermission
 
 
 class CompanyFilterMixin:
@@ -39,22 +40,6 @@ class CompanyCreateMixin:
         serializer.save(**extra_fields)
 
 
-class HasPermission(permissions.BasePermission):
-    """Standard permission class that checks JWT claims."""
-    
-    def has_permission(self, request, view):
-        required_perm = getattr(view, 'required_permission', None)
-        if not required_perm:
-            return True
-        
-        claims = getattr(request, 'user_claims', {}) or {}
-        user_perms = claims.get('permissions', [])
-        roles = claims.get('roles', [])
-        
-        if 'superuser' in roles or 'admin' in roles:
-            return True
-        
-        return required_perm in user_perms
 
 
 class BaseCompanyViewSet(CompanyFilterMixin, CompanyCreateMixin, viewsets.ModelViewSet):

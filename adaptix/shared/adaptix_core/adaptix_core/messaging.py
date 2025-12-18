@@ -8,7 +8,7 @@ def publish_event(exchange, routing_key, payload):
     Publish an event to RabbitMQ using generic settings.
     """
     try:
-        broker_url = getattr(settings, 'RABBITMQ_URL', 'amqp://guest:guest@rabbitmq:5672/')
+        broker_url = getattr(settings, 'RABBITMQ_URL', os.environ.get('RABBITMQ_URL', 'amqp://adaptix:adaptix123@rabbitmq:5672/'))
         params = pika.URLParameters(broker_url)
         connection = pika.BlockingConnection(params)
         channel = connection.channel()

@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 from .models import Vendor
 from .serializers import VendorSerializer
-from apps.utils.permissions import HasPermission
+from adaptix_core.permissions import HasPermission
 
 class VendorViewSet(viewsets.ModelViewSet):
     queryset = Vendor.objects.all()

@@ -3,7 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from .models import PurchaseOrder
 from .serializers import PurchaseOrderSerializer
-from apps.utils.permissions import HasPermission
+from adaptix_core.permissions import HasPermission
 # Service integration import later
 
 class PurchaseOrderViewSet(viewsets.ModelViewSet):

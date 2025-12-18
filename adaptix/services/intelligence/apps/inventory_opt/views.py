@@ -1,14 +1,34 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import viewsets
+from rest_framework import viewsets, status
+from rest_framework.decorators import action
 from django.db import connection
 import pandas as pd
 from .models import InventoryOptimization
 from .serializers import InventoryOptimizationSerializer
+from .tasks import analyze_stockout_risk
 
 class InventoryOptimizationViewSet(viewsets.ModelViewSet):
-    queryset = InventoryOptimization.objects.all()
     serializer_class = InventoryOptimizationSerializer
+
+    def get_queryset(self):
+        company_uuid = self.request.user_claims.get('company_uuid')
+        queryset = InventoryOptimization.objects.filter(company_uuid=company_uuid)
+        if product_uuid := self.request.query_params.get('product_uuid'):
+            queryset = queryset.filter(product_uuid=product_uuid)
+        return queryset
+
+    @action(detail=False, methods=['post'])
+    def trigger_analysis(self, request):
+        company_uuid = request.user_claims.get('company_uuid')
+        
+        # Delay the task to Celery
+        analyze_stockout_risk.delay(company_uuid=company_uuid)
+        
+        return Response({
+            "status": "Accepted", 
+            "message": "Stockout risk analysis has been queued."
+        }, status=status.HTTP_202_ACCEPTED)
 
 class ReorderPointView(APIView):
     def post(self, request):

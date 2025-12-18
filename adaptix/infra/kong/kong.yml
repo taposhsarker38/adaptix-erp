@@ -249,6 +249,17 @@ services:
           - http
           - https
 
+  - name: intelligence-service
+    url: http://ai-service:8000
+    routes:
+      - name: intelligence-route
+        paths:
+          - /api/intelligence
+        strip_path: false
+        protocols:
+          - http
+          - https
+
 jwt_secrets:
   - id: 4ba55d53-8acb-403e-a089-edf75b355cc3
     consumer:

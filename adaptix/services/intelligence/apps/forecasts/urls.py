@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 from .views import SalesForecastViewSet
 
 router = DefaultRouter()
-router.register(r'sales', SalesForecastViewSet)
+router.register(r'sales', SalesForecastViewSet, basename='sales')
 
 urlpatterns = [
     path('', include(router.urls)),

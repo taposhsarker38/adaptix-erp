@@ -14,7 +14,7 @@ from .serializers import (
     CurrencySerializer, InvoiceSettingsSerializer, EmployeeSerializer,
     DepartmentSerializer, DesignationSerializer, AccountGroupSerializer, ChartOfAccountSerializer
 )
-from .permissions import HasPermission
+from adaptix_core.permissions import HasPermission
 
 
 # --------------------------------------------------------
