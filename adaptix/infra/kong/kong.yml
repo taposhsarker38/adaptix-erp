@@ -260,6 +260,17 @@ services:
           - http
           - https
 
+  - name: manufacturing-service
+    url: http://manufacturing:8000
+    routes:
+      - name: manufacturing-route
+        paths:
+          - /api/manufacturing
+        strip_path: false
+        protocols:
+          - http
+          - https
+
 jwt_secrets:
   - id: 4ba55d53-8acb-403e-a089-edf75b355cc3
     consumer:

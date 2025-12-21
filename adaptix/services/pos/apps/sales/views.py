@@ -68,7 +68,8 @@ class OrderViewSet(viewsets.ModelViewSet):
                     "grand_total": str(order.grand_total),
                     "items": data.get("items", []),
                     "created_at": order.created_at.isoformat(),
-                    "payment_details": data.get("payments", [])
+                    "payment_details": data.get("payments", []),
+                    "customer_uuid": str(order.customer_uuid) if order.customer_uuid else None
                 }
                 
                 producer.publish(

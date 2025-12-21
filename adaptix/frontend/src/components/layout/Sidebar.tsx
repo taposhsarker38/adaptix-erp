@@ -102,6 +102,12 @@ const routes = [
     permission: "view_manufacturing",
   },
   {
+    label: "Shop Floor",
+    icon: Monitor,
+    href: "/dashboard/manufacturing/shop-floor",
+    permission: "view_manufacturing",
+  },
+  {
     label: "Quality Control",
     icon: ShieldCheck,
     href: "/dashboard/quality",
