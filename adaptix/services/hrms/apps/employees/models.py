@@ -39,13 +39,18 @@ class Employee(models.Model):
     last_name = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=20, blank=True)
+    gender = models.CharField(max_length=10, choices=[('MALE', 'Male'), ('FEMALE', 'Female'), ('OTHER', 'Other')], null=True, blank=True)
 
     # Normalized Foreign Keys for filtering
     department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True, blank=True, related_name='employees')
     designation = models.ForeignKey(Designation, on_delete=models.SET_NULL, null=True, blank=True, related_name='employees')
     
-    # Hierarchy
+    # Hierarchy & Location
     reporting_to = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='subordinates')
+    branch_uuid = models.UUIDField(null=True, blank=True, db_index=True, help_text="Specific Branch/Subsidiary UUID")
+    
+    # Work Timing
+    current_shift = models.ForeignKey('shifts.Shift', on_delete=models.SET_NULL, null=True, blank=True, related_name='employees')
 
     joining_date = models.DateField(default=timezone.now)
     salary_basic = models.DecimalField(max_digits=12, decimal_places=2, default=0)

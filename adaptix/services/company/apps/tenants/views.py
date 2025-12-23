@@ -12,7 +12,8 @@ from .models import (
 from .serializers import (
     CompanySettingSerializer, NavigationItemSerializer, WingSerializer,
     CurrencySerializer, InvoiceSettingsSerializer, EmployeeSerializer,
-    DepartmentSerializer, DesignationSerializer, AccountGroupSerializer, ChartOfAccountSerializer
+    DepartmentSerializer, DesignationSerializer, AccountGroupSerializer, ChartOfAccountSerializer,
+    CompanySerializer, OrganizationTreeSerializer
 )
 from adaptix_core.permissions import HasPermission
 
@@ -22,13 +23,28 @@ from adaptix_core.permissions import HasPermission
 # --------------------------------------------------------
 def get_company_from_request(request):
     company_uuid = getattr(request, "company_uuid", None)
-    if not company_uuid:
-        return None
+    
+    # Try finding the Root Group for this tenant
+    if company_uuid:
+        try:
+            return Company.objects.get(auth_company_uuid=company_uuid, parent__isnull=True)
+        except Company.DoesNotExist:
+            # If not found, maybe lookup just by UUID if it's the only one
+            return Company.objects.filter(auth_company_uuid=company_uuid).first()
+        except Company.MultipleObjectsReturned:
+            return Company.objects.filter(auth_company_uuid=company_uuid, parent__isnull=True).first()
 
-    try:
-        return Company.objects.get(auth_company_uuid=company_uuid)
-    except Company.DoesNotExist:
-        return None
+    # Fallback for Superuser (Checking user_claims from JWTCompanyMiddleware)
+    claims = getattr(request, "user_claims", {})
+    if claims.get("is_superuser"):
+        return Company.objects.first()
+
+    # Legacy check for session-based request.user
+    user = getattr(request, "user", None)
+    if user and getattr(user, "is_superuser", False):
+        return Company.objects.first()
+
+    return None
 
 
 # --------------------------------------------------------
@@ -76,9 +92,10 @@ class WingViewSet(viewsets.ModelViewSet):
         return Wing.objects.filter(company=company)
 
     def perform_create(self, serializer):
-        company = get_company_from_request(self.request)
+        # Default to request company, but allow override for hierarchy
+        company = serializer.validated_data.get('company') or get_company_from_request(self.request)
         if not company:
-            raise ValidationError({"detail": "Company not found or not associated with user."})
+            raise ValidationError({"detail": "Company not found."})
         serializer.save(company=company)
 
 
@@ -151,6 +168,63 @@ class CompanyInfoViewSet(viewsets.ViewSet):
             "settings": CompanySettingSerializer(settings).data if settings else None,
             "navigation": NavigationItemSerializer(nav_items, many=True).data,
         })
+
+    def partial_update(self, request, pk=None):
+        """
+        PATCH /api/company/info/detail/
+        Updates company name/timezone
+        """
+        company = get_company_from_request(request)
+        if not company:
+            return Response({"detail": "Company not found"}, status=404)
+
+        serializer = CompanySerializer(company, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+
+    @action(detail=False, methods=['get'])
+    def tree(self, request):
+        """
+        GET /api/company/info/tree/
+        Returns full organizational hierarchy
+        """
+        company = get_company_from_request(request)
+        if not company:
+            return Response({"detail": "Root company not found"}, status=404)
+
+        # Get the top-most parent (Root Group)
+        root = company
+        while root.parent:
+            root = root.parent
+
+        serializer = OrganizationTreeSerializer(root)
+        return Response(serializer.data)
+
+
+# --------------------------------------------------------
+# Company CRUD ViewSet
+# --------------------------------------------------------
+class CompanyViewSet(viewsets.ModelViewSet):
+    serializer_class = CompanySerializer
+
+    def get_queryset(self):
+        # Allow seeing siblings/children
+        company = get_company_from_request(self.request)
+        if not company:
+            return Company.objects.none()
+        
+        # Get root to see entire tree if superuser, or just descendants
+        return Company.objects.all()
+
+    def perform_create(self, serializer):
+        company = get_company_from_request(self.request)
+        if not company:
+            raise ValidationError({"detail": "User not associated with a company."})
+        
+        # All subsidiaries share the same root auth_company_uuid for this tenant
+        serializer.save(auth_company_uuid=company.auth_company_uuid)
 
 
 # --------------------------------------------------------

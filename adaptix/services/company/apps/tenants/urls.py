@@ -4,10 +4,11 @@ from .views import (
     CompanySettingViewSet, NavigationItemViewSet, WingViewSet,
     EmployeeViewSet, CurrencyViewSet, InvoiceSettingsViewSet,
     CompanyInfoViewSet, DepartmentViewSet, DesignationViewSet,
-    AccountGroupViewSet, ChartOfAccountViewSet
+    AccountGroupViewSet, ChartOfAccountViewSet, CompanyViewSet
 )
 
 router = DefaultRouter()
+router.register("companies", CompanyViewSet, basename="companies")
 router.register("info", CompanyInfoViewSet, basename="company-info")
 router.register("settings", CompanySettingViewSet, basename="settings")
 router.register("navigation", NavigationItemViewSet, basename="navigation")

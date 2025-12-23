@@ -34,6 +34,8 @@ const formSchema = z.object({
   designation: z.string().optional(),
   salary_basic: z.coerce.number().min(0, "Salary must be positive"),
   joining_date: z.string().optional(),
+  branch_uuid: z.string().optional(),
+  current_shift: z.string().optional(),
 });
 
 interface EmployeeFormProps {
@@ -49,17 +51,23 @@ export function EmployeeForm({
 }: EmployeeFormProps) {
   const [departments, setDepartments] = useState<any[]>([]);
   const [positions, setPositions] = useState<any[]>([]);
+  const [branches, setBranches] = useState<any[]>([]);
+  const [shifts, setShifts] = useState<any[]>([]);
 
   useEffect(() => {
     // Fetch dependencies
     const loadMetadata = async () => {
       try {
-        const [deptRes, posRes] = await Promise.all([
+        const [deptRes, posRes, compRes, shiftRes] = await Promise.all([
           api.get("/hrms/employees/departments/"),
           api.get("/hrms/employees/designations/"),
+          api.get("/company/companies/"),
+          api.get("/hrms/shifts/definitions/"),
         ]);
         setDepartments(deptRes.data.results || deptRes.data);
         setPositions(posRes.data.results || posRes.data);
+        setBranches(compRes.data.results || compRes.data);
+        setShifts(shiftRes.data.results || shiftRes.data);
       } catch (e) {
         console.error(e);
       }
@@ -82,6 +90,8 @@ export function EmployeeForm({
         : 0,
       joining_date:
         initialData?.joining_date || new Date().toISOString().split("T")[0],
+      branch_uuid: initialData?.branch_uuid || "",
+      current_shift: initialData?.current_shift || "",
     },
   });
 
@@ -270,6 +280,66 @@ export function EmployeeForm({
             </FormItem>
           )}
         />
+
+        <div className="grid grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="branch_uuid"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Assign to Company/Branch</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  value={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Branch" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {branches.map((b) => (
+                      <SelectItem key={b.id} value={b.id}>
+                        {b.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="current_shift"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Work Shift</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  value={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Shift" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {shifts.map((s) => (
+                      <SelectItem key={s.id} value={s.id}>
+                        {s.name} ({s.start_time}-{s.end_time})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
         <div className="flex justify-end gap-2 pt-4">
           <Button variant="outline" type="button" onClick={onCancel}>

@@ -16,6 +16,10 @@ class LeaveType(models.Model):
     is_carry_forward = models.BooleanField(default=False)
     days_allowed_per_year = models.PositiveIntegerField(default=0)
     
+    # New fields for dynamic rules
+    gender_exclusive = models.CharField(max_length=10, choices=[('MALE', 'Male'), ('FEMALE', 'Female')], null=True, blank=True)
+    minimum_tenure_days = models.PositiveIntegerField(default=0)
+    
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -36,6 +40,9 @@ class LeaveAllocation(models.Model):
     year = models.PositiveIntegerField(default=timezone.now().year)
     total_allocated = models.DecimalField(max_digits=5, decimal_places=1, default=0)
     used = models.DecimalField(max_digits=5, decimal_places=1, default=0)
+    
+    status = models.CharField(max_length=20, choices=[('DRAFT', 'Draft'), ('APPROVED', 'Approved')], default='DRAFT')
+    notes = models.TextField(blank=True)
     
     # helper property
     @property
@@ -78,3 +85,22 @@ class LeaveApplication(models.Model):
 
     def __str__(self):
         return f"{self.employee} : {self.start_date} -> {self.end_date} ({self.status})"
+
+class LeavePolicy(models.Model):
+    """
+    Template for dynamic leave allocation rules.
+    """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    company_uuid = models.UUIDField(db_index=True)
+    name = models.CharField(max_length=100)
+    leave_type = models.ForeignKey(LeaveType, on_delete=models.CASCADE)
+    
+    allocation_days = models.DecimalField(max_digits=5, decimal_places=1)
+    tenure_months_required = models.PositiveIntegerField(default=0)
+    gender_requirement = models.CharField(max_length=10, choices=[('MALE', 'Male'), ('FEMALE', 'Female'), ('ALL', 'All')], default='ALL')
+    
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.name} ({self.leave_type.name})"

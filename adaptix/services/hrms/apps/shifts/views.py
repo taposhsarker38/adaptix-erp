@@ -1,36 +1,19 @@
-from rest_framework import viewsets, status
+from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from .models import Shift, EmployeeShift
 from .serializers import ShiftSerializer, EmployeeShiftSerializer
+from config.base_views import BaseCompanyViewSet
 
-class ShiftViewSet(viewsets.ModelViewSet):
+class ShiftViewSet(BaseCompanyViewSet):
     queryset = Shift.objects.all()
     serializer_class = ShiftSerializer
+    required_permission = 'hrms.shift'
 
-    def get_queryset(self):
-        # Filter by company if provided in query params (or from auth context in real usage)
-        queryset = super().get_queryset()
-        company_uuid = self.request.query_params.get('company_uuid')
-        if company_uuid:
-            queryset = queryset.filter(company_uuid=company_uuid)
-        return queryset
-
-class EmployeeShiftViewSet(viewsets.ModelViewSet):
+class EmployeeShiftViewSet(BaseCompanyViewSet):
     queryset = EmployeeShift.objects.all()
     serializer_class = EmployeeShiftSerializer
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        company_uuid = self.request.query_params.get('company_uuid')
-        if company_uuid:
-            queryset = queryset.filter(company_uuid=company_uuid)
-            
-        employee_id = self.request.query_params.get('employee_id')
-        if employee_id:
-            queryset = queryset.filter(employee_id=employee_id)
-            
-        return queryset
+    required_permission = 'hrms.roster'
 
     @action(detail=False, methods=['post'])
     def bulk_assign(self, request):

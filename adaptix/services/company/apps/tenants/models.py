@@ -7,7 +7,7 @@ from .business_types import BUSINESS_TYPE_CHOICES, DEFAULT_FEATURES, FMCG
 
 class Company(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    auth_company_uuid = models.UUIDField(unique=True, db_index=True)
+    auth_company_uuid = models.UUIDField(db_index=True, null=True, blank=True)
     name = models.CharField(max_length=255)
     code = models.CharField(max_length=50)
     business_type = models.CharField(max_length=50, choices=BUSINESS_TYPE_CHOICES, default=FMCG)

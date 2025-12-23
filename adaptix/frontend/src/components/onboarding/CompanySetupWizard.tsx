@@ -97,12 +97,17 @@ export function CompanySetupWizard({
       );
       if (res.ok) {
         const body = await res.json();
-        setCompanyId(body.company.id);
+        if (body.company) {
+          setData((prev) => ({
+            ...prev,
+            companyName: body.company.name || "",
+          }));
+          setCompanyId(body.company.id);
+        }
         if (body.settings) {
           setSettingsId(body.settings.id);
           setData((prev) => ({
             ...prev,
-            companyName: body.company.name,
             primaryColor: body.settings.primary_color || "#000000",
             logoUrl: body.settings.logo || "",
           }));
@@ -129,6 +134,20 @@ export function CompanySetupWizard({
     setLoading(true);
     const token = localStorage.getItem("access_token");
     try {
+      // 0. Save Company Name (Step 1)
+      if (companyId) {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/company/info/detail/`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            name: data.companyName,
+          }),
+        });
+      }
+
       // 1. Save Branding (Step 2)
       if (settingsId) {
         await fetch(
@@ -226,10 +245,18 @@ export function CompanySetupWizard({
               </div>
             </div>
             <div className="space-y-2">
-              <Label>Company Name</Label>
-              <Input value={data.companyName} disabled className="bg-muted" />
+              <Label htmlFor="companyName">Company Name</Label>
+              <Input
+                id="companyName"
+                value={data.companyName}
+                onChange={(e) =>
+                  setData({ ...data, companyName: e.target.value })
+                }
+                placeholder="Enter your company name"
+                className="focus:ring-2 focus:ring-blue-500"
+              />
               <p className="text-xs text-muted-foreground">
-                Contact support to change your legal entity name.
+                This name will appear on invoices and reports.
               </p>
             </div>
           </div>

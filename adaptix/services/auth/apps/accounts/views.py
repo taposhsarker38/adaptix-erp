@@ -503,7 +503,11 @@ def login_view(request):
         access = refresh.access_token
         access["iss"] = settings.SIMPLE_JWT.get('ISSUER', 'auth-service')
         # Add company_uuid to the token payload
-        access["company_uuid"] = str(user.company.uuid) if user.company else None
+        if user.is_superuser and not user.company:
+            root_comp = Company.objects.first()
+            access["company_uuid"] = str(root_comp.uuid) if root_comp else None
+        else:
+            access["company_uuid"] = str(user.company.uuid) if user.company else None
         # Add RBAC to token
         access["roles"] = roles_list
         access["permissions"] = permissions_list

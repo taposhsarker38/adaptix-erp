@@ -199,6 +199,7 @@ services:
             config:
               claims_to_verify: ["exp"]
               key_claim_name: iss
+              run_on_preflight: false
 
   - name: hrms-service
     url: http://hrms-service:8000
@@ -215,6 +216,7 @@ services:
             config:
               claims_to_verify: ["exp"]
               key_claim_name: iss
+              run_on_preflight: false
 
   - name: accounting-service
     url: http://accounting:8000
@@ -231,6 +233,7 @@ services:
             config:
               claims_to_verify: ["exp"]
               key_claim_name: iss
+              run_on_preflight: false
 
   - name: notification-service
     url: http://notification:8000
@@ -247,6 +250,7 @@ services:
             config:
               claims_to_verify: ["exp"]
               key_claim_name: iss
+              run_on_preflight: false
 
   - name: reporting-service
     url: http://reporting:8000
@@ -263,6 +267,7 @@ services:
             config:
               claims_to_verify: ["exp"]
               key_claim_name: iss
+              run_on_preflight: false
 
   - name: promotion-service
     url: http://promotion:8000
@@ -279,6 +284,7 @@ services:
             config:
               claims_to_verify: ["exp"]
               key_claim_name: iss
+              run_on_preflight: false
 
   - name: payment-service
     url: http://payment:8000
@@ -294,6 +300,7 @@ services:
             config:
               claims_to_verify: ["exp"]
               key_claim_name: iss
+              run_on_preflight: false
 
   - name: quality-service
     url: http://quality-service:8000
@@ -310,6 +317,7 @@ services:
             config:
               claims_to_verify: ["exp"]
               key_claim_name: iss
+              run_on_preflight: false
 
   - name: logistics-service
     url: http://logistics-service:8000
@@ -326,6 +334,7 @@ services:
             config:
               claims_to_verify: ["exp"]
               key_claim_name: iss
+              run_on_preflight: false
 
   - name: intelligence-service
     url: http://intelligence-service:8000
@@ -342,6 +351,7 @@ services:
             config:
               claims_to_verify: ["exp"]
               key_claim_name: iss
+              run_on_preflight: false
           - name: cors
             config:
               origins: ["*"]
@@ -369,8 +379,6 @@ jwt_secrets:
 plugins:
   # CORS applied to the auth service (keeps browser swagger working)
   - name: cors
-    service:
-      id: 2915b562-3d36-4b29-82ed-c49aaeb45c4b
     config:
       origins: ["*"]
       methods: ["GET", "POST", "OPTIONS", "PUT", "PATCH", "DELETE"]
@@ -386,6 +394,7 @@ plugins:
     config:
       claims_to_verify: ["exp"]
       key_claim_name: iss
+      run_on_preflight: false
 
   # ============================================
   # 🔒 SECURITY PLUGINS

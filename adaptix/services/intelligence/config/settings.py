@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+from django.urls import path, include
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -51,6 +52,7 @@ INSTALLED_APPS = [
     'apps.automation',
     'apps.financial_anomalies',
     'apps.sales_trends',
+    'apps.vision',
 ]
 
 REST_FRAMEWORK = {
