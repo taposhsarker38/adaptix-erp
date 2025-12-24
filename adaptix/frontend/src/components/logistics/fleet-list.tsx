@@ -67,7 +67,7 @@ function VehicleForm({
   }, []);
 
   const form = useForm<VehicleFormValues>({
-    resolver: zodResolver(vehicleSchema),
+    resolver: zodResolver(vehicleSchema) as any,
     defaultValues: {
       license_plate: "",
       model: "",

@@ -23,6 +23,7 @@ interface DynamicAttributeRendererProps {
   form: UseFormReturn<any>;
   attributeSet: {
     id: string;
+    name: string;
     attributes: Array<{
       id: string;
       name: string;

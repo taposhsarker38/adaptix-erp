@@ -8,35 +8,6 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [authorized, setAuthorized] = useState(false);
 
-  useEffect(() => {
-    // 1. Cleanup Legacy Keys (Self-Healing)
-    if (localStorage.getItem("accessToken")) {
-      console.log("AuthGuard: Cleaning up legacy 'accessToken'");
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
-    }
-
-    // 2. Get Current Token
-    const token = localStorage.getItem("access_token");
-
-    if (!token) {
-      console.log("AuthGuard: No token found. Redirecting to login...");
-      redirectToLogin();
-      return;
-    }
-
-    // 3. Check Token Expiry
-    if (isTokenExpired(token)) {
-      console.log("AuthGuard: Token expired. Requesting re-login...");
-      clearAuth();
-      redirectToLogin();
-      return;
-    }
-
-    // 4. Authorized
-    setAuthorized(true);
-  }, [router, pathname]);
-
   const redirectToLogin = () => {
     setAuthorized(false);
     const returnUrl = encodeURIComponent(pathname);
@@ -66,6 +37,36 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
       return true;
     }
   };
+
+  useEffect(() => {
+    // 1. Cleanup Legacy Keys (Self-Healing)
+    if (localStorage.getItem("accessToken")) {
+      console.log("AuthGuard: Cleaning up legacy 'accessToken'");
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+    }
+
+    // 2. Get Current Token
+    const token = localStorage.getItem("access_token");
+
+    if (!token) {
+      console.log("AuthGuard: No token found. Redirecting to login...");
+      redirectToLogin();
+      return;
+    }
+
+    // 3. Check Token Expiry
+    if (isTokenExpired(token)) {
+      console.log("AuthGuard: Token expired. Requesting re-login...");
+      clearAuth();
+      redirectToLogin();
+      return;
+    }
+
+    // 4. Authorized
+    setAuthorized(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router, pathname]);
 
   if (!authorized) {
     return (

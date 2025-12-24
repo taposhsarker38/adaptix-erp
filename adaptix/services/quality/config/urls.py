@@ -9,6 +9,7 @@ def health_check(request):
 
 urlpatterns = [
     path('health/', health_check, name='health_check'),
+    path('api/quality/health/', health_check),
     path('metrics/', ExportToDjangoView, name='prometheus-metrics'),
     path('api/quality/', include('apps.quality.urls')),
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),

@@ -14,10 +14,18 @@ class NLPEngine:
         # Intent: Greeting
         if any(word in message for word in ['hello', 'hi', 'hey']):
             return {
-                "reply": "Hello! I am your Adaptix Business Assistant. You can ask me about today's sales or low stock items."
+                "reply": "Hello! I am your Adaptix Business Assistant. I can help you with sales reports, inventory alerts, and staff attendance. Ask me something like 'Who are my top selling products?' or 'Is anyone late today?'"
             }
 
-        # Intent: Sales Summary
+        # Intent: Top Products
+        if 'top' in message and ('product' in message or 'selling' in message):
+            return self._get_top_products()
+
+        # Intent: Attendance / Staff
+        if 'staff' in message or 'attendance' in message or 'late' in message or 'absent' in message:
+            return self._get_staff_insights(message)
+
+        # Intent: Sales Summary/Revenue
         if 'sales' in message or 'revenue' in message:
             return self._get_sales_summary(message)
 
@@ -26,8 +34,51 @@ class NLPEngine:
             return self._get_low_stock()
 
         return {
-            "reply": "I didn't quite understand that. Try asking 'What are today's sales?' or 'Show me low stock items'."
+            "reply": "I didn't quite understand that. Try asking:\n- 'Show top selling products'\n- 'Is anyone late today?'\n- 'What are today's sales?'\n- 'Show me low stock items'"
         }
+
+    def _get_top_products(self):
+        """Query for top 5 selling products by quantity."""
+        with connection.cursor() as cursor:
+            sql = """
+                SELECT oi.product_name, SUM(oi.quantity) as total_qty
+                FROM pos.sales_order o
+                JOIN pos.sales_orderitem oi ON o.id = oi.order_id
+                WHERE o.company_uuid = %s AND o.status = 'completed'
+                GROUP BY oi.product_name
+                ORDER BY total_qty DESC
+                LIMIT 5
+            """
+            try:
+                cursor.execute(sql, [self.company_uuid])
+                rows = cursor.fetchall()
+                if not rows: return {"reply": "No sales data found yet."}
+                
+                reply = "Your top 5 selling products are:\n" + "\n".join([f"{i+1}. {r[0]} ({int(r[1])} units)" for i, r in enumerate(rows)])
+                return {"reply": reply, "data": rows}
+            except Exception as e:
+                return {"reply": "Error fetching top products.", "debug": str(e)}
+
+    def _get_staff_insights(self, message):
+        """Query for late or absent staff today."""
+        with connection.cursor() as cursor:
+            # Table names based on app_model naming: hrms.employees_employee, hrms.attendance_attendance
+            sql = """
+                SELECT e.first_name, e.last_name, a.status, a.late_minutes
+                FROM hrms.attendance_attendance a
+                JOIN hrms.employees_employee e ON a.employee_id = e.id
+                WHERE e.company_uuid = %s AND a.date = CURRENT_DATE
+                AND (a.status IN ('late', 'absent') OR a.late_minutes > 0)
+            """
+            try:
+                cursor.execute(sql, [self.company_uuid])
+                rows = cursor.fetchall()
+                if not rows: return {"reply": "Everyone is on time today! No late or absent staff reported."}
+                
+                reply = "Attendance Alerts for today:\n" + "\n".join([f"- {r[0]} {r[1]}: {r[2].capitalize()}" + (f" ({r[3]} mins late)" if r[3] > 0 else "") for r in rows])
+                return {"reply": reply, "data": rows}
+            except Exception as e:
+                return {"reply": "I couldn't access the attendance records.", "debug": str(e)}
 
     def _get_sales_summary(self, message):
         """

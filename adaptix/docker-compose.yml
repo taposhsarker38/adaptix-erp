@@ -184,7 +184,7 @@ services:
       - DEBUG=True
       - PUBLIC_KEY_PATH=/keys/public.pem
       - RABBITMQ_URL=amqp://${MQ_USER:-adaptix}:${MQ_PASSWORD:-adaptix123}@rabbitmq:5672/
-    command: bash -c "python manage.py migrate --noinput && gunicorn config.wsgi:application --bind 0.0.0.0:8000"
+    command: bash -c "python manage.py migrate --noinput && daphne -b 0.0.0.0 -p 8000 config.asgi:application"
     volumes:
       - ./keys:/keys:ro
       - ./services/company:/app
@@ -197,6 +197,34 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - backend
+
+  ws-bridge:
+    build:
+      context: .
+      dockerfile: services/company/Dockerfile
+    container_name: adaptix-ws-bridge
+    environment:
+      - DATABASE_URL=postgres://${DB_USER:-adaptix}:${DB_PASSWORD:-adaptix123}@postgres:5432/adaptix
+      - DB_SCHEMA=company
+      - SECRET_KEY=${SECRET_KEY:-your-secret-key}
+      - DEBUG=True
+      - PUBLIC_KEY_PATH=/keys/public.pem
+      - REDIS_URL=redis://redis:6379/1
+      - RABBITMQ_URL=amqp://${MQ_USER:-adaptix}:${MQ_PASSWORD:-adaptix123}@rabbitmq:5672/
+    command: python manage.py run_websocket_bridge
+    volumes:
+      - ./keys:/keys:ro
+      - ./services/company:/app
+      - ./shared:/shared
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     networks:
       - backend
 

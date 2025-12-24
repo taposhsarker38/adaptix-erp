@@ -113,6 +113,14 @@ services:
           - http
           - https
 
+      - name: company-websocket
+        paths:
+          - /api/ws/
+        strip_path: false
+        protocols:
+          - http
+          - https
+
       - name: company-schema
         paths:
           - /api/company/schema

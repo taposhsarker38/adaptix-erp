@@ -10,6 +10,7 @@ def health_check(request):
 
 urlpatterns = [
     path('health/', health_check),
+    path('api/hrms/health/', health_check),
     path('admin/', admin.site.urls),
     # OpenAPI
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),

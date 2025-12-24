@@ -55,7 +55,7 @@ export function PromotionForm({
   }, []);
 
   const form = useForm<PromotionFormValues>({
-    resolver: zodResolver(promotionSchema),
+    resolver: zodResolver(promotionSchema) as any,
     defaultValues: {
       employee: "",
       previous_designation: "",

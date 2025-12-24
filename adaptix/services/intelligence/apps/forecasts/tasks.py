@@ -82,28 +82,42 @@ def run_forecasts(company_uuid=None):
         comp_id = p['company_uuid']
         name = p['product_name']
         
-        # Simple weighted moving average for next 7 days
-        # We take last 14 days of history
-        history = SalesHistory.objects.filter(
+        # Advanced Forecasting: Linear Regression
+        # We take available history to train a trend model
+        history_data = SalesHistory.objects.filter(
             product_uuid=prod_id, 
             company_uuid=comp_id
-        ).order_by('-date')[:14]
+        ).order_by('date')
         
-        if history.count() < 3:
-            continue # Need at least 3 days of data
+        if history_data.count() < 7:
+            continue # Need at least a week of data for a reliable trend
             
-        # Calculate daily average
-        total_qty = sum(item.quantity_sold for item in history)
-        daily_avg = float(total_qty) / history.count()
+        import numpy as np
+        from sklearn.linear_model import LinearRegression
         
-        # Trend detection: last 3 days vs overall
-        recent_avg = float(sum(item.quantity_sold for item in history[:3])) / 3
-        trend_multiplier = 1.1 if recent_avg > daily_avg else 0.95
+        # Prepare data for Scikit-learn
+        # X is days since the first sale in history, y is quantity
+        start_date = history_data.first().date
+        X = np.array([(item.date - start_date).days for item in history_data]).reshape(-1, 1)
+        y = np.array([float(item.quantity_sold) for item in history_data])
+        
+        # Train model
+        model = LinearRegression()
+        model.fit(X, y)
+        
+        # Calculate daily trend (slope)
+        slope = model.coeff_[0] if hasattr(model, 'coef_') else 0
         
         # Generate 7 days of forecast
         for i in range(1, 8):
             target_date = today + timedelta(days=i)
-            predicted_qty = daily_avg * trend_multiplier
+            days_since_start = (target_date - start_date).days
+            
+            # Prediction = model prediction
+            predicted_qty = model.predict([[days_since_start]])[0]
+            
+            # Quality control: non-negative predictions, cap if crazy high
+            predicted_qty = max(0, predicted_qty)
             
             Forecast.objects.update_or_create(
                 product_uuid=prod_id,
@@ -111,9 +125,9 @@ def run_forecasts(company_uuid=None):
                 company_uuid=comp_id,
                 defaults={
                     'product_name': name,
-                    'predicted_quantity': round(predicted_qty, 2),
-                    'confidence_score': 0.7 if history.count() > 7 else 0.5,
-                    'algorithm_used': 'weighted_moving_average'
+                    'predicted_quantity': round(float(predicted_qty), 2),
+                    'confidence_score': 0.8 if history_data.count() > 14 else 0.6,
+                    'algorithm_used': 'linear_regression'
                 }
             )
             forecast_count += 1

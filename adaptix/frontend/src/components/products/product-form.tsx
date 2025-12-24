@@ -51,7 +51,7 @@ const formSchema = z.object({
   sku: z.string().optional(),
   quantity: z.coerce.number().min(0).default(0),
   attribute_set: z.string().optional(),
-  attributes: z.record(z.any()).default({}),
+  attributes: z.record(z.string(), z.any()).default({}),
 });
 
 type FormValues = z.infer<typeof formSchema>;

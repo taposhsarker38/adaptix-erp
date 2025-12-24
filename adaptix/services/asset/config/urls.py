@@ -10,6 +10,7 @@ def health_check(request):
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('health/', health_check, name='health_check'),
+    path('api/asset/health/', health_check),
     path('metrics/', ExportToDjangoView, name='prometheus-metrics'),
     path('api/asset/docs/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/asset/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),

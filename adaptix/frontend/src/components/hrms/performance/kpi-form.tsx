@@ -38,7 +38,7 @@ interface KPIFormProps {
 
 export function KPIForm({ initialData, onSuccess, onCancel }: KPIFormProps) {
   const form = useForm<KPIFormValues>({
-    resolver: zodResolver(kpiSchema),
+    resolver: zodResolver(kpiSchema) as any,
     defaultValues: {
       title: "",
       description: "",

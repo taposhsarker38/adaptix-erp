@@ -64,7 +64,7 @@ export const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
   } as any);
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema) as any,
     defaultValues: {
       payment_method: "cash",
       amount_tendered: "",
@@ -230,11 +230,17 @@ export const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
                     $
                   </span>
                   <Input
-                    ref={tenderedRef}
-                    type="number"
-                    step="0.01"
-                    className="h-16 pl-9 text-3xl font-black rounded-xl border-2 focus:border-primary shadow-inner"
-                    {...form.register("amount_tendered")}
+                    {...(() => {
+                      const { ref: registerRef, ...rest } =
+                        form.register("amount_tendered");
+                      return {
+                        ...rest,
+                        ref: (e: HTMLInputElement | null) => {
+                          registerRef(e);
+                          (tenderedRef as any).current = e;
+                        },
+                      };
+                    })()}
                   />
                 </div>
                 <div className="grid grid-cols-5 gap-1.5">

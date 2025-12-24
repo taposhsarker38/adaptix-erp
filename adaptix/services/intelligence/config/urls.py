@@ -19,7 +19,13 @@ from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from django_prometheus.exports import ExportToDjangoView
 
+from django.http import JsonResponse
+def health_check(request):
+    return JsonResponse({'status': 'healthy', 'service': 'intelligence'})
+
 urlpatterns = [
+    path('health/', health_check),
+    path('api/intelligence/health/', health_check),
     path('admin/', admin.site.urls),
     path('api/intelligence/forecast/', include('apps.forecasts.urls')),
     path('api/intelligence/inventory/', include('apps.inventory_opt.urls')),

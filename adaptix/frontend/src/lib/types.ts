@@ -98,6 +98,7 @@ export interface LeaveAllocation {
   remaining: number;
   status: "DRAFT" | "APPROVED";
   notes?: string;
+  company_uuid?: string;
 }
 
 export interface LeavePolicy {

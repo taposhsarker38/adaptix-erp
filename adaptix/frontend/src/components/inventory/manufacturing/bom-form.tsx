@@ -59,7 +59,7 @@ export function BOMForm({ initialData, onSuccess, onCancel }: BOMFormProps) {
   }, []);
 
   const form = useForm<BOMFormValues>({
-    resolver: zodResolver(bomSchema),
+    resolver: zodResolver(bomSchema) as any,
     defaultValues: {
       name: "",
       quantity: "1",
