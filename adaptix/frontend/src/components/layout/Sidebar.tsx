@@ -168,6 +168,16 @@ const routes: SidebarRoute[] = [
         href: "/dashboard/analytics",
         permission: "view_analytics",
       },
+      {
+        label: "automationHub",
+        href: "/dashboard/intelligence/automation",
+        permission: "view_forecast",
+      },
+      {
+        label: "demandForecasting",
+        href: "/dashboard/intelligence/forecasts",
+        permission: "view_forecast",
+      },
     ],
   },
 ];
@@ -206,6 +216,11 @@ const adminRouteGroup: SidebarRoute = {
     {
       label: "settings",
       href: "/dashboard/settings",
+      permission: "view_settings",
+    },
+    {
+      label: "taxes",
+      href: "/dashboard/settings/taxes",
       permission: "view_settings",
     },
   ],

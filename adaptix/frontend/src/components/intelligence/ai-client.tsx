@@ -11,6 +11,7 @@ import {
   ArrowRight,
   Zap,
 } from "lucide-react";
+import { useRouter } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -53,6 +54,7 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 
 export function AIClient() {
+  const router = useRouter();
   const [module, setModule] = useState("sales-forecast");
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
@@ -112,7 +114,7 @@ export function AIClient() {
   }, [module]);
 
   const goToDemandForecasting = () => {
-    window.location.href = "/dashboard/intelligence/forecasts";
+    router.push("/dashboard/intelligence/forecasts");
   };
 
   const renderContent = () => {
@@ -436,9 +438,7 @@ export function AIClient() {
               </p>
             </div>
             <Button
-              onClick={() =>
-                (window.location.href = "/dashboard/intelligence/automation")
-              }
+              onClick={() => router.push("/dashboard/intelligence/automation")}
               className="bg-amber-600 hover:bg-amber-700 text-white"
             >
               Open Automation Hub <ArrowRight className="ml-2 h-4 w-4" />

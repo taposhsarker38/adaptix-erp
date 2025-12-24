@@ -12,6 +12,7 @@ class Company(models.Model):
     accounting_codes = models.JSONField(default=dict, blank=True)  # mapping: {"sales":"4000", "cogs":"5000"}
     default_payment_terms = models.CharField(max_length=255, blank=True, null=True)
     address = models.TextField(blank=True, null=True)
+    custom_domain = models.CharField(max_length=255, unique=True, null=True, blank=True)
     metadata = models.JSONField(default=dict, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     timezone = models.CharField(max_length=64, default="UTC")

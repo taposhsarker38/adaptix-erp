@@ -25,6 +25,8 @@
     "businessAI": "الذكاء الاصطناعي للأعمال",
     "visionHub": "مركز الرؤية",
     "generalAnalytics": "التحليلات العامة",
+    "automationHub": "مركز الأتمتة",
+    "demandForecasting": "التنبؤ بالطلب",
     "administration": "الإدارة",
     "users": "المستخدمين",
     "organizationHub": "مركز المؤسسة",
@@ -34,6 +36,7 @@
     "securityCenter": "مركز الأمن",
     "systemOps": "عمليات النظام",
     "settings": "الإعدادات",
+    "taxes": "الضرائب",
     "signOut": "تسجيل الخروج",
     "systemManagement": "إدارة النظام",
     "enterpriseSuite": "مجموعة المؤسسات"
@@ -64,7 +67,15 @@
     "status": "الحالة",
     "active": "نشط",
     "inactive": "غير نشط",
-    "category": "الفئة",
-    "actions": "إجراءات"
+    "category": "فئة",
+    "actions": "إجراءات",
+    "addRateTitle": "إنشاء معدل ضريبة جديد",
+    "addZoneTitle": "إنشاء منطقة ضريبية جديدة",
+    "addRuleTitle": "إنشاء قاعدة ضريبية جديدة",
+    "saveSuccess": "تم الحفظ بنجاح!",
+    "saveError": "فشل الحفظ. يرجى المحاولة مرة أخرى.",
+    "placeholderName": "أدخل الاسم...",
+    "placeholderRate": "أدخل نسبة المعدل...",
+    "placeholderCode": "أدخل رمزًا فريدًا (مثلاً BD-DHK)..."
   }
 }

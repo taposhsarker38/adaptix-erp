@@ -25,6 +25,8 @@
     "businessAI": "Business AI",
     "visionHub": "Vision Hub",
     "generalAnalytics": "General Analytics",
+    "automationHub": "Automation Hub",
+    "demandForecasting": "Demand Forecasting",
     "administration": "Administration",
     "users": "Users",
     "organizationHub": "Organization Hub",
@@ -34,6 +36,7 @@
     "securityCenter": "Security Center",
     "systemOps": "System Ops",
     "settings": "Settings",
+    "taxes": "Taxes",
     "signOut": "Sign Out",
     "systemManagement": "System Management",
     "enterpriseSuite": "Enterprise Suite"
@@ -65,6 +68,14 @@
     "active": "Active",
     "inactive": "Inactive",
     "category": "Category",
-    "actions": "Actions"
+    "actions": "Actions",
+    "addRateTitle": "Create New Tax Rate",
+    "addZoneTitle": "Create New Tax Zone",
+    "addRuleTitle": "Create New Tax Rule",
+    "saveSuccess": "Saved successfully!",
+    "saveError": "Failed to save. Please try again.",
+    "placeholderName": "Enter name...",
+    "placeholderRate": "Enter rate percentage...",
+    "placeholderCode": "Enter unique code (e.g. BD-DHK)..."
   }
 }
