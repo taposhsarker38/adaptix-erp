@@ -62,7 +62,7 @@ export const UserForm: React.FC<UserFormProps> = ({
   const [loading, setLoading] = React.useState(false);
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema) as any,
     defaultValues: {
       username: "",
       email: "",

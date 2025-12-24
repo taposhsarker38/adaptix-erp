@@ -55,7 +55,7 @@ export function StandardForm({ onSuccess, onCancel }: StandardFormProps) {
   }, []);
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema) as any,
     defaultValues: {
       product_uuid: "",
       name: "",

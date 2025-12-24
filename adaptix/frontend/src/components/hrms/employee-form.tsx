@@ -39,7 +39,7 @@ const formSchema = z.object({
   current_shift: z.string().optional(),
   attendance_policy: z.enum(["STRICT", "FLEXIBLE", "NONE"]).default("STRICT"),
   attribute_set: z.string().optional(),
-  attributes: z.record(z.any()).optional(),
+  attributes: z.record(z.string(), z.any()).optional(),
 });
 
 interface EmployeeFormProps {

@@ -5,7 +5,13 @@ from django.conf.urls.static import static
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from django_prometheus.exports import ExportToDjangoView
 
+from django.http import JsonResponse
+def health_check(request):
+    return JsonResponse({'status': 'healthy', 'service': 'pos'})
+
 urlpatterns = [
+    path('health/', health_check),
+    path('api/pos/health/', health_check),
     path('admin/', admin.site.urls),
     path('api/pos/', include('apps.sales.urls')), # Main app URLs
     

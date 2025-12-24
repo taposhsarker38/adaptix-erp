@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Loader } from "@/components/ui/loader";
 import {
@@ -15,7 +15,7 @@ import { CheckCircle2, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import api from "@/lib/api";
 
-export default function VerifyEmailPage() {
+function VerifyEmailContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
@@ -100,5 +100,13 @@ export default function VerifyEmailPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function VerifyEmailPage() {
+  return (
+    <Suspense fallback={<Loader fullScreen text="Loading..." />}>
+      <VerifyEmailContent />
+    </Suspense>
   );
 }

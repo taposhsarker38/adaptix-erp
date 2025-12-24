@@ -42,7 +42,7 @@ export function InspectionForm({ onSuccess, onCancel }: InspectionFormProps) {
   const [loading, setLoading] = useState(false);
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema) as any,
     defaultValues: {
       reference_type: "PRODUCTION",
       reference_uuid: "",

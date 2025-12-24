@@ -1,0 +1,1102 @@
+
+> frontend@0.1.0 lint
+> eslint
+
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/next.config.ts
+  12:3  error  Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/app/dashboard/accounting/page.tsx
+  19:44  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/app/dashboard/admin/audit/page.tsx
+    9:10  warning  'Input' is defined but never used                                                                                    @typescript-eslint/no-unused-vars
+  134:10  warning  'loading' is assigned a value but never used                                                                         @typescript-eslint/no-unused-vars
+  164:6   warning  React Hook useEffect has a missing dependency: 'fetchData'. Either include it or remove the dependency array         react-hooks/exhaustive-deps
+  201:12  error    Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/app/dashboard/analytics/page.tsx
+   35:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   83:30  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  162:47  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/app/dashboard/hr/employees/page.tsx
+  15:18  warning  'Plus' is defined but never used                                 @typescript-eslint/no-unused-vars
+  37:37  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/app/dashboard/hr/leaves/page.tsx
+   50:10  warning  'LeaveAllocation' is defined but never used         @typescript-eslint/no-unused-vars
+   50:27  warning  'LeavePolicy' is defined but never used             @typescript-eslint/no-unused-vars
+   53:36  warning  'leavesLoading' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  101:14  warning  'err' is defined but never used                     @typescript-eslint/no-unused-vars
+  117:14  warning  'err' is defined but never used                     @typescript-eslint/no-unused-vars
+  619:26  warning  'err' is defined but never used                     @typescript-eslint/no-unused-vars
+  750:26  warning  'err' is defined but never used                     @typescript-eslint/no-unused-vars
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/app/dashboard/intelligence/automation/page.tsx
+    9:3   warning  'Play' is defined but never used              @typescript-eslint/no-unused-vars
+   16:3   warning  'MoreVertical' is defined but never used      @typescript-eslint/no-unused-vars
+   79:10  warning  'loading' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  124:14  warning  'error' is defined but never used             @typescript-eslint/no-unused-vars
+  140:14  warning  'error' is defined but never used             @typescript-eslint/no-unused-vars
+  150:14  warning  'error' is defined but never used             @typescript-eslint/no-unused-vars
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/app/dashboard/intelligence/forecasts/page.tsx
+    9:3   warning  'Calendar' is defined but never used                                                                          @typescript-eslint/no-unused-vars
+   15:3   warning  'LineChart' is defined but never used                                                                         @typescript-eslint/no-unused-vars
+   16:3   warning  'Line' is defined but never used                                                                              @typescript-eslint/no-unused-vars
+   49:11  warning  'SalesHistory' is defined but never used                                                                      @typescript-eslint/no-unused-vars
+   58:46  error    Unexpected any. Specify a different type                                                                      @typescript-eslint/no-explicit-any
+   82:6   warning  React Hook useEffect has a missing dependency: 'fetchData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  103:6   warning  React Hook useEffect has a missing dependency: 'fetchData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  115:47  error    Unexpected any. Specify a different type                                                                      @typescript-eslint/no-explicit-any
+  121:42  error    Unexpected any. Specify a different type                                                                      @typescript-eslint/no-explicit-any
+  133:14  warning  'error' is defined but never used                                                                             @typescript-eslint/no-unused-vars
+  145:14  warning  'error' is defined but never used                                                                             @typescript-eslint/no-unused-vars
+  417:24  error    Unexpected any. Specify a different type                                                                      @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/app/dashboard/intelligence/vision-hub/page.tsx
+    3:31  warning  'useMemo' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+   12:3   warning  'UserCheck' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+   16:3   warning  'Search' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          @typescript-eslint/no-unused-vars
+   22:3   warning  'ChevronRight' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    @typescript-eslint/no-unused-vars
+   23:3   warning  'Plus' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            @typescript-eslint/no-unused-vars
+   25:3   warning  'Plane' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           @typescript-eslint/no-unused-vars
+   88:13  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    @typescript-eslint/no-explicit-any
+  117:10  warning  'isLoading' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @typescript-eslint/no-unused-vars
+  186:5   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/app/dashboard/intelligence/vision-hub/page.tsx:186:5
+  184 |
+  185 |   useEffect(() => {
+> 186 |     refreshData();
+      |     ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  187 |   }, [selectedBranch, filterDate]);
+  188 |
+  189 |   const handleManualSubmit = async () => {  react-hooks/set-state-in-effect
+  187:6   warning  React Hook useEffect has a missing dependency: 'refreshData'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              react-hooks/exhaustive-deps
+  219:14  warning  'error' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           @typescript-eslint/no-unused-vars
+  258:58  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/app/dashboard/inventory/stock/components/StockAdjustmentDialog.tsx
+  16:3   warning  'Select' is defined but never used         @typescript-eslint/no-unused-vars
+  17:3   warning  'SelectContent' is defined but never used  @typescript-eslint/no-unused-vars
+  18:3   warning  'SelectItem' is defined but never used     @typescript-eslint/no-unused-vars
+  19:3   warning  'SelectTrigger' is defined but never used  @typescript-eslint/no-unused-vars
+  20:3   warning  'SelectValue' is defined but never used    @typescript-eslint/no-unused-vars
+  51:23  error    Unexpected any. Specify a different type   @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/app/dashboard/logistics/page.tsx
+  3:10  warning  'useEffect' is defined but never used    @typescript-eslint/no-unused-vars
+  3:21  warning  'useState' is defined but never used     @typescript-eslint/no-unused-vars
+  5:10  warning  'Card' is defined but never used         @typescript-eslint/no-unused-vars
+  5:16  warning  'CardContent' is defined but never used  @typescript-eslint/no-unused-vars
+  5:29  warning  'CardHeader' is defined but never used   @typescript-eslint/no-unused-vars
+  5:41  warning  'CardTitle' is defined but never used    @typescript-eslint/no-unused-vars
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/app/dashboard/manufacturing/shop-floor/page.tsx
+    7:3   warning  'WorkCenter' is defined but never used       @typescript-eslint/no-unused-vars
+   13:3   warning  'CardDescription' is defined but never used  @typescript-eslint/no-unused-vars
+   49:60  error    Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+  228:31  error    Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/app/dashboard/ops/page.tsx
+   10:3   warning  'Database' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+   11:3   warning  'Cpu' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @typescript-eslint/no-unused-vars
+   85:59  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     @typescript-eslint/no-explicit-any
+   91:39  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     @typescript-eslint/no-explicit-any
+  105:18  warning  'e' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                @typescript-eslint/no-unused-vars
+  122:5   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/app/dashboard/ops/page.tsx:122:5
+  120 |
+  121 |   useEffect(() => {
+> 122 |     checkHealth();
+      |     ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  123 |     const interval = setInterval(checkHealth, 30000); // Auto-refresh every 30s
+  124 |     return () => clearInterval(interval);
+  125 |   }, []);  react-hooks/set-state-in-effect
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/app/dashboard/organization/page.tsx
+   67:29  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   87:14  warning  'error' is defined but never used         @typescript-eslint/no-unused-vars
+  212:17  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/app/dashboard/pos/components/CheckoutModal.tsx
+  17:8  warning  'axios' is defined but never used  @typescript-eslint/no-unused-vars
+  30:3  warning  'cart' is defined but never used   @typescript-eslint/no-unused-vars
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/app/dashboard/pos/components/ProductCard.tsx
+   9:10  warning  'cn' is defined but never used                  @typescript-eslint/no-unused-vars
+  25:9   warning  'glowColor' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/app/dashboard/pos/page.tsx
+  10:52  error    Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+  13:9   warning  'searchInputRef' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  15:31  error    Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/app/dashboard/security/page.tsx
+  23:10  warning  'useWebSockets' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/app/dashboard/settings/CustomFieldsSettings.tsx
+    6:3   warning  'CardContent' is defined but never used                                                                                @typescript-eslint/no-unused-vars
+   71:6   warning  React Hook useEffect has a missing dependency: 'fetchAttributeSets'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+   80:14  warning  'error' is defined but never used                                                                                      @typescript-eslint/no-unused-vars
+  100:21  error    Unexpected any. Specify a different type                                                                               @typescript-eslint/no-explicit-any
+  116:14  warning  'error' is defined but never used                                                                                      @typescript-eslint/no-unused-vars
+  144:21  error    Unexpected any. Specify a different type                                                                               @typescript-eslint/no-explicit-any
+  167:14  warning  'error' is defined but never used                                                                                      @typescript-eslint/no-unused-vars
+  179:32  error    Unexpected any. Specify a different type                                                                               @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/app/dashboard/settings/GeneralSettings.tsx
+   65:14  warning  'err' is defined but never used  @typescript-eslint/no-unused-vars
+  109:14  warning  'err' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/app/dashboard/settings/LoyaltySettings.tsx
+  13:10  warning  'Button' is defined but never used           @typescript-eslint/no-unused-vars
+  30:10  warning  'saving' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  50:14  warning  'err' is defined but never used              @typescript-eslint/no-unused-vars
+  85:14  warning  'err' is defined but never used              @typescript-eslint/no-unused-vars
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/app/dashboard/settings/page.tsx
+   9:3  warning  'Card' is defined but never used             @typescript-eslint/no-unused-vars
+  10:3  warning  'CardContent' is defined but never used      @typescript-eslint/no-unused-vars
+  11:3  warning  'CardDescription' is defined but never used  @typescript-eslint/no-unused-vars
+  12:3  warning  'CardHeader' is defined but never used       @typescript-eslint/no-unused-vars
+  13:3  warning  'CardTitle' is defined but never used        @typescript-eslint/no-unused-vars
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/app/dashboard/settings/theme/page.tsx
+  34:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/app/forgot-password/page.tsx
+   7:13  warning  'z' is defined but never used                                    @typescript-eslint/no-unused-vars
+  58:21  error    Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+  78:27  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/app/login/page.tsx
+  111:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/app/password/reset/confirm/page.tsx
+  96:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/app/verify-email/page.tsx
+  30:7   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/app/verify-email/page.tsx:30:7
+  28 |   useEffect(() => {
+  29 |     if (!token) {
+> 30 |       setStatus("error");
+     |       ^^^^^^^^^ Avoid calling setState() directly within an effect
+  31 |       setMessage("Invalid verification link.");
+  32 |       return;
+  33 |     }  react-hooks/set-state-in-effect
+  49:23  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/accounting/account-client.tsx
+  20:44  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  22:40  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  25:58  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  61:30  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  82:14  warning  'e' is defined but never used             @typescript-eslint/no-unused-vars
+  91:28  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/accounting/account-form.tsx
+   8:10  warning  'useEffect' is defined but never used     @typescript-eslint/no-unused-vars
+  38:17  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  41:11  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/accounting/group-client.tsx
+  21:40  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  25:54  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  51:28  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  72:14  warning  'e' is defined but never used             @typescript-eslint/no-unused-vars
+  81:28  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/accounting/group-form.tsx
+  38:17  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/accounting/journal-form.tsx
+   27:10  warning  'cn' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 @typescript-eslint/no-unused-vars
+   62:44  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       @typescript-eslint/no-explicit-any
+  105:17  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       @typescript-eslint/no-explicit-any
+  111:22  warning  Compilation Skipped: Use of incompatible library
+
+This API returns functions which cannot be memoized without leading to stale UI. To prevent this, by default React Compiler will skip memoizing this component/hook. However, you may see issues if values from this API are passed to other components/hooks that are memoized.
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/accounting/journal-form.tsx:111:22
+  109 |   };
+  110 |
+> 111 |   const totalDebit = form
+      |                      ^^^^ React Hook Form's `useForm()` API returns a `watch()` function which cannot be memoized safely.
+  112 |     .watch("items")
+  113 |     .reduce((sum, i) => sum + (Number(i.debit) || 0), 0);
+  114 |   const totalCredit = form  react-hooks/incompatible-library
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/analytics/recent-sales.tsx
+  4:16  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/analytics/sales-chart.tsx
+  13:9  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/assets/asset-client.tsx
+   6:3   warning  'Search' is defined but never used        @typescript-eslint/no-unused-vars
+  10:3   warning  'Monitor' is defined but never used       @typescript-eslint/no-unused-vars
+  13:10  warning  'Input' is defined but never used         @typescript-eslint/no-unused-vars
+  36:40  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  39:52  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  70:14  warning  'e' is defined but never used             @typescript-eslint/no-unused-vars
+  84:17  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  89:28  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/assets/asset-form.tsx
+   42:17  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   52:48  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   55:43  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  103:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/auth/AuthGuard.tsx
+  24:7  error    Error: Cannot access variable before it is declared
+
+`redirectToLogin` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/auth/AuthGuard.tsx:24:7
+  22 |     if (!token) {
+  23 |       console.log("AuthGuard: No token found. Redirecting to login...");
+> 24 |       redirectToLogin();
+     |       ^^^^^^^^^^^^^^^ `redirectToLogin` accessed before it is declared
+  25 |       return;
+  26 |     }
+  27 |
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/auth/AuthGuard.tsx:40:3
+  38 |   }, [router, pathname]);
+  39 |
+> 40 |   const redirectToLogin = () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 41 |     setAuthorized(false);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 42 |     const returnUrl = encodeURIComponent(pathname);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 43 |     router.push(`/login?returnUrl=${returnUrl}`);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 44 |   };
+     | ^^^^^ `redirectToLogin` is declared here
+  45 |
+  46 |   const clearAuth = () => {
+  47 |     localStorage.removeItem("access_token");  react-hooks/immutability
+  29:9  error    Error: Cannot access variable before it is declared
+
+`isTokenExpired` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/auth/AuthGuard.tsx:29:9
+  27 |
+  28 |     // 3. Check Token Expiry
+> 29 |     if (isTokenExpired(token)) {
+     |         ^^^^^^^^^^^^^^ `isTokenExpired` accessed before it is declared
+  30 |       console.log("AuthGuard: Token expired. Requesting re-login...");
+  31 |       clearAuth();
+  32 |       redirectToLogin();
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/auth/AuthGuard.tsx:51:3
+  49 |   };
+  50 |
+> 51 |   const isTokenExpired = (token: string): boolean => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 52 |     try {
+     | ^^^^^^^^^
+> 53 |       const payloadBase64 = token.split(".")[1];
+     …
+     | ^^^^^^^^^
+> 67 |     }
+     | ^^^^^^^^^
+> 68 |   };
+     | ^^^^^ `isTokenExpired` is declared here
+  69 |
+  70 |   if (!authorized) {
+  71 |     return (                                                                                     react-hooks/immutability
+  31:7  error    Error: Cannot access variable before it is declared
+
+`clearAuth` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/auth/AuthGuard.tsx:31:7
+  29 |     if (isTokenExpired(token)) {
+  30 |       console.log("AuthGuard: Token expired. Requesting re-login...");
+> 31 |       clearAuth();
+     |       ^^^^^^^^^ `clearAuth` accessed before it is declared
+  32 |       redirectToLogin();
+  33 |       return;
+  34 |     }
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/auth/AuthGuard.tsx:46:3
+  44 |   };
+  45 |
+> 46 |   const clearAuth = () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 47 |     localStorage.removeItem("access_token");
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 48 |     localStorage.removeItem("refresh_token");
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 49 |   };
+     | ^^^^^ `clearAuth` is declared here
+  50 |
+  51 |   const isTokenExpired = (token: string): boolean => {
+  52 |     try {                                                                          react-hooks/immutability
+  38:6  warning  React Hook useEffect has a missing dependency: 'redirectToLogin'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    react-hooks/exhaustive-deps
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/customers/customer-client.tsx
+   4:16  warning  'Search' is defined but never used                                                                                 @typescript-eslint/no-unused-vars
+  29:46  error    Unexpected any. Specify a different type                                                                           @typescript-eslint/no-explicit-any
+  31:22  warning  'setSearchTerm' is assigned a value but never used                                                                 @typescript-eslint/no-unused-vars
+  33:58  error    Unexpected any. Specify a different type                                                                           @typescript-eslint/no-explicit-any
+  34:58  error    Unexpected any. Specify a different type                                                                           @typescript-eslint/no-explicit-any
+  36:54  error    Unexpected any. Specify a different type                                                                           @typescript-eslint/no-explicit-any
+  61:6   warning  React Hook useEffect has a missing dependency: 'fetchCustomers'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  74:14  warning  'e' is defined but never used                                                                                      @typescript-eslint/no-unused-vars
+  83:31  error    Unexpected any. Specify a different type                                                                           @typescript-eslint/no-explicit-any
+  98:28  error    Unexpected any. Specify a different type                                                                           @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/customers/customer-form.tsx
+   42:17  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             @typescript-eslint/no-explicit-any
+   45:18  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             @typescript-eslint/no-explicit-any
+   56:46  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             @typescript-eslint/no-explicit-any
+   92:21  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             @typescript-eslint/no-explicit-any
+  187:41  warning  Compilation Skipped: Use of incompatible library
+
+This API returns functions which cannot be memoized without leading to stale UI. To prevent this, by default React Compiler will skip memoizing this component/hook. However, you may see issues if values from this API are passed to other components/hooks that are memoized.
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/customers/customer-form.tsx:187:41
+  185 |               form={form}
+  186 |               attributeSet={attributeSets.find(
+> 187 |                 (s) => String(s.id) === form.watch("attribute_set")
+      |                                         ^^^^ React Hook Form's `useForm()` API returns a `watch()` function which cannot be memoized safely.
+  188 |               )}
+  189 |             />
+  190 |           )}  react-hooks/incompatible-library
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/customers/loyalty-view.tsx
+   16:10  warning  'toast' is defined but never used         @typescript-eslint/no-unused-vars
+   24:42  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   40:15  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  137:51  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/hrms/department-client.tsx
+   4:32  warning  'Search' is defined but never used         @typescript-eslint/no-unused-vars
+  20:3   warning  'DialogTrigger' is defined but never used  @typescript-eslint/no-unused-vars
+  75:14  warning  'error' is defined but never used          @typescript-eslint/no-unused-vars
+  91:14  warning  'error' is defined but never used          @typescript-eslint/no-unused-vars
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/hrms/employee-client.tsx
+   4:16  warning  'Search' is defined but never used                                                                                 @typescript-eslint/no-unused-vars
+  21:46  error    Unexpected any. Specify a different type                                                                           @typescript-eslint/no-explicit-any
+  23:22  warning  'setSearchTerm' is assigned a value but never used                                                                 @typescript-eslint/no-unused-vars
+  25:58  error    Unexpected any. Specify a different type                                                                           @typescript-eslint/no-explicit-any
+  26:54  error    Unexpected any. Specify a different type                                                                           @typescript-eslint/no-explicit-any
+  52:6   warning  React Hook useEffect has a missing dependency: 'fetchEmployees'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  65:14  warning  'e' is defined but never used                                                                                      @typescript-eslint/no-unused-vars
+  74:26  error    Unexpected any. Specify a different type                                                                           @typescript-eslint/no-explicit-any
+  89:28  error    Unexpected any. Specify a different type                                                                           @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/hrms/employee-form.tsx
+   46:17  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @typescript-eslint/no-explicit-any
+   47:19  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @typescript-eslint/no-explicit-any
+   58:50  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @typescript-eslint/no-explicit-any
+   59:46  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @typescript-eslint/no-explicit-any
+   60:44  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @typescript-eslint/no-explicit-any
+   61:40  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @typescript-eslint/no-explicit-any
+   62:46  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @typescript-eslint/no-explicit-any
+   89:42  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @typescript-eslint/no-explicit-any
+  144:21  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @typescript-eslint/no-explicit-any
+  446:31  warning  Compilation Skipped: Use of incompatible library
+
+This API returns functions which cannot be memoized without leading to stale UI. To prevent this, by default React Compiler will skip memoizing this component/hook. However, you may see issues if values from this API are passed to other components/hooks that are memoized.
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/hrms/employee-form.tsx:446:31
+  444 |             form={form}
+  445 |             attributeSet={attributeSets.find(
+> 446 |               (s) => s.id === form.watch("attribute_set")
+      |                               ^^^^ React Hook Form's `useForm()` API returns a `watch()` function which cannot be memoized safely.
+  447 |             )}
+  448 |           />
+  449 |         </div>  react-hooks/incompatible-library
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/hrms/performance/kpi-client.tsx
+  21:36  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  24:50  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  53:14  warning  'e' is defined but never used             @typescript-eslint/no-unused-vars
+  61:28  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/hrms/performance/kpi-form.tsx
+  34:17  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  75:14  warning  'error' is defined but never used         @typescript-eslint/no-unused-vars
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/hrms/performance/promotion-form.tsx
+   39:17  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   49:46  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  102:14  warning  'error' is defined but never used         @typescript-eslint/no-unused-vars
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/hrms/performance/review-client.tsx
+  18:10  warning  'Badge' is defined but never used         @typescript-eslint/no-unused-vars
+  21:36  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  24:50  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  53:14  warning  'e' is defined but never used             @typescript-eslint/no-unused-vars
+  61:28  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/hrms/performance/review-form.tsx
+  39:17  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  49:46  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  90:14  warning  'error' is defined but never used         @typescript-eslint/no-unused-vars
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/hrms/position-client.tsx
+  74:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  90:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/hrms/projects/project-client.tsx
+   4:46  warning  'CalIcon' is defined but never used       @typescript-eslint/no-unused-vars
+  24:36  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  27:50  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  58:14  warning  'e' is defined but never used             @typescript-eslint/no-unused-vars
+  66:28  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/hrms/projects/project-detail-client.tsx
+    9:3   warning  'MoreHorizontal' is defined but never used  @typescript-eslint/no-unused-vars
+   43:42  error    Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+   44:38  error    Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+   47:50  error    Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+   83:14  warning  'e' is defined but never used               @typescript-eslint/no-unused-vars
+   96:14  warning  'e' is defined but never used               @typescript-eslint/no-unused-vars
+  101:28  error    Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/hrms/projects/project-form.tsx
+   50:17  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   60:46  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  116:14  warning  'error' is defined but never used         @typescript-eslint/no-unused-vars
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/hrms/projects/task-form.tsx
+   50:17  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   61:46  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  114:14  warning  'error' is defined but never used         @typescript-eslint/no-unused-vars
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/hrms/shift-client.tsx
+    4:32  warning  'Clock' is defined but never used         @typescript-eslint/no-unused-vars
+   97:21  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  120:14  warning  'error' is defined but never used         @typescript-eslint/no-unused-vars
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/intelligence/ai-client.tsx
+    9:3   warning  'Users' is defined but never used                                @typescript-eslint/no-unused-vars
+   32:3   warning  'LineChart' is defined but never used                            @typescript-eslint/no-unused-vars
+   39:3   warning  'Legend' is defined but never used                               @typescript-eslint/no-unused-vars
+   58:36  error    Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+   59:54  error    Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+   86:17  error    Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+   99:14  warning  'e' is defined but never used                                    @typescript-eslint/no-unused-vars
+   99:17  error    Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+  434:24  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  434:42  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/intelligence/anomaly-alert.tsx
+   4:25  warning  'TrendingUp' is defined but never used           @typescript-eslint/no-unused-vars
+   4:37  warning  'X' is defined but never used                    @typescript-eslint/no-unused-vars
+   5:10  warning  'Card' is defined but never used                 @typescript-eslint/no-unused-vars
+   5:16  warning  'CardContent' is defined but never used          @typescript-eslint/no-unused-vars
+   5:29  warning  'CardHeader' is defined but never used           @typescript-eslint/no-unused-vars
+   5:41  warning  'CardTitle' is defined but never used            @typescript-eslint/no-unused-vars
+   8:10  warning  'Button' is defined but never used               @typescript-eslint/no-unused-vars
+  22:19  warning  'setVisible' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/intelligence/live-feed.tsx
+   7:20  warning  'Bell' is defined but never used          @typescript-eslint/no-unused-vars
+   7:26  warning  'CheckCircle2' is defined but never used  @typescript-eslint/no-unused-vars
+   7:40  warning  'AlertCircle' is defined but never used   @typescript-eslint/no-unused-vars
+   7:53  warning  'Zap' is defined but never used           @typescript-eslint/no-unused-vars
+  48:44  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  56:46  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/intelligence/sales-trend-widget.tsx
+  11:3  warning  'XAxis' is defined but never used  @typescript-eslint/no-unused-vars
+  12:3  warning  'YAxis' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/intelligence/stockout-modal.tsx
+  27:15  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  48:13  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/inventory/manufacturing/bom-form.tsx
+  46:17  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  52:44  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  82:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/inventory/manufacturing/bom-list.tsx
+  20:36  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  24:50  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  32:50  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  36:14  warning  'e' is defined but never used             @typescript-eslint/no-unused-vars
+  67:14  warning  'e' is defined but never used             @typescript-eslint/no-unused-vars
+  75:28  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/inventory/manufacturing/production-order-form.tsx
+   39:17  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    @typescript-eslint/no-explicit-any
+   49:44  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    @typescript-eslint/no-explicit-any
+   50:36  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    @typescript-eslint/no-explicit-any
+   51:60  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    @typescript-eslint/no-explicit-any
+   67:40  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    @typescript-eslint/no-explicit-any
+  117:14  warning  'e' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               @typescript-eslint/no-unused-vars
+  135:14  warning  'error' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           @typescript-eslint/no-unused-vars
+  216:30  warning  Compilation Skipped: Use of incompatible library
+
+This API returns functions which cannot be memoized without leading to stale UI. To prevent this, by default React Compiler will skip memoizing this component/hook. However, you may see issues if values from this API are passed to other components/hooks that are memoized.
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/inventory/manufacturing/production-order-form.tsx:216:30
+  214 |                   variant="secondary"
+  215 |                   onClick={checkStock}
+> 216 |                   disabled={!form.watch("bom")}
+      |                              ^^^^ React Hook Form's `useForm()` API returns a `watch()` function which cannot be memoized safely.
+  217 |                 >
+  218 |                   Check Stock
+  219 |                 </Button>  react-hooks/incompatible-library
+  242:62  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/inventory/manufacturing/production-order-list.tsx
+  21:36  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  25:50  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  33:50  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  37:14  warning  'e' is defined but never used             @typescript-eslint/no-unused-vars
+  72:14  warning  'e' is defined but never used             @typescript-eslint/no-unused-vars
+  87:14  warning  'e' is defined but never used             @typescript-eslint/no-unused-vars
+  92:28  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/inventory/manufacturing/work-center-list.tsx
+    8:24  warning  'Trash2' is defined but never used        @typescript-eslint/no-unused-vars
+    8:32  warning  'Cpu' is defined but never used           @typescript-eslint/no-unused-vars
+   77:16  warning  'row' is defined but never used           @typescript-eslint/no-unused-vars
+  127:20  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/inventory/quick-adjust-cell.tsx
+  8:10  warning  'Input' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/inventory/stock-adjustment-dialog.tsx
+  48:15  error    Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+  49:13  error    Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+  62:9   warning  'router' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  66:42  error    Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+  91:21  error    Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/inventory/stock-client.tsx
+    4:41  warning  'Filter' is defined but never used            @typescript-eslint/no-unused-vars
+   18:42  error    Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+   19:54  error    Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+   20:50  error    Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+   21:10  warning  'loading' is assigned a value but never used  @typescript-eslint/no-unused-vars
+   67:33  error    Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+   79:41  error    Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+   80:37  error    Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+   81:33  error    Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  115:28  error    Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/inventory/warehouse-client.tsx
+   7:10  warning  'format' is defined but never used        @typescript-eslint/no-unused-vars
+  24:42  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  27:58  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  51:25  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  66:28  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/inventory/warehouse-form.tsx
+  40:16  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  54:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  94:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/layout/Sidebar.tsx
+    8:3   warning  'BarChart3' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+   10:3   warning  'Settings' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          @typescript-eslint/no-unused-vars
+   13:3   warning  'Package' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           @typescript-eslint/no-unused-vars
+   14:3   warning  'ShoppingCart' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-unused-vars
+   15:3   warning  'Tags' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @typescript-eslint/no-unused-vars
+   17:3   warning  'Scale' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             @typescript-eslint/no-unused-vars
+   18:3   warning  'UserCog' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           @typescript-eslint/no-unused-vars
+   20:3   warning  'Lock' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @typescript-eslint/no-unused-vars
+   22:3   warning  'Contact' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           @typescript-eslint/no-unused-vars
+   23:3   warning  'Ticket' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            @typescript-eslint/no-unused-vars
+   24:3   warning  'Monitor' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           @typescript-eslint/no-unused-vars
+   26:3   warning  'ChartColumn' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+   27:3   warning  'Briefcase' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+   29:3   warning  'ShieldCheck' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+   30:3   warning  'Truck' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             @typescript-eslint/no-unused-vars
+   31:3   warning  'History' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           @typescript-eslint/no-unused-vars
+   32:3   warning  'Eye' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               @typescript-eslint/no-unused-vars
+   42:9   error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-explicit-any
+  208:11  error    An interface declaring no members is equivalent to its supertype                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @typescript-eslint/no-empty-object-type
+  218:5   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/layout/Sidebar.tsx:218:5
+  216 |
+  217 |   useEffect(() => {
+> 218 |     setIsClient(true);
+      |     ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  219 |     const perms = getPermissions();
+  220 |     setPermissions(perms);
+  221 |     setIsSuper(isSuperUser());  react-hooks/set-state-in-effect
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/layout/UserNav.tsx
+  16:8  warning  'Link' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/layout/notification-bell.tsx
+   4:16  warning  'Check' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+  36:61  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  39:14  warning  'error' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+  45:5   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/layout/notification-bell.tsx:45:5
+  43 |
+  44 |   useEffect(() => {
+> 45 |     fetchNotifications();
+     |     ^^^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  46 |     // Poll every 30s
+  47 |     const interval = setInterval(fetchNotifications, 30000);
+  48 |     return () => clearInterval(interval);  react-hooks/set-state-in-effect
+  58:14  warning  'e' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            @typescript-eslint/no-unused-vars
+  69:14  warning  'e' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            @typescript-eslint/no-unused-vars
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/logistics/fleet-list.tsx
+   21:24  warning  'Truck' is defined but never used               @typescript-eslint/no-unused-vars
+   60:10  warning  'employees' is assigned a value but never used  @typescript-eslint/no-unused-vars
+   60:46  error    Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+  166:44  error    Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/logistics/route-list.tsx
+  18:40  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/logistics/shipment-list.tsx
+   21:24  warning  'Package' is defined but never used        @typescript-eslint/no-unused-vars
+   36:3   warning  'Select' is defined but never used         @typescript-eslint/no-unused-vars
+   37:3   warning  'SelectContent' is defined but never used  @typescript-eslint/no-unused-vars
+   38:3   warning  'SelectItem' is defined but never used     @typescript-eslint/no-unused-vars
+   39:3   warning  'SelectTrigger' is defined but never used  @typescript-eslint/no-unused-vars
+   40:3   warning  'SelectValue' is defined but never used    @typescript-eslint/no-unused-vars
+  150:46  error    Unexpected any. Specify a different type   @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/modals/alert-modal.tsx
+   4:10  warning  'Button' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          @typescript-eslint/no-unused-vars
+  36:5   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/modals/alert-modal.tsx:36:5
+  34 |
+  35 |   useEffect(() => {
+> 36 |     setIsMounted(true);
+     |     ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  37 |   }, []);
+  38 |
+  39 |   if (!isMounted) {  react-hooks/set-state-in-effect
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/onboarding/CompanySetupWizard.tsx
+   18:3   warning  'Check' is defined but never used         @typescript-eslint/no-unused-vars
+   24:10  warning  'cn' is defined but never used            @typescript-eslint/no-unused-vars
+  183:15  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/onboarding/ProductTour.tsx
+  4:10  warning  'motion' is defined but never used  @typescript-eslint/no-unused-vars
+  6:10  warning  'X' is defined but never used       @typescript-eslint/no-unused-vars
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/organization/OrganizationWizard.tsx
+   5:3  warning  'Building2' is defined but never used     @typescript-eslint/no-unused-vars
+   7:3  warning  'X' is defined but never used             @typescript-eslint/no-unused-vars
+   8:3  warning  'Check' is defined but never used         @typescript-eslint/no-unused-vars
+   9:3  warning  'ChevronRight' is defined but never used  @typescript-eslint/no-unused-vars
+  11:3  warning  'MapPin' is defined but never used        @typescript-eslint/no-unused-vars
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/permissions/permission-client.tsx
+  10:42  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  18:16  warning  'error' is defined but never used         @typescript-eslint/no-unused-vars
+  27:28  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/pos/cart.tsx
+  10:10  warning  'Badge' is defined but never used         @typescript-eslint/no-unused-vars
+  11:10  warning  'cn' is defined but never used            @typescript-eslint/no-unused-vars
+  14:10  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  30:66  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/pos/checkout-dialog.tsx
+   18:3   warning  'DialogHeader' is defined but never used                                                                                           @typescript-eslint/no-unused-vars
+   19:3   warning  'DialogTitle' is defined but never used                                                                                            @typescript-eslint/no-unused-vars
+   35:10  error    Unexpected any. Specify a different type                                                                                           @typescript-eslint/no-explicit-any
+   40:14  error    Unexpected any. Specify a different type                                                                                           @typescript-eslint/no-explicit-any
+   52:56  error    Unexpected any. Specify a different type                                                                                           @typescript-eslint/no-explicit-any
+   58:9   warning  'router' is assigned a value but never used                                                                                        @typescript-eslint/no-unused-vars
+   64:8   error    Unexpected any. Specify a different type                                                                                           @typescript-eslint/no-explicit-any
+   93:6   warning  React Hook React.useEffect has missing dependencies: 'form' and 'successData'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  144:21  error    Unexpected any. Specify a different type                                                                                           @typescript-eslint/no-explicit-any
+  271:60  error    Unexpected any. Specify a different type                                                                                           @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/pos/customer-selector.tsx
+   4:33  warning  'User' is defined but never used              @typescript-eslint/no-unused-vars
+   4:39  warning  'Plus' is defined but never used              @typescript-eslint/no-unused-vars
+  24:24  error    Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  25:21  error    Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  33:10  warning  'value' is assigned a value but never used    @typescript-eslint/no-unused-vars
+  34:52  error    Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  35:10  warning  'loading' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  54:35  error    Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/pos/product-grid.tsx
+   22:26  error    Unexpected any. Specify a different type                                                                                                                                                                                                     @typescript-eslint/no-explicit-any
+   26:50  error    Unexpected any. Specify a different type                                                                                                                                                                                                     @typescript-eslint/no-explicit-any
+   27:54  error    Unexpected any. Specify a different type                                                                                                                                                                                                     @typescript-eslint/no-explicit-any
+   34:9   warning  'scrollRef' is assigned a value but never used                                                                                                                                                                                               @typescript-eslint/no-unused-vars
+  116:6   warning  React Hook React.useEffect has a missing dependency: 'onAddToCart'. Either include it or remove the dependency array. If 'onAddToCart' changes too often, find the parent component that defines it and wrap that definition in useCallback  react-hooks/exhaustive-deps
+  217:37  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                                                              react/no-unescaped-entities
+  217:46  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                                                              react/no-unescaped-entities
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/products/brand-client.tsx
+   7:10  warning  'format' is defined but never used        @typescript-eslint/no-unused-vars
+  23:42  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  26:58  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  50:25  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  65:28  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/products/brand-form.tsx
+  38:16  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  89:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/products/category-client.tsx
+  23:42  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  26:58  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  50:25  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  65:28  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  91:18  warning  'e' is defined but never used             @typescript-eslint/no-unused-vars
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/products/category-form.tsx
+  37:16  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  85:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/products/product-client.tsx
+    7:10  warning  'format' is defined but never used                                                                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+   21:10  warning  'Badge' is defined but never used                                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+   24:42  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+   25:54  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+   26:46  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+   27:44  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+   28:60  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+   31:64  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+   92:28  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  107:28  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  113:11  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/products/product-form.tsx
+   24:3   warning  'FormDescription' is defined but never used  @typescript-eslint/no-unused-vars
+   36:10  warning  'Checkbox' is defined but never used         @typescript-eslint/no-unused-vars
+   60:16  error    Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+   61:15  error    Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+   62:11  error    Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+   63:10  error    Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+   64:18  error    Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+   82:42  error    Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+  167:21  error    Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/products/unit-client.tsx
+   7:10  warning  'format' is defined but never used        @typescript-eslint/no-unused-vars
+  23:42  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  26:58  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  50:25  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  65:28  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/products/unit-form.tsx
+  37:16  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  85:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/promotion/coupon-client.tsx
+   4:16  warning  'Search' is defined but never used        @typescript-eslint/no-unused-vars
+   4:42  warning  'Ticket' is defined but never used        @typescript-eslint/no-unused-vars
+   6:10  warning  'Input' is defined but never used         @typescript-eslint/no-unused-vars
+  28:42  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  31:54  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  62:14  warning  'e' is defined but never used             @typescript-eslint/no-unused-vars
+  71:29  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/promotion/coupon-form.tsx
+  42:17  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  53:44  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  95:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/providers/SyncManager.tsx
+  28:7  error  Error: Cannot access variable before it is declared
+
+`processSyncQueue` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/providers/SyncManager.tsx:28:7
+  26 |     const handleOnline = () => {
+  27 |       setIsOnline(true);
+> 28 |       processSyncQueue();
+     |       ^^^^^^^^^^^^^^^^ `processSyncQueue` accessed before it is declared
+  29 |     };
+  30 |     const handleOffline = () => setIsOnline(false);
+  31 |
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/providers/SyncManager.tsx:47:3
+  45 |   }, []);
+  46 |
+> 47 |   const processSyncQueue = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 48 |     const pendingItems = await db.syncQueue
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 49 |       .where("status")
+     …
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 92 |     }
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 93 |   };
+     | ^^^^^ `processSyncQueue` is declared here
+  94 |
+  95 |   if (!isOnline) {
+  96 |     return (  react-hooks/immutability
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/purchase/purchase-order-client.tsx
+    4:37  warning  'FileText' is defined but never used      @typescript-eslint/no-unused-vars
+   25:42  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   26:48  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   27:50  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   30:60  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   79:26  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   94:29  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  114:28  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/purchase/purchase-order-form.tsx
+   25:3   warning  'FormDescription' is defined but never used           @typescript-eslint/no-unused-vars
+   57:16  error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   58:12  error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   59:13  error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   75:34  error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+  109:53  error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+  140:21  error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+  149:9   warning  'onProductSelect' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  151:11  warning  'product' is assigned a value but never used          @typescript-eslint/no-unused-vars
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/purchase/receive-order-dialog.tsx
+  54:54  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  96:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/quality/inspection-form.tsx
+  25:10  warning  'useEffect' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/quality/inspection-list.tsx
+  54:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/quality/quality-client.tsx
+  3:10  warning  'useState' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/quality/standard-form.tsx
+  45:44  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/quality/standard-list.tsx
+  30:41  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               @typescript-eslint/no-explicit-any
+  38:5   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/quality/standard-list.tsx:38:5
+  36 |
+  37 |   useEffect(() => {
+> 38 |     fetchData();
+     |     ^^^^^^^^^ Avoid calling setState() directly within an effect
+  39 |   }, []);
+  40 |
+  41 |   const columns: ColumnDef<any>[] = [  react-hooks/set-state-in-effect
+  41:28  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/reporting/daily-sales-chart.tsx
+  15:36  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/roles/role-client.tsx
+  22:11  error    An empty interface declaration allows any non-nullish value, including literals like `0` and `""`.
+- If that's what you want, disable this lint rule with an inline comment or configure the 'allowInterfaces' rule option.
+- If you want a type meaning "any object", you probably want `object` instead.
+- If you want a type meaning "any value", you probably want `unknown` instead  @typescript-eslint/no-empty-object-type
+  25:9   warning  'router' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                               @typescript-eslint/no-unused-vars
+  26:42  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                  @typescript-eslint/no-explicit-any
+  27:56  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                  @typescript-eslint/no-explicit-any
+  30:58  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                  @typescript-eslint/no-explicit-any
+  53:25  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                  @typescript-eslint/no-explicit-any
+  63:14  warning  'error' is defined but never used                                                                                                                                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+  78:28  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/roles/role-form.tsx
+  36:16  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  37:16  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  55:57  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  63:57  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  81:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/shared/DynamicAttributeRenderer.tsx
+  23:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/ui/LiveClock.tsx
+  10:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/ui/LiveClock.tsx:10:5
+   8 |
+   9 |   useEffect(() => {
+> 10 |     setTime(new Date());
+     |     ^^^^^^^ Avoid calling setState() directly within an effect
+  11 |     const interval = setInterval(() => {
+  12 |       setTime(new Date());
+  13 |     }, 1000);  react-hooks/set-state-in-effect
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/ui/command-menu.tsx
+   6:3  warning  'Calendar' is defined but never used    @typescript-eslint/no-unused-vars
+   7:3  warning  'CreditCard' is defined but never used  @typescript-eslint/no-unused-vars
+   9:3  warning  'Smile' is defined but never used       @typescript-eslint/no-unused-vars
+  18:3  warning  'Laptop' is defined but never used      @typescript-eslint/no-unused-vars
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/ui/data-table.tsx
+   68:17  warning  Compilation Skipped: Use of incompatible library
+
+This API returns functions which cannot be memoized without leading to stale UI. To prevent this, by default React Compiler will skip memoizing this component/hook. However, you may see issues if values from this API are passed to other components/hooks that are memoized.
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/ui/data-table.tsx:68:17
+  66 |   );
+  67 |
+> 68 |   const table = useReactTable({
+     |                 ^^^^^^^^^^^^^ TanStack Table's `useReactTable()` API returns functions that cannot be memoized safely
+  69 |     data,
+  70 |     columns,
+  71 |     onSortingChange: setSorting,  react-hooks/incompatible-library
+   93:18  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-explicit-any
+  104:22  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-explicit-any
+  106:44  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-explicit-any
+  139:18  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-explicit-any
+  148:20  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-explicit-any
+  150:42  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-explicit-any
+  156:37  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-explicit-any
+  163:22  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/users/user-client.tsx
+   22:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   23:44  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   24:56  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   27:58  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   54:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   69:28  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  107:32  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/components/users/user-form.tsx
+   47:16  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   48:10  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   49:16  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   86:53  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   88:15  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  123:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/hooks/useDashboardStats.ts
+  16:10  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  88:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/hooks/useHRMS.ts
+  6:3  warning  'Designation' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/hooks/useInventory.ts
+  3:35  warning  'Warehouse' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/hooks/useWebSockets.ts
+  19:22  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  @typescript-eslint/no-explicit-any
+  59:20  error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/hooks/useWebSockets.ts:59:20
+  57 |   }, []);
+  58 |
+> 59 |   return { socket: socketRef.current, connected };
+     |                    ^^^^^^^^^^^^^^^^^ Cannot access ref value during render
+  60 | };
+  61 |  react-hooks/refs
+  59:20  error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/hooks/useWebSockets.ts:59:20
+  57 |   }, []);
+  58 |
+> 59 |   return { socket: socketRef.current, connected };
+     |                    ^^^^^^^^^^^^^^^^^ Cannot access ref value during render
+  60 | };
+  61 |  react-hooks/refs
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/lib/api.ts
+  30:50  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/lib/auth.ts
+  16:28  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  24:12  warning  'e' is defined but never used             @typescript-eslint/no-unused-vars
+  37:12  warning  'e' is defined but never used             @typescript-eslint/no-unused-vars
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/lib/offline/OfflineStore.ts
+   7:9  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  14:9  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/lib/types.ts
+  9:30  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/lib/utils/error-handler.ts
+   5:38  error  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+  16:10  error  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+  17:24  error  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+  65:9   error  Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+
+/home/taposh/projects/POS-Microservices-v1.1/adaptix/frontend/src/types/jspdf-autotable.d.ts
+   5:12  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   6:12  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   7:12  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  10:14  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  17:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  18:14  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  19:18  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  20:18  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  21:18  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  22:26  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  23:20  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  24:26  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+✖ 541 problems (307 errors, 234 warnings)
+

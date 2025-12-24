@@ -193,6 +193,11 @@ const adminRouteGroup: SidebarRoute = {
       permission: "view_audit_log",
     },
     {
+      label: "System Ops",
+      href: "/dashboard/ops",
+      permission: "view_settings",
+    },
+    {
       label: "Settings",
       href: "/dashboard/settings",
       permission: "view_settings",

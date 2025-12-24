@@ -6,12 +6,9 @@ import {
   Users,
   Package,
   ShoppingCart,
-  CreditCard,
   AlertCircle,
   Activity,
-  TrendingUp,
   Brain,
-  Pointer,
   Factory,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -114,7 +111,7 @@ export default function DashboardPage() {
             <LiveClock className="text-lg font-normal text-muted-foreground hidden sm:inline-block" />
           </h2>
           <p className="text-sm text-muted-foreground">
-            Welcome back! Here's your live overview.
+            Welcome back! Here&apos;s your live overview.
           </p>
         </div>
         <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 shadow-sm shadow-emerald-500/10">

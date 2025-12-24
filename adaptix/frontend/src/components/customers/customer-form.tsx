@@ -33,7 +33,7 @@ const customerSchema = z.object({
   address: z.string().optional(),
   loyalty_points: z.coerce.number().min(0).default(0),
   attribute_set: z.string().optional(),
-  attributes: z.record(z.any()).default({}),
+  attributes: z.record(z.string(), z.any()).default({}),
 });
 
 type CustomerFormValues = z.infer<typeof customerSchema>;

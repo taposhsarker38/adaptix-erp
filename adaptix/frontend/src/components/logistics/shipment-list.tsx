@@ -58,7 +58,7 @@ function ShipmentForm({
   onCancel: () => void;
 }) {
   const form = useForm<ShipmentFormValues>({
-    resolver: zodResolver(shipmentSchema),
+    resolver: zodResolver(shipmentSchema) as any,
     defaultValues: {
       order_uuid: "",
       customer_name: "",

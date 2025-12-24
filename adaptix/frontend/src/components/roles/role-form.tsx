@@ -49,7 +49,7 @@ export const RoleForm: React.FC<RoleFormProps> = ({
   const [loading, setLoading] = React.useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema) as any,
     defaultValues: {
       name: initialData?.name || "",
       permission_ids: initialData?.permissions?.map((p: any) => p.id) || [],

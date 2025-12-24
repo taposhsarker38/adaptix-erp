@@ -17,6 +17,7 @@ def health_check(request):
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('health/', health_check, name='health_check'),
+    path('api/purchase/health/', health_check),
     path('metrics/', ExportToDjangoView, name='prometheus-metrics'),
     path('api/purchase/', include(router.urls)),
 

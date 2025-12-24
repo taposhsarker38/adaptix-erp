@@ -23,6 +23,7 @@ def health_check(request):
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('health/', health_check, name='health_check'),
+    path('api/inventory/health/', health_check),
     path('api/inventory/', include(router.urls)),
     path('metrics/', ExportToDjangoView, name='prometheus-metrics'),
 

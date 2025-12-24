@@ -1,9 +1,16 @@
 from django.contrib import admin
 from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+from django.http import JsonResponse
+from django_prometheus.exports import ExportToDjangoView
+
+def health_check(request):
+    return JsonResponse({'status': 'healthy', 'service': 'manufacturing'})
 
 urlpatterns = [
-    # path('admin/', admin.site.urls), # Optional, often disabled in microservices
+    path('health/', health_check),
+    path('api/manufacturing/health/', health_check),
+    path('metrics/', ExportToDjangoView, name='prometheus-metrics'),
     
     # API Routes
     path('api/manufacturing/', include('apps.mrp.urls')),

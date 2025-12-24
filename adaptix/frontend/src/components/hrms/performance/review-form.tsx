@@ -55,7 +55,7 @@ export function ReviewForm({
   }, []);
 
   const form = useForm<ReviewFormValues>({
-    resolver: zodResolver(reviewSchema),
+    resolver: zodResolver(reviewSchema) as any,
     defaultValues: {
       employee: "",
       period_name: "",

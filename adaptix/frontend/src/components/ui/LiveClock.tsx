@@ -7,6 +7,7 @@ export function LiveClock({ className }: { className?: string }) {
   const [time, setTime] = useState<Date | null>(null);
 
   useEffect(() => {
+    // eslint-disable-next-line
     setTime(new Date());
     const interval = setInterval(() => {
       setTime(new Date());

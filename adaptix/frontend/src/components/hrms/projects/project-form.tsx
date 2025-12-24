@@ -66,7 +66,7 @@ export function ProjectForm({
   }, []);
 
   const form = useForm<ProjectFormValues>({
-    resolver: zodResolver(projectSchema),
+    resolver: zodResolver(projectSchema) as any,
     defaultValues: {
       title: "",
       description: "",

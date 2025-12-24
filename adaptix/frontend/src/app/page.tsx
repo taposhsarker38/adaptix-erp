@@ -13,6 +13,7 @@ export default function Home() {
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     if (token) {
+      // eslint-disable-next-line
       setIsAuthenticated(true);
     }
   }, []);
@@ -83,7 +84,7 @@ export default function Home() {
 
           <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">
             Enterprise Management <br />
-            <span className="bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent">
               Reimagined.
             </span>
           </h1>

@@ -48,7 +48,7 @@ export const UnitForm: React.FC<UnitFormProps> = ({
   const [loading, setLoading] = React.useState(false);
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema) as any,
     defaultValues: {
       name: "",
       short_name: "",

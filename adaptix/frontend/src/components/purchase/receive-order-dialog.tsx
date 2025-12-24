@@ -54,7 +54,7 @@ export const ReceiveOrderDialog: React.FC<ReceiveOrderDialogProps> = ({
   const [warehouses, setWarehouses] = React.useState<any[]>([]);
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema) as any,
     defaultValues: {
       warehouse_id: "",
     },

@@ -62,7 +62,7 @@ export function JournalEntryForm({ onSuccess }: { onSuccess?: () => void }) {
   const [accounts, setAccounts] = useState<any[]>([]);
 
   const form = useForm<JournalFormValues>({
-    resolver: zodResolver(journalSchema),
+    resolver: zodResolver(journalSchema) as any,
     defaultValues: {
       date: new Date().toISOString().split("T")[0],
       reference: "",
