@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/select";
 import api from "@/lib/api";
 import { toast } from "sonner";
+import { DynamicAttributeRenderer } from "@/components/shared/DynamicAttributeRenderer";
 
 const formSchema = z.object({
   first_name: z.string().min(1, "First Name is required"),
@@ -34,32 +35,49 @@ const formSchema = z.object({
   designation: z.string().optional(),
   salary_basic: z.coerce.number().min(0, "Salary must be positive"),
   joining_date: z.string().optional(),
+  branch_uuid: z.string().optional(),
+  current_shift: z.string().optional(),
+  attendance_policy: z.enum(["STRICT", "FLEXIBLE", "NONE"]).default("STRICT"),
+  attribute_set: z.string().optional(),
+  attributes: z.record(z.any()).optional(),
 });
 
 interface EmployeeFormProps {
   initialData?: any;
+  attributeSets?: any[];
   onSuccess: () => void;
   onCancel: () => void;
 }
 
 export function EmployeeForm({
   initialData,
+  attributeSets = [],
   onSuccess,
   onCancel,
 }: EmployeeFormProps) {
   const [departments, setDepartments] = useState<any[]>([]);
   const [positions, setPositions] = useState<any[]>([]);
+  const [branches, setBranches] = useState<any[]>([]);
+  const [shifts, setShifts] = useState<any[]>([]);
+  const [allShifts, setAllShifts] = useState<any[]>([]);
 
   useEffect(() => {
     // Fetch dependencies
     const loadMetadata = async () => {
       try {
-        const [deptRes, posRes] = await Promise.all([
+        const [deptRes, posRes, compRes, shiftRes] = await Promise.all([
           api.get("/hrms/employees/departments/"),
           api.get("/hrms/employees/designations/"),
+          api.get("/company/companies/"),
+          api.get("/hrms/shifts/definitions/"),
         ]);
         setDepartments(deptRes.data.results || deptRes.data);
         setPositions(posRes.data.results || posRes.data);
+        setBranches(compRes.data.results || compRes.data);
+
+        const shiftData = shiftRes.data.results || shiftRes.data;
+        setAllShifts(shiftData);
+        setShifts(shiftData); // Default to all
       } catch (e) {
         console.error(e);
       }
@@ -82,8 +100,36 @@ export function EmployeeForm({
         : 0,
       joining_date:
         initialData?.joining_date || new Date().toISOString().split("T")[0],
+      branch_uuid: initialData?.branch_uuid || "",
+      current_shift: initialData?.current_shift || "",
+      attendance_policy: initialData?.attendance_policy || "STRICT",
+      attribute_set: initialData?.attribute_set || undefined,
+      attributes: initialData?.attributes || {},
     },
   });
+
+  // Dynamic Shift Filtering
+  const selectedBranchId = form.watch("branch_uuid");
+  useEffect(() => {
+    if (!selectedBranchId || !allShifts.length) {
+      setShifts(allShifts);
+      return;
+    }
+    const branch = branches.find((b) => b.id === selectedBranchId);
+    if (branch) {
+      const filtered = allShifts.filter(
+        (s) =>
+          s.branch_type === branch.entity_type || s.branch_type === "GENERAL"
+      );
+      setShifts(filtered);
+
+      // Auto-reset shift if current one is not in filtered list
+      const currentShift = form.getValues("current_shift");
+      if (currentShift && !filtered.find((s) => s.id === currentShift)) {
+        form.setValue("current_shift", "");
+      }
+    }
+  }, [selectedBranchId, allShifts, branches, form]);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
@@ -270,6 +316,137 @@ export function EmployeeForm({
             </FormItem>
           )}
         />
+
+        <div className="grid grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="branch_uuid"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Assign to Company/Branch</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  value={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Branch" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {branches.map((b) => (
+                      <SelectItem key={b.id} value={b.id}>
+                        {b.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="current_shift"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Work Shift</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  value={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Shift" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {shifts.map((s) => (
+                      <SelectItem key={s.id} value={s.id}>
+                        {s.name} ({s.start_time}-{s.end_time})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="attendance_policy"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Attendance Policy</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  value={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Policy" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="STRICT">Strict (Shift Based)</SelectItem>
+                    <SelectItem value="FLEXIBLE">
+                      Flexible (One Punch)
+                    </SelectItem>
+                    <SelectItem value="NONE">No Tracking</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <div className="space-y-4 border-t pt-4 mt-4">
+          <h3 className="text-sm font-medium">Custom Fields</h3>
+          <FormField
+            control={form.control}
+            name="attribute_set"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Attribute Set</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  value={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Set" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="none">None</SelectItem>
+                    {attributeSets.map((s) => (
+                      <SelectItem key={s.id} value={s.id}>
+                        {s.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <DynamicAttributeRenderer
+            form={form}
+            attributeSet={attributeSets.find(
+              (s) => s.id === form.watch("attribute_set")
+            )}
+          />
+        </div>
 
         <div className="flex justify-end gap-2 pt-4">
           <Button variant="outline" type="button" onClick={onCancel}>

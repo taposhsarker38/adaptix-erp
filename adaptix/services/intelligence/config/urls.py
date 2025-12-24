@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+from django_prometheus.exports import ExportToDjangoView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -27,9 +28,11 @@ urlpatterns = [
     path('api/intelligence/automation/', include('apps.automation.urls')),
     path('api/intelligence/financial-anomalies/', include('apps.financial_anomalies.urls')),
     path('api/intelligence/sales-trends/', include('apps.sales_trends.urls')),
+    path('api/intelligence/vision/', include('apps.vision.urls')),
     path('api/intelligence/', include('apps.assistant.urls')),
     
     # OpenAPI
     path('api/intelligence/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/intelligence/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('metrics/', ExportToDjangoView, name='prometheus-metrics'),
 ]

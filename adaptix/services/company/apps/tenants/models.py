@@ -7,10 +7,18 @@ from .business_types import BUSINESS_TYPE_CHOICES, DEFAULT_FEATURES, FMCG
 
 class Company(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    auth_company_uuid = models.UUIDField(unique=True, db_index=True)
+    auth_company_uuid = models.UUIDField(db_index=True, null=True, blank=True)
     name = models.CharField(max_length=255)
     code = models.CharField(max_length=50)
     business_type = models.CharField(max_length=50, choices=BUSINESS_TYPE_CHOICES, default=FMCG)
+    
+    ENTITY_TYPE_CHOICES = (
+        ('GENERAL', 'General'),
+        ('FACTORY', 'Factory'),
+        ('STORE', 'Store'),
+        ('WAREHOUSE', 'Warehouse'),
+    )
+    entity_type = models.CharField(max_length=20, choices=ENTITY_TYPE_CHOICES, default='GENERAL')
     tax_number = models.CharField(max_length=128, blank=True, null=True)
     vat_rate = models.DecimalField(max_digits=5, decimal_places=2, default=0)
     bin_number = models.CharField(max_length=128, blank=True, null=True)

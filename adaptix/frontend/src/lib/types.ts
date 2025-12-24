@@ -73,6 +73,7 @@ export interface Employee {
   joining_date: string;
   is_active: boolean;
   thumbnail?: string; // Optional avatar
+  company_uuid: string; // Multi-tenancy
 }
 
 export interface LeaveType {
@@ -80,6 +81,35 @@ export interface LeaveType {
   name: string;
   code: string;
   days_allowed_per_year: number;
+  gender_exclusive?: "MALE" | "FEMALE";
+  minimum_tenure_days: number;
+  company_uuid: string;
+}
+
+export interface LeaveAllocation {
+  id: string;
+  employee: string;
+  employee_name?: string;
+  leave_type: string;
+  leave_type_name?: string;
+  year: number;
+  total_allocated: number;
+  used: number;
+  remaining: number;
+  status: "DRAFT" | "APPROVED";
+  notes?: string;
+}
+
+export interface LeavePolicy {
+  id: string;
+  name: string;
+  leave_type: string;
+  leave_type_name?: string;
+  allocation_days: number;
+  tenure_months_required: number;
+  gender_requirement: "MALE" | "FEMALE" | "ALL";
+  is_active: boolean;
+  company_uuid: string;
 }
 
 export interface LeaveApplication {
@@ -93,6 +123,7 @@ export interface LeaveApplication {
   reason: string;
   status: "pending" | "approved" | "rejected" | "cancelled";
   days?: number;
+  company_uuid: string;
 }
 
 export interface Warehouse {

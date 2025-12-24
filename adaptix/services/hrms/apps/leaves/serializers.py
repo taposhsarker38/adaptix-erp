@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import LeaveType, LeaveAllocation, LeaveApplication
+from .models import LeaveType, LeaveAllocation, LeaveApplication, LeavePolicy
 
 class LeaveTypeSerializer(serializers.ModelSerializer):
     class Meta:
@@ -21,3 +21,10 @@ class LeaveApplicationSerializer(serializers.ModelSerializer):
         model = LeaveApplication
         fields = '__all__'
         read_only_fields = ['status', 'approved_by', 'rejection_reason']
+
+class LeavePolicySerializer(serializers.ModelSerializer):
+    leave_type_name = serializers.CharField(source='leave_type.name', read_only=True)
+    
+    class Meta:
+        model = LeavePolicy
+        fields = '__all__'

@@ -5,9 +5,17 @@ from apps.employees.models import Employee
 
 class Shift(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    company_uuid = models.UUIDField(db_index=True)
+    company_uuid = models.UUIDField(db_index=True, null=True, blank=True)
     name = models.CharField(max_length=100)
     code = models.CharField(max_length=20)
+    
+    BRANCH_TYPE_CHOICES = (
+        ('GENERAL', 'General'),
+        ('FACTORY', 'Factory'),
+        ('STORE', 'Store'),
+        ('WAREHOUSE', 'Warehouse'),
+    )
+    branch_type = models.CharField(max_length=20, choices=BRANCH_TYPE_CHOICES, default='GENERAL')
     
     start_time = models.TimeField()
     end_time = models.TimeField()
@@ -31,7 +39,7 @@ class EmployeeShift(models.Model):
     For day-specific overrides, validation logic should check for overlaps.
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    company_uuid = models.UUIDField(db_index=True)
+    company_uuid = models.UUIDField(db_index=True, null=True, blank=True)
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='shifts')
     shift = models.ForeignKey(Shift, on_delete=models.CASCADE, related_name='assignments')
     

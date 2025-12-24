@@ -6,6 +6,40 @@ from .models import (
 )
 
 
+class CompanySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Company
+        fields = ["id", "name", "code", "timezone", "parent", "is_group", "entity_type"]
+        read_only_fields = ["id"]
+
+
+class WingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Wing
+        fields = ["id", "name", "code", "metadata", "company"]
+
+
+class OrganizationTreeSerializer(serializers.ModelSerializer):
+    subsidiaries = serializers.SerializerMethodField()
+    wings = WingSerializer(many=True, read_only=True)
+    type = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Company
+        fields = ["id", "name", "code", "is_group", "type", "subsidiaries", "wings"]
+
+    def get_subsidiaries(self, obj):
+        subs = obj.subsidiaries.all()
+        if subs:
+            return OrganizationTreeSerializer(subs, many=True).data
+        return []
+
+    def get_type(self, obj):
+        if obj.is_group:
+            return "GROUP" if not obj.parent else "HOLDING"
+        return "UNIT"
+
+
 class NavigationItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = NavigationItem
