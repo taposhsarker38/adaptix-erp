@@ -59,6 +59,16 @@ class PurchaseOrder(SoftDeleteModel):
     reference_number = models.CharField(max_length=100)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')
     
+    # Payment Tracking
+    PAYMENT_STATUS_CHOICES = (
+        ('pending', 'Pending'),
+        ('partial', 'Partially Paid'),
+        ('paid', 'Fully Paid'),
+        ('overdue', 'Overdue'),
+    )
+    payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='pending')
+    paid_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    
     # Approval
     approval_status = models.CharField(max_length=20, default='pending', choices=(('pending','Pending'), ('approved','Approved'), ('rejected','Rejected')))
     approved_by = models.CharField(max_length=100, blank=True, null=True) # User ID

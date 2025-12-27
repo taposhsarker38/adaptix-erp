@@ -92,6 +92,49 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
         
         return Response({"status": "approved", "id": order.id})
 
+    @action(detail=True, methods=['post'], url_path='record-payment')
+    def record_payment(self, request, pk=None):
+        order = self.get_object()
+        
+        amount = request.data.get('amount')
+        method = request.data.get('method', 'bank_transfer')
+        note = request.data.get('note', '')
+        
+        if not amount:
+             return Response({"detail": "Amount is required"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            amount = float(amount)
+        except ValueError:
+            return Response({"detail": "Invalid amount"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if amount <= 0:
+             return Response({"detail": "Amount must be positive"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Update Order Stats
+        order.paid_amount = float(order.paid_amount) + amount
+        
+        if order.paid_amount >= float(order.total_amount):
+            order.payment_status = 'paid'
+        elif order.paid_amount > 0:
+            order.payment_status = 'active' # active/partial
+        
+        # If explicitly set to partial in model choices
+        if order.paid_amount > 0 and order.paid_amount < float(order.total_amount):
+             order.payment_status = 'partial'
+             
+        order.save()
+        
+        # Publish Event (Mocking for now, real implementation would use rabbitmq publisher)
+        # from adaptix_core.messaging import publish_event
+        # publish_event("purchase.payment.recorded", { ... })
+        
+        return Response({
+            "status": "success", 
+            "paid_amount": order.paid_amount, 
+            "payment_status": order.payment_status
+        })
+
 class RFQViewSet(viewsets.ModelViewSet):
     queryset = RFQ.objects.all()
     serializer_class = RFQSerializer

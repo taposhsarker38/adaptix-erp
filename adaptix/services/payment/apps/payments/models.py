@@ -14,6 +14,13 @@ class Payment(models.Model):
         ('card', 'Credit/Debit Card'),
         ('cash', 'Cash'),
         ('wallet', 'Digital Wallet'),
+        ('bank_transfer', 'Bank Transfer'),
+        ('check', 'Check'),
+    )
+
+    TYPE_CHOICES = (
+        ('inbound', 'Inbound (Sales)'), # Money coming in
+        ('outbound', 'Outbound (Purchase)'), # Money going out
     )
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -22,6 +29,7 @@ class Payment(models.Model):
     currency = models.CharField(max_length=3, default='USD')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     method = models.CharField(max_length=20, choices=METHOD_CHOICES, default='card')
+    payment_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='inbound')
     
     stripe_charge_id = models.CharField(max_length=100, blank=True, null=True)
     
