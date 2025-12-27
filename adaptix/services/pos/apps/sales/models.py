@@ -150,6 +150,7 @@ class Payment(SoftDeleteModel):
         ('bank_transfer', 'Bank Transfer'),
         ('cheque', 'Cheque'),
         ('credit', 'Store Credit'),
+        ('emi', 'EMI'),
     )
     
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='payments')

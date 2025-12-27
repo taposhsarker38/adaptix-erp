@@ -1,8 +1,8 @@
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from .models import PurchaseOrder
-from .serializers import PurchaseOrderSerializer
+from .models import PurchaseOrder, RFQ, VendorQuote
+from .serializers import PurchaseOrderSerializer, RFQSerializer, VendorQuoteSerializer
 from adaptix_core.permissions import HasPermission
 # Service integration import later
 
@@ -91,3 +91,43 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
         )
         
         return Response({"status": "approved", "id": order.id})
+
+class RFQViewSet(viewsets.ModelViewSet):
+    queryset = RFQ.objects.all()
+    serializer_class = RFQSerializer
+    permission_classes = [HasPermission]
+    required_permission = "purchase.order"
+
+    def get_queryset(self):
+        uuid = getattr(self.request, "company_uuid", None)
+        if uuid:
+            return self.queryset.filter(company_uuid=uuid)
+        return self.queryset.none()
+
+    def perform_create(self, serializer):
+        uuid = getattr(self.request, "company_uuid", None)
+        serializer.save(company_uuid=uuid)
+
+    @action(detail=True, methods=['post'], url_path='select-winner')
+    def select_winner(self, request, pk=None):
+        from .services import RFQService
+        po = RFQService.auto_select_winner(pk)
+        if po:
+            return Response({"status": "converted", "po_id": po.id})
+        return Response({"detail": "Failed to auto-select winner or no quotes available"}, status=status.HTTP_400_BAD_REQUEST)
+
+class VendorQuoteViewSet(viewsets.ModelViewSet):
+    queryset = VendorQuote.objects.all()
+    serializer_class = VendorQuoteSerializer
+    permission_classes = [HasPermission]
+    required_permission = "purchase.order" # Vendors will need a specific permission later, using this for now
+
+    def get_queryset(self):
+        uuid = getattr(self.request, "company_uuid", None)
+        if uuid:
+            return self.queryset.filter(company_uuid=uuid)
+        return self.queryset.none()
+
+    def perform_create(self, serializer):
+        uuid = getattr(self.request, "company_uuid", None)
+        serializer.save(company_uuid=uuid)

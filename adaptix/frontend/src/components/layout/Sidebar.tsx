@@ -103,6 +103,16 @@ const routes: SidebarRoute[] = [
         permission: "view_purchase",
       },
       {
+        label: "rfqManagement",
+        href: "/dashboard/purchase/rfqs",
+        permission: "view_purchase",
+      },
+      {
+        label: "vendorPortal",
+        href: "/dashboard/purchase/portal",
+        permission: "view_purchase",
+      },
+      {
         label: "accounting",
         href: "/dashboard/accounting",
         permission: "view_accounting",
@@ -110,6 +120,11 @@ const routes: SidebarRoute[] = [
       {
         label: "logistics",
         href: "/dashboard/logistics",
+        permission: "view_logistics",
+      },
+      {
+        label: "riderDashboard",
+        href: "/rider",
         permission: "view_logistics",
       },
       { label: "assets", href: "/dashboard/assets", permission: "view_asset" },

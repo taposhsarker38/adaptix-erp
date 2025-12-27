@@ -15,9 +15,7 @@ services:
     - postgres_data:/var/lib/postgresql/data
     - ./init-schemas.sql:/docker-entrypoint-initdb.d/init-schemas.sql:ro
     healthcheck:
-      test:
-      - CMD-SHELL
-      - pg_isready -U adaptix -d adaptix
+      test: ["CMD-SHELL", "pg_isready -U adaptix -d adaptix"]
       interval: 5s
       timeout: 5s
       retries: 20
@@ -27,7 +25,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 2G
+          memory: 1G
     logging:
       driver: "json-file"
       options:
@@ -43,10 +41,7 @@ services:
     volumes:
     - redis_data:/data
     healthcheck:
-      test:
-      - CMD
-      - redis-cli
-      - ping
+      test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -55,7 +50,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 512M
+          memory: 256M
     logging:
       driver: "json-file"
       options:
@@ -76,10 +71,7 @@ services:
     volumes:
     - rabbitmq_data:/var/lib/rabbitmq
     healthcheck:
-      test:
-      - CMD
-      - rabbitmqctl
-      - status
+      test: ["CMD", "rabbitmqctl", "status"]
       interval: 10s
       timeout: 10s
       retries: 5
@@ -135,7 +127,7 @@ services:
     - DATABASE_URL=postgres://${DB_USER:-adaptix}:${DB_PASSWORD:-adaptix123}@postgres:5432/adaptix
     - DB_SCHEMA=auth
     - SECRET_KEY=${SECRET_KEY:-your-secret-key}
-    - DEBUG=True
+    - DEBUG=False
     - ENABLE_TRACING=False
     - REDIS_URL=redis://redis:6379/0
     - PUBLIC_KEY_PATH=/keys/public.pem
@@ -150,8 +142,6 @@ services:
     - 8100:8000
     volumes:
     - ./keys:/keys:ro
-    - ./services/auth:/app
-    - ./shared:/shared
     depends_on:
       postgres:
         condition: service_healthy
@@ -178,7 +168,7 @@ services:
     - DATABASE_URL=postgres://${DB_USER:-adaptix}:${DB_PASSWORD:-adaptix123}@postgres:5432/adaptix
     - DB_SCHEMA=company
     - SECRET_KEY=${SECRET_KEY:-your-secret-key}
-    - DEBUG=True
+    - DEBUG=False
     - ENABLE_TRACING=False
     - PUBLIC_KEY_PATH=/keys/public.pem
     - JWT_ALGORITHM=RS256
@@ -186,8 +176,6 @@ services:
     - SERVICE_NAME=company
     volumes:
     - ./keys:/keys:ro
-    - ./services/company:/app
-    - ./shared:/shared
     depends_on:
       postgres:
         condition: service_healthy
@@ -212,7 +200,7 @@ services:
     - DATABASE_URL=postgres://${DB_USER:-adaptix}:${DB_PASSWORD:-adaptix123}@postgres:5432/adaptix
     - DB_SCHEMA=product
     - SECRET_KEY=${SECRET_KEY:-your-secret-key}
-    - DEBUG=True
+    - DEBUG=False
     - ENABLE_TRACING=False
     - PUBLIC_KEY_PATH=/keys/public.pem
     - JWT_ALGORITHM=RS256
@@ -220,8 +208,6 @@ services:
     - SERVICE_NAME=product
     volumes:
     - ./keys:/keys:ro
-    - ./services/product:/app
-    - ./shared:/shared
     depends_on:
       postgres:
         condition: service_healthy
@@ -246,7 +232,7 @@ services:
     - DATABASE_URL=postgres://${DB_USER:-adaptix}:${DB_PASSWORD:-adaptix123}@postgres:5432/adaptix
     - DB_SCHEMA=pos
     - SECRET_KEY=${SECRET_KEY:-your-secret-key}
-    - DEBUG=True
+    - DEBUG=False
     - ENABLE_TRACING=False
     - PUBLIC_KEY_PATH=/keys/public.pem
     - JWT_ALGORITHM=RS256
@@ -254,8 +240,6 @@ services:
     - SERVICE_NAME=pos
     volumes:
     - ./keys:/keys:ro
-    - ./services/pos:/app
-    - ./shared:/shared
     depends_on:
       postgres:
         condition: service_healthy
@@ -285,9 +269,6 @@ services:
     - SECRET_KEY=${SECRET_KEY:-your-secret-key}
     - RABBITMQ_URL=amqp://${MQ_USER:-adaptix}:${MQ_PASSWORD:-adaptix123}@rabbitmq:5672/
     - SERVICE_NAME=inventory-worker
-    volumes:
-    - ./services/inventory:/app
-    - ./shared:/shared
     depends_on:
       postgres:
         condition: service_healthy
@@ -298,7 +279,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 512M
+          memory: 256M
     logging:
       driver: "json-file"
       options:
@@ -314,7 +295,7 @@ services:
     - DATABASE_URL=postgres://${DB_USER:-adaptix}:${DB_PASSWORD:-adaptix123}@postgres:5432/adaptix
     - DB_SCHEMA=inventory
     - SECRET_KEY=${SECRET_KEY:-your-secret-key}
-    - DEBUG=True
+    - DEBUG=False
     - ENABLE_TRACING=False
     - PUBLIC_KEY_PATH=/keys/public.pem
     - JWT_ALGORITHM=RS256
@@ -322,8 +303,6 @@ services:
     - SERVICE_NAME=inventory
     volumes:
     - ./keys:/keys:ro
-    - ./services/inventory:/app
-    - ./shared:/shared
     depends_on:
       postgres:
         condition: service_healthy
@@ -348,7 +327,7 @@ services:
     - DATABASE_URL=postgres://${DB_USER:-adaptix}:${DB_PASSWORD:-adaptix123}@postgres:5432/adaptix
     - DB_SCHEMA=purchase
     - SECRET_KEY=${SECRET_KEY:-your-secret-key}
-    - DEBUG=True
+    - DEBUG=False
     - ENABLE_TRACING=False
     - PUBLIC_KEY_PATH=/keys/public.pem
     - JWT_ALGORITHM=RS256
@@ -356,8 +335,6 @@ services:
     - SERVICE_NAME=purchase
     volumes:
     - ./keys:/keys:ro
-    - ./services/purchase:/app
-    - ./shared:/shared
     depends_on:
       postgres:
         condition: service_healthy
@@ -382,7 +359,7 @@ services:
     - DATABASE_URL=postgres://${DB_USER:-adaptix}:${DB_PASSWORD:-adaptix123}@postgres:5432/adaptix
     - DB_SCHEMA=hrms
     - SECRET_KEY=${SECRET_KEY:-your-secret-key}
-    - DEBUG=True
+    - DEBUG=False
     - ENABLE_TRACING=False
     - PUBLIC_KEY_PATH=/keys/public.pem
     - JWT_ALGORITHM=RS256
@@ -390,8 +367,6 @@ services:
     - SERVICE_NAME=hrms
     volumes:
     - ./keys:/keys:ro
-    - ./services/hrms:/app
-    - ./shared:/shared
     depends_on:
       postgres:
         condition: service_healthy
@@ -416,7 +391,7 @@ services:
     - DATABASE_URL=postgres://${DB_USER:-adaptix}:${DB_PASSWORD:-adaptix123}@postgres:5432/adaptix
     - DB_SCHEMA=accounting
     - SECRET_KEY=${SECRET_KEY:-your-secret-key}
-    - DEBUG=True
+    - DEBUG=False
     - ENABLE_TRACING=False
     - PUBLIC_KEY_PATH=/keys/public.pem
     - JWT_ALGORITHM=RS256
@@ -424,8 +399,6 @@ services:
     - SERVICE_NAME=accounting
     volumes:
     - ./keys:/keys:ro
-    - ./services/accounting:/app
-    - ./shared:/shared
     depends_on:
       postgres:
         condition: service_healthy
@@ -450,7 +423,7 @@ services:
     - DATABASE_URL=postgres://${DB_USER:-adaptix}:${DB_PASSWORD:-adaptix123}@postgres:5432/adaptix
     - DB_SCHEMA=customer
     - SECRET_KEY=${SECRET_KEY:-your-secret-key}
-    - DEBUG=True
+    - DEBUG=False
     - ENABLE_TRACING=False
     - PUBLIC_KEY_PATH=/keys/public.pem
     - JWT_ALGORITHM=RS256
@@ -458,8 +431,6 @@ services:
     - SERVICE_NAME=customer
     volumes:
     - ./keys:/keys:ro
-    - ./services/customer:/app
-    - ./shared:/shared
     depends_on:
       postgres:
         condition: service_healthy
@@ -489,8 +460,6 @@ services:
     - SERVICE_NAME=customer-worker
     volumes:
     - ./keys:/keys:ro
-    - ./services/customer:/app
-    - ./shared:/shared
     depends_on:
       postgres:
         condition: service_healthy
@@ -501,7 +470,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 512M
+          memory: 256M
     logging:
       driver: "json-file"
       options:
@@ -517,7 +486,7 @@ services:
     - DATABASE_URL=postgres://${DB_USER:-adaptix}:${DB_PASSWORD:-adaptix123}@postgres:5432/adaptix
     - DB_SCHEMA=asset
     - SECRET_KEY=${SECRET_KEY:-your-secret-key}
-    - DEBUG=True
+    - DEBUG=False
     - ENABLE_TRACING=False
     - PUBLIC_KEY_PATH=/keys/public.pem
     - JWT_ALGORITHM=RS256
@@ -525,8 +494,6 @@ services:
     - SERVICE_NAME=asset
     volumes:
     - ./keys:/keys:ro
-    - ./services/asset:/app
-    - ./shared:/shared
     depends_on:
       postgres:
         condition: service_healthy
@@ -551,7 +518,7 @@ services:
     - DATABASE_URL=postgres://${DB_USER:-adaptix}:${DB_PASSWORD:-adaptix123}@postgres:5432/adaptix
     - DB_SCHEMA=promotion
     - SECRET_KEY=${SECRET_KEY:-your-secret-key}
-    - DEBUG=True
+    - DEBUG=False
     - ENABLE_TRACING=False
     - PUBLIC_KEY_PATH=/keys/public.pem
     - JWT_ALGORITHM=RS256
@@ -559,8 +526,6 @@ services:
     - SERVICE_NAME=promotion
     volumes:
     - ./keys:/keys:ro
-    - ./services/promotion:/app
-    - ./shared:/shared
     depends_on:
       postgres:
         condition: service_healthy
@@ -585,7 +550,7 @@ services:
     - DATABASE_URL=postgres://${DB_USER:-adaptix}:${DB_PASSWORD:-adaptix123}@postgres:5432/adaptix
     - DB_SCHEMA=payment
     - SECRET_KEY=${SECRET_KEY:-your-secret-key}
-    - DEBUG=True
+    - DEBUG=False
     - ENABLE_TRACING=False
     - PUBLIC_KEY_PATH=/keys/public.pem
     - JWT_ALGORITHM=RS256
@@ -593,8 +558,6 @@ services:
     - SERVICE_NAME=payment
     volumes:
     - ./keys:/keys:ro
-    - ./services/payment:/app
-    - ./shared:/shared
     depends_on:
       postgres:
         condition: service_healthy
@@ -619,7 +582,7 @@ services:
     - DATABASE_URL=postgres://${DB_USER:-adaptix}:${DB_PASSWORD:-adaptix123}@postgres:5432/adaptix
     - DB_SCHEMA=notification
     - SECRET_KEY=${SECRET_KEY:-your-secret-key}
-    - DEBUG=True
+    - DEBUG=False
     - ENABLE_TRACING=False
     - PUBLIC_KEY_PATH=/keys/public.pem
     - JWT_ALGORITHM=RS256
@@ -627,12 +590,8 @@ services:
     - SERVICE_NAME=notification
     volumes:
     - ./keys:/keys:ro
-    - ./services/notification:/app
-    - ./shared:/shared
     depends_on:
       postgres:
-        condition: service_healthy
-      rabbitmq:
         condition: service_healthy
     networks:
     - backend
@@ -655,7 +614,7 @@ services:
     - DATABASE_URL=postgres://${DB_USER:-adaptix}:${DB_PASSWORD:-adaptix123}@postgres:5432/adaptix
     - DB_SCHEMA=reporting
     - SECRET_KEY=${SECRET_KEY:-your-secret-key}
-    - DEBUG=True
+    - DEBUG=False
     - ENABLE_TRACING=False
     - PUBLIC_KEY_PATH=/keys/public.pem
     - JWT_ALGORITHM=RS256
@@ -664,8 +623,6 @@ services:
     - SERVICE_NAME=reporting
     volumes:
     - ./keys:/keys:ro
-    - ./services/reporting:/app
-    - ./shared:/shared
     depends_on:
       postgres:
         condition: service_healthy
@@ -693,7 +650,7 @@ services:
     - DATABASE_URL=postgres://${DB_USER:-adaptix}:${DB_PASSWORD:-adaptix123}@postgres:5432/adaptix
     - DB_SCHEMA=reporting
     - SECRET_KEY=${SECRET_KEY:-your-secret-key}
-    - DEBUG=True
+    - DEBUG=False
     - ENABLE_TRACING=False
     - PUBLIC_KEY_PATH=/keys/public.pem
     - JWT_ALGORITHM=RS256
@@ -702,8 +659,6 @@ services:
     - SERVICE_NAME=reporting-worker
     volumes:
     - ./keys:/keys:ro
-    - ./services/reporting:/app
-    - ./shared:/shared
     depends_on:
       postgres:
         condition: service_healthy
@@ -716,7 +671,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 512M
+          memory: 256M
     logging:
       driver: "json-file"
       options:
@@ -732,7 +687,7 @@ services:
     - DATABASE_URL=postgres://${DB_USER:-adaptix}:${DB_PASSWORD:-adaptix123}@postgres:5432/adaptix
     - DB_SCHEMA=intelligence
     - SECRET_KEY=${SECRET_KEY:-your-secret-key}
-    - DEBUG=True
+    - DEBUG=False
     - ENABLE_TRACING=False
     - PUBLIC_KEY_PATH=/keys/public.pem
     - JWT_ALGORITHM=RS256
@@ -741,7 +696,6 @@ services:
     - SERVICE_NAME=ai
     volumes:
     - ./keys:/keys:ro
-    - ./services/intelligence:/app
     depends_on:
       postgres:
         condition: service_healthy
@@ -777,8 +731,6 @@ services:
       - SERVICE_NAME=ws-gateway
     volumes:
       - ./keys:/keys:ro
-      - ./services/ws-gateway:/app
-      - /app/node_modules
     depends_on:
       - rabbitmq
       - redis
@@ -797,21 +749,19 @@ services:
     build: ./frontend
     container_name: adaptix-frontend-app
     profiles: ["frontend"]
+    command: sh -c "npm run build && npm start"
     environment:
     - NEXT_PUBLIC_API_URL=http://localhost:8101/api
     - RABBITMQ_URL=amqp://${MQ_USER:-adaptix}:${MQ_PASSWORD:-adaptix123}@rabbitmq:5672/
     - SERVICE_NAME=frontend-app
     ports:
     - 3000:3000
-    volumes:
-    - ./frontend:/app
-    - /app/node_modules
     networks:
     - backend
     deploy:
       resources:
         limits:
-          memory: 512M
+          memory: 1536M
     logging:
       driver: "json-file"
       options:
@@ -835,9 +785,7 @@ services:
     - RABBITMQ_URL=amqp://${MQ_USER:-adaptix}:${MQ_PASSWORD:-adaptix123}@rabbitmq:5672/
     - SERVICE_NAME=quality
     volumes:
-    - ./services/quality:/app
     - ./keys:/keys:ro
-    - ./shared:/shared
     networks:
     - backend
     deploy:
@@ -871,16 +819,14 @@ services:
     - DATABASE_URL=postgres://${DB_USER:-adaptix}:${DB_PASSWORD:-adaptix123}@postgres:5432/adaptix
     - DB_SCHEMA=logistics
     - SECRET_KEY=${SECRET_KEY:-your-secret-key}
-    - DEBUG=True
+    - DEBUG=False
     - ENABLE_TRACING=False
     - PUBLIC_KEY_PATH=/keys/public.pem
     - JWT_ALGORITHM=RS256
     - RABBITMQ_URL=amqp://${MQ_USER:-adaptix}:${MQ_PASSWORD:-adaptix123}@rabbitmq:5672/
     - SERVICE_NAME=logistics
     volumes:
-    - ./services/logistics:/app
     - ./keys:/keys:ro
-    - ./shared:/shared
     networks:
     - backend
     deploy:
@@ -916,9 +862,6 @@ services:
     - RABBITMQ_URL=amqp://${MQ_USER:-adaptix}:${MQ_PASSWORD:-adaptix123}@rabbitmq:5672/
     - SERVICE_NAME=audit-consumer
     - PYTHONPATH=/app:/shared/adaptix_core
-    volumes:
-    - ./services/auth:/app
-    - ./shared:/shared
     depends_on:
       postgres:
         condition: service_healthy
@@ -929,7 +872,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 512M
+          memory: 256M
     logging:
       driver: "json-file"
       options:
@@ -950,9 +893,6 @@ services:
     - CELERY_BROKER_URL=amqp://${MQ_USER:-adaptix}:${MQ_PASSWORD:-adaptix123}@rabbitmq:5672/
     - REDIS_URL=redis://redis:6379/0
     - SERVICE_NAME=ai-worker
-    volumes:
-    - ./services/intelligence:/app
-    - ./shared:/shared
     depends_on:
       postgres:
         condition: service_healthy
@@ -984,9 +924,6 @@ services:
     - SECRET_KEY=${SECRET_KEY:-your-secret-key}
     - RABBITMQ_URL=amqp://${MQ_USER:-adaptix}:${MQ_PASSWORD:-adaptix123}@rabbitmq:5672/
     - SERVICE_NAME=manufacturing-worker
-    volumes:
-    - ./services/manufacturing:/app
-    - ./shared:/shared
     depends_on:
       postgres:
         condition: service_healthy
@@ -997,7 +934,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 512M
+          memory: 256M
     logging:
       driver: "json-file"
       options:
@@ -1013,7 +950,7 @@ services:
     - DATABASE_URL=postgres://${DB_USER:-adaptix}:${DB_PASSWORD:-adaptix123}@postgres:5432/adaptix
     - DB_SCHEMA=manufacturing
     - SECRET_KEY=${SECRET_KEY:-your-secret-key}
-    - DEBUG=True
+    - DEBUG=False
     - ENABLE_TRACING=False
     - PUBLIC_KEY_PATH=/keys/public.pem
     - JWT_ALGORITHM=RS256
@@ -1021,8 +958,6 @@ services:
     - SERVICE_NAME=manufacturing
     volumes:
     - ./keys:/keys:ro
-    - ./services/manufacturing:/app
-    - ./shared:/shared
     depends_on:
       postgres:
         condition: service_healthy
@@ -1052,9 +987,6 @@ services:
     - SECRET_KEY=${SECRET_KEY:-your-secret-key}
     - RABBITMQ_URL=amqp://${MQ_USER:-adaptix}:${MQ_PASSWORD:-adaptix123}@rabbitmq:5672/
     - SERVICE_NAME=quality-worker
-    volumes:
-    - ./services/quality:/app
-    - ./shared:/shared
     depends_on:
       postgres:
         condition: service_healthy
