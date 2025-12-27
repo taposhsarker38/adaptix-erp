@@ -25,6 +25,8 @@
     "businessAI": "বিজনেস এআই",
     "visionHub": "ভিশন হাব",
     "generalAnalytics": "সাধারণ অ্যানালিটিক্স",
+    "automationHub": "অটোমেশন হাব",
+    "demandForecasting": "ডিমান্ড ফোরকাস্টিং",
     "administration": "প্রশাসন",
     "users": "ব্যবহারকারী",
     "organizationHub": "অর্গানাইজেশন হাব",
@@ -34,6 +36,7 @@
     "securityCenter": "সিকিউরিটি সেন্টার",
     "systemOps": "সিস্টেম অপস",
     "settings": "সেটিংস",
+    "taxes": "ট্যাক্স",
     "signOut": "সাইন আউট",
     "systemManagement": "সিস্টেম ম্যানেজমেন্ট",
     "enterpriseSuite": "এন্টারপ্রাইজ সুইট"
@@ -65,6 +68,14 @@
     "active": "সক্রিয়",
     "inactive": "নিষ্ক্রিয়",
     "category": "ক্যাটাগরি",
-    "actions": "অ্যাকশন"
+    "actions": "অ্যাকশন",
+    "addRateTitle": "নতুন ট্যাক্স রেট তৈরি করুন",
+    "addZoneTitle": "নতুন ট্যাক্স জোন তৈরি করুন",
+    "addRuleTitle": "নতুন ট্যাক্স রুল তৈরি করুন",
+    "saveSuccess": "সফলভাবে সংরক্ষিত হয়েছে!",
+    "saveError": "সংরক্ষণ করতে ব্যর্থ হয়েছে। আবার চেষ্টা করুন।",
+    "placeholderName": "নাম লিখুন...",
+    "placeholderRate": "ট্যাক্স হার লিখুন (শতাংশ)...",
+    "placeholderCode": "ইউনিক কোড লিখুন (যেমন: BD-DHK)..."
   }
 }

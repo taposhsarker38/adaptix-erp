@@ -9,7 +9,7 @@ from .models import (
 class CompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
-        fields = ["id", "name", "code", "timezone", "parent", "is_group", "entity_type"]
+        fields = ["id", "name", "code", "timezone", "parent", "is_group", "entity_type", "custom_domain"]
         read_only_fields = ["id"]
 
 
@@ -61,6 +61,8 @@ class CompanySettingSerializer(serializers.ModelSerializer):
             'favicon',
             'feature_flags',
             'ui_schema',
+            'smtp_settings',
+            'theme_config',
         ]
         read_only_fields = ('id', 'company', 'feature_flags')
 

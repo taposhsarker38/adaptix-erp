@@ -51,8 +51,8 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["id", "username", "email", "first_name", "last_name", "is_active", "company", "company_id", "is_terminal", "roles", "role_ids", "direct_permissions", "direct_permission_ids", "password","confirm_password"]
-        read_only_fields = ["id", "roles", "direct_permissions", "company"]
+        fields = ["id", "username", "email", "first_name", "last_name", "is_active", "company", "company_id", "company_uuid", "is_terminal", "roles", "role_ids", "direct_permissions", "direct_permission_ids", "password","confirm_password"]
+        read_only_fields = ["id", "roles", "direct_permissions", "company", "company_uuid"]
 
     def validate(self, attrs):
         pwd = attrs.get("password")

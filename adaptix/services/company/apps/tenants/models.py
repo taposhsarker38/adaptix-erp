@@ -25,6 +25,7 @@ class Company(models.Model):
     accounting_codes = models.JSONField(default=dict, blank=True)
     default_payment_terms = models.CharField(max_length=255, blank=True, null=True)
     address = models.TextField(blank=True, null=True)
+    custom_domain = models.CharField(max_length=255, unique=True, null=True, blank=True)
     timezone = models.CharField(max_length=50, default='UTC')
     metadata = models.JSONField(default=dict, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -84,6 +85,8 @@ class CompanySetting(models.Model):
     metadata = models.JSONField(default=dict, blank=True)
     feature_flags = models.JSONField(default=dict, blank=True)
     ui_schema = models.JSONField(default=dict, blank=True)
+    smtp_settings = models.JSONField(default=dict, blank=True, help_text="Tenant-specific SMTP: host, port, user, password, from_email")
+    theme_config = models.JSONField(default=dict, blank=True, help_text="Extended theming: font, radius, etc.")
     updated_at = models.DateTimeField(auto_now=True)
 
 class Wing(models.Model):

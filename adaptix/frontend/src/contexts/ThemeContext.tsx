@@ -7,7 +7,23 @@ import {
   useState,
   ReactNode,
 } from "react";
-import { themeApi, ThemeColors } from "@/lib/theme-api";
+import { themeApi } from "@/lib/theme-api";
+
+export interface ThemeColors {
+  id?: string;
+  primary_color?: string;
+  secondary_color?: string;
+  accent_color?: string;
+  background_color?: string;
+  text_color?: string;
+  logo?: string;
+  favicon?: string;
+  theme_config?: {
+    font_main?: string;
+    radius?: string;
+    [key: string]: any;
+  };
+}
 
 const DEFAULT_THEME: ThemeColors = {
   primary_color: "#8b5cf6", // violet-500
@@ -100,5 +116,13 @@ function applyThemeToDOM(theme: ThemeColors) {
   }
   if (theme.text_color) {
     root.style.setProperty("--color-text", theme.text_color);
+  }
+
+  // Extended config
+  if (theme.theme_config?.radius) {
+    root.style.setProperty("--radius", theme.theme_config.radius);
+  }
+  if (theme.theme_config?.font_main) {
+    root.style.setProperty("--font-sans", theme.theme_config.font_main);
   }
 }

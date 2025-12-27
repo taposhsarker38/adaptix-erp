@@ -364,7 +364,8 @@ services:
             config:
               origins: ["*"]
               methods: ["GET", "POST", "OPTIONS", "PUT", "PATCH", "DELETE"]
-              headers: ["Authorization", "Content-Type", "Accept"]
+              headers:
+                ["Authorization", "Content-Type", "Accept", "X-Company-Id"]
               credentials: true
 
 jwt_secrets:
@@ -390,7 +391,7 @@ plugins:
     config:
       origins: ["*"]
       methods: ["GET", "POST", "OPTIONS", "PUT", "PATCH", "DELETE"]
-      headers: ["Authorization", "Content-Type", "Accept"]
+      headers: ["Authorization", "Content-Type", "Accept", "X-Company-Id"]
       credentials: true
 
   # ============================================

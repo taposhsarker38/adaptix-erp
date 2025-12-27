@@ -31,7 +31,11 @@ class AutomationRule(SoftDeleteModel):
     condition_value = models.CharField(max_length=255, blank=True, null=True)
     
     action_type = models.CharField(max_length=50, choices=ACTION_CHOICES)
-    action_config = models.JSONField(default=dict, blank=True) # e.g. {"to": "admin@example.com", "body": "Low Stock!"}
+    action_config = models.JSONField(default=dict, blank=True)
+    
+    # New: Scheduling support
+    trigger_config = models.JSONField(default=dict, blank=True, help_text="Config for schedule (e.g. cron)")
+    is_scheduled = models.BooleanField(default=False)
     
     company_uuid = models.UUIDField(db_index=True, null=True, blank=True)
     description = models.TextField(blank=True, null=True)
@@ -52,3 +56,48 @@ class ActionLog(models.Model):
 
     def __str__(self):
         return f"Log {self.id} - {self.rule.name}"
+
+class Workflow(SoftDeleteModel):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    is_active = models.BooleanField(default=True)
+    
+    # Nodes/Edges for visual builder integration
+    flow_data = models.JSONField(default=dict, help_text="JSON structure of steps and transitions")
+    
+    company_uuid = models.UUIDField(db_index=True, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+class WorkflowInstance(models.Model):
+    STATUS_CHOICES = (
+        ('running', 'Running'),
+        ('pending_approval', 'Pending Approval'),
+        ('completed', 'Completed'),
+        ('failed', 'Failed'),
+        ('cancelled', 'Cancelled'),
+    )
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    workflow = models.ForeignKey(Workflow, on_delete=models.CASCADE, related_name='instances')
+    company_uuid = models.UUIDField(db_index=True)
+    
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='running')
+    current_node_id = models.CharField(max_length=100, null=True, blank=True)
+    context_data = models.JSONField(default=dict)
+    
+    started_at = models.DateTimeField(auto_now_add=True)
+    completed_at = models.DateTimeField(null=True, blank=True)
+
+    def set_completed(self):
+        from django.utils import timezone
+        self.status = 'completed'
+        self.completed_at = timezone.now()
+        self.save()
+
+    def __str__(self):
+        return f"{self.workflow.name} - {self.id} ({self.status})"

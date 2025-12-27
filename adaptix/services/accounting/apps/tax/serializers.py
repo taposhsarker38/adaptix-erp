@@ -5,11 +5,13 @@ class TaxSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tax
         fields = '__all__'
+        read_only_fields = ['company_uuid']
 
 class TaxZoneSerializer(serializers.ModelSerializer):
     class Meta:
         model = TaxZone
         fields = '__all__'
+        read_only_fields = ['company_uuid']
 
 class TaxRuleSerializer(serializers.ModelSerializer):
     tax_details = TaxSerializer(source='tax', read_only=True)
@@ -17,6 +19,7 @@ class TaxRuleSerializer(serializers.ModelSerializer):
     class Meta:
         model = TaxRule
         fields = '__all__'
+        read_only_fields = ['company_uuid']
 
 class TaxCalculationRequestSerializer(serializers.Serializer):
     amount = serializers.DecimalField(max_digits=12, decimal_places=2)

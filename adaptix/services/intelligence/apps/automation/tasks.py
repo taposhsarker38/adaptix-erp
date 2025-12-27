@@ -45,5 +45,13 @@ def execute_rule_action(self, rule_id, context):
         except:
             pass
             
-        # Retry for transient errors (e.g. network issues with webhooks)
         raise self.retry(exc=exc, countdown=60)
+
+@shared_task(name="automation.heartbeat")
+def automation_heartbeat():
+    """
+    Periodic task to check for scheduled automation rules.
+    """
+    from .services import SchedulerRunner
+    SchedulerRunner.run_heartbeat()
+    return "Heartbeat processed"

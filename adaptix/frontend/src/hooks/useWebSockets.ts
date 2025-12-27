@@ -6,6 +6,7 @@ import { jwtDecode } from "jwt-decode";
 export const useWebSockets = () => {
   const socketRef = useRef<WebSocket | null>(null);
   const [connected, setConnected] = useState(false);
+  const listenersRef = useRef<{ [key: string]: ((data: any) => void)[] }>({});
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -16,7 +17,6 @@ export const useWebSockets = () => {
     let user_id: string | null = null;
     try {
       const decoded: any = jwtDecode(token);
-      // Try multiple common claims for user ID
       user_id = decoded.user_id || decoded.sub || decoded.id;
     } catch (e) {
       console.error("Failed to decode token", e);
@@ -28,12 +28,8 @@ export const useWebSockets = () => {
       );
     }
 
-    // Determine the environment-specific WebSocket protocol (ws or wss)
     const isSecure = window.location.protocol === "https:";
     const protocol = isSecure ? "wss" : "ws";
-
-    // Fallback to localhost:8101 (Kong) if NEXT_PUBLIC_WS_URL is not set
-    // Note: NEXT_PUBLIC_WS_URL normally shouldn't include protocol if we handle it dynamically
     const wsHost = process.env.NEXT_PUBLIC_WS_URL
       ? process.env.NEXT_PUBLIC_WS_URL.replace(/^https?:\/\//, "")
       : "localhost:8101";
@@ -53,9 +49,18 @@ export const useWebSockets = () => {
       try {
         const data = JSON.parse(event.data);
         console.log("WebSocket message received:", data);
-        // Dispatch a custom event so components can listen globally
+
+        const eventName = data.event || "message";
+        const eventPayload = data.data || data;
+
+        // Trigger local listeners from the shim
+        if (listenersRef.current[eventName]) {
+          listenersRef.current[eventName].forEach((cb) => cb(eventPayload));
+        }
+
+        // Global event dispatch
         window.dispatchEvent(
-          new CustomEvent("ws-notification", { detail: data })
+          new CustomEvent(`ws:${eventName}`, { detail: eventPayload })
         );
       } catch (e) {
         console.error("Failed to parse WebSocket message", e);
@@ -65,8 +70,6 @@ export const useWebSockets = () => {
     socket.onclose = (event) => {
       setConnected(false);
       console.log(`Disconnected from WebSocket Gateway (Code: ${event.code})`);
-
-      // Optional: Add reconnection logic here if needed
     };
 
     socket.onerror = (err) => {
@@ -83,5 +86,30 @@ export const useWebSockets = () => {
     };
   }, []);
 
-  return { socket: socketRef.current, connected };
+  // Socket.io-like shim
+  const socketShim = {
+    on: (event: string, callback: (data: any) => void) => {
+      if (!listenersRef.current[event]) {
+        listenersRef.current[event] = [];
+      }
+      listenersRef.current[event].push(callback);
+    },
+    off: (event: string, callback: (data: any) => void) => {
+      if (listenersRef.current[event]) {
+        listenersRef.current[event] = listenersRef.current[event].filter(
+          (cb) => cb !== callback
+        );
+      }
+    },
+    send: (data: any) => {
+      if (socketRef.current?.readyState === WebSocket.OPEN) {
+        socketRef.current.send(JSON.stringify(data));
+      }
+    },
+    get readyState() {
+      return socketRef.current?.readyState;
+    },
+  };
+
+  return { socket: socketShim, connected };
 };

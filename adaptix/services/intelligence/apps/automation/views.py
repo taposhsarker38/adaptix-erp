@@ -1,8 +1,11 @@
 from rest_framework import viewsets, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import AutomationRule, ActionLog
-from .serializers import AutomationRuleSerializer, ActionLogSerializer
+from .models import AutomationRule, ActionLog, Workflow, WorkflowInstance
+from .serializers import (
+    AutomationRuleSerializer, ActionLogSerializer, 
+    WorkflowSerializer, WorkflowInstanceSerializer
+)
 from .services import RuleEngine
 
 class AutomationRuleViewSet(viewsets.ModelViewSet):
@@ -17,8 +20,26 @@ class AutomationRuleViewSet(viewsets.ModelViewSet):
         serializer.save(company_uuid=company_uuid)
 
 class ActionLogViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = ActionLog.objects.all()
     serializer_class = ActionLogSerializer
+    def get_queryset(self):
+        company_uuid = getattr(self.request, 'company_uuid', None)
+        return ActionLog.objects.filter(rule__company_uuid=company_uuid).order_by('-executed_at')
+
+class WorkflowViewSet(viewsets.ModelViewSet):
+    serializer_class = WorkflowSerializer
+    def get_queryset(self):
+        company_uuid = getattr(self.request, 'company_uuid', None)
+        return Workflow.objects.filter(company_uuid=company_uuid, is_deleted=False)
+    
+    def perform_create(self, serializer):
+        company_uuid = getattr(self.request, 'company_uuid', None)
+        serializer.save(company_uuid=company_uuid)
+
+class WorkflowInstanceViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = WorkflowInstanceSerializer
+    def get_queryset(self):
+        company_uuid = getattr(self.request, 'company_uuid', None)
+        return WorkflowInstance.objects.filter(company_uuid=company_uuid).order_by('-started_at')
 
 class TriggerAutomationView(APIView):
     def post(self, request):

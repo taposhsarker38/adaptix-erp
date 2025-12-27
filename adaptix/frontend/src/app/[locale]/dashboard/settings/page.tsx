@@ -5,6 +5,9 @@ import { LoyaltySettings } from "./LoyaltySettings";
 import { GeneralSettings } from "./GeneralSettings";
 import { WingSettings } from "./WingSettings";
 import { CustomFieldsSettings } from "./CustomFieldsSettings";
+import { TaxSettings } from "./TaxSettings";
+import { WhiteLabelSettings } from "./WhiteLabelSettings";
+import { useTranslations } from "next-intl";
 import {
   Card,
   CardContent,
@@ -24,9 +27,11 @@ export default function SettingsPage() {
       </div>
 
       <Tabs defaultValue="general" className="space-y-6">
-        <TabsList>
+        <TabsList className="bg-slate-100 dark:bg-slate-800/50 p-1">
           <TabsTrigger value="general">General</TabsTrigger>
           <TabsTrigger value="branches">Branches</TabsTrigger>
+          <TabsTrigger value="taxes">Taxes</TabsTrigger>
+          <TabsTrigger value="white-label">White-labeling</TabsTrigger>
           <TabsTrigger value="loyalty">Loyalty & Rewards</TabsTrigger>
           <TabsTrigger value="custom-fields">Custom Fields</TabsTrigger>
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
@@ -37,6 +42,12 @@ export default function SettingsPage() {
         </TabsContent>
         <TabsContent value="branches" className="space-y-4">
           <WingSettings />
+        </TabsContent>
+        <TabsContent value="taxes" className="space-y-4">
+          <TaxSettings />
+        </TabsContent>
+        <TabsContent value="white-label" className="space-y-4">
+          <WhiteLabelSettings />
         </TabsContent>
         <TabsContent value="loyalty" className="space-y-4">
           <LoyaltySettings />

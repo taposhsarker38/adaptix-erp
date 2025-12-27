@@ -1,5 +1,6 @@
 import axios from "axios";
 import { db } from "./offline/OfflineStore";
+import { jwtDecode } from "jwt-decode";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8101/api";
 
@@ -17,6 +18,19 @@ api.interceptors.request.use(
       const token = localStorage.getItem("access_token");
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
+
+        try {
+          // Decode token to extract company_uuid for multi-tenant headers
+          const decoded: any = jwtDecode(token);
+          if (decoded.company_uuid) {
+            config.headers["X-Company-Id"] = decoded.company_uuid;
+            console.log("Injecting X-Company-Id:", decoded.company_uuid);
+          } else {
+            console.warn("No company_uuid found in token payload");
+          }
+        } catch (e) {
+          console.error("Failed to decode token for company header", e);
+        }
       }
 
       // Offline Resilience: If offline and NOT a GET request, queue it

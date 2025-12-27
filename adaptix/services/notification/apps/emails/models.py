@@ -31,3 +31,20 @@ class NotificationLog(models.Model):
 
     def __str__(self):
         return f"{self.recipient} - {self.subject} ({self.status})"
+
+class SMTPSettings(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    company_uuid = models.UUIDField(unique=True, db_index=True)
+    host = models.CharField(max_length=255)
+    port = models.PositiveIntegerField(default=587)
+    username = models.CharField(max_length=255, blank=True)
+    password = models.CharField(max_length=255, blank=True)
+    use_tls = models.BooleanField(default=True)
+    use_ssl = models.BooleanField(default=False)
+    default_from_email = models.EmailField()
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"SMTP for {self.company_uuid} ({self.host})"
