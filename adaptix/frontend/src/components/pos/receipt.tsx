@@ -23,6 +23,8 @@ interface ReceiptProps {
     total: number;
     paymentMethod: string;
     change?: number;
+    paidAmount?: number;
+    balanceDue?: number;
   };
 }
 
@@ -93,9 +95,23 @@ export const Receipt = forwardRef<HTMLDivElement, ReceiptProps>(
           </div>
         </div>
 
-        <div className="mb-4 text-center">
+        <div className="mb-4 text-center space-y-1">
           <p className="uppercase">PAID BY {data.paymentMethod}</p>
-          {data.change !== undefined && <p>CHANGE: {data.change.toFixed(2)}</p>}
+          {data.paidAmount !== undefined && (
+            <p className="flex justify-between px-4">
+              <span>Paid:</span>
+              <span>{data.paidAmount.toFixed(2)}</span>
+            </p>
+          )}
+          {data.balanceDue !== undefined && data.balanceDue > 0 && (
+            <p className="flex justify-between px-4 font-bold text-red-600">
+              <span>Balance Due:</span>
+              <span>{data.balanceDue.toFixed(2)}</span>
+            </p>
+          )}
+          {data.change !== undefined && data.change > 0 && (
+            <p>CHANGE: {data.change.toFixed(2)}</p>
+          )}
         </div>
 
         <div className="text-center border-t border-black pt-2">

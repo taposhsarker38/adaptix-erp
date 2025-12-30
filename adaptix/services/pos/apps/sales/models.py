@@ -182,6 +182,7 @@ class Payment(SoftDeleteModel):
     method = models.CharField(max_length=50, choices=METHOD_CHOICES, default='cash')
     provider = models.CharField(max_length=100, blank=True, null=True, help_text="Bank or Mobile Banking provider (e.g. Bkash, Nagad, Brac Bank)")
     amount = models.DecimalField(max_digits=12, decimal_places=2)
+    emi_plan = models.UUIDField(blank=True, null=True, help_text="ID of the EMI plan if method is emi")
     transaction_id = models.CharField(max_length=100, blank=True, null=True)
     note = models.TextField(blank=True, null=True)
     

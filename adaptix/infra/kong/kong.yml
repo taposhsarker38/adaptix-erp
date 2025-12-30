@@ -313,6 +313,7 @@ services:
           - /api/payment
         strip_path: false
         protocols:
+          - http
           - https
         plugins:
           - name: jwt

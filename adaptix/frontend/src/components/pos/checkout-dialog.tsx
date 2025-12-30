@@ -69,17 +69,41 @@ export const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
   const { settings } = usePOSSettings(companyId || "");
 
   // -- EMI Plans --
-  const { data: emiPlans } = useQuery({
+  // -- EMI Plans --
+  const { data: allEmiPlans } = useQuery({
     queryKey: ["emi-plans", companyId],
     queryFn: async () => {
       if (!companyId) return [];
-      const res = await api.get(
-        `/payment/emi-plans/?company_uuid=${companyId}`
-      );
+      const res = await api.get(`payment/emi-plans/?company_uuid=${companyId}`);
       return res.data;
     },
     enabled: isOpen && !!companyId,
   });
+
+  const emiPlans = React.useMemo(() => {
+    if (!allEmiPlans) return [];
+
+    let commonPlanIds: string[] | null = null;
+
+    items.forEach((item) => {
+      if (
+        item.emi_plan_ids &&
+        Array.isArray(item.emi_plan_ids) &&
+        item.emi_plan_ids.length > 0
+      ) {
+        if (commonPlanIds === null) {
+          commonPlanIds = [...item.emi_plan_ids];
+        } else {
+          commonPlanIds = commonPlanIds.filter((id) =>
+            item.emi_plan_ids.includes(id)
+          );
+        }
+      }
+    });
+
+    if (commonPlanIds === null) return allEmiPlans;
+    return allEmiPlans.filter((p: any) => commonPlanIds?.includes(p.id));
+  }, [allEmiPlans, items]);
 
   const receiptRef = React.useRef<HTMLDivElement>(null);
   const handlePrint = useReactToPrint({
@@ -109,6 +133,10 @@ export const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
   );
   const remainingDue = Math.max(0, finalTotal - totalPaid);
   const change = Math.max(0, totalPaid - finalTotal);
+
+  const isAllEmiEligible = items.every(
+    (item) => item.is_emi_eligible !== false
+  );
 
   // -- Actions --
   const addPayment = () => {
@@ -179,10 +207,17 @@ export const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
       const payload = {
         items: items.map((item) => ({
           product_uuid: item.id,
+          product_name: item.name,
+          sku: item.sku,
           quantity: item.quantity,
           unit_price: item.sales_price,
           tax_amount: 0,
           discount_amount: 0,
+          metadata: {
+            ...item.metadata,
+            is_tax_exempt: item.is_tax_exempt,
+            is_emi_eligible: item.is_emi_eligible,
+          },
         })),
         module_type: "pos",
         status: "closed",
@@ -214,8 +249,11 @@ export const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
         tax: 0,
         discount: discountAmount,
         total: finalTotal,
-        paymentMethod: "Split",
+        paymentMethod:
+          payments.length > 1 ? "Split" : payments[0]?.method || "Due",
         change: change,
+        paidAmount: totalPaid,
+        balanceDue: remainingDue,
         customerName: customer?.name,
         earnedPoints: loyaltyAction === "EARN" ? earnPoints : 0,
       };
@@ -300,6 +338,19 @@ export const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
         ) : (
           // --- PAYMENT FORM VIEW ---
           <div className="p-6 flex flex-col h-[500px]">
+            {!isAllEmiEligible && (
+              <div className="mb-4 p-2 bg-amber-50 border border-amber-200 rounded-lg flex items-center gap-2">
+                <Badge
+                  variant="outline"
+                  className="text-amber-600 border-amber-300 bg-amber-100/50 text-[10px]"
+                >
+                  NOTE
+                </Badge>
+                <p className="text-[10px] text-amber-700 font-medium">
+                  Cart has items ineligible for EMI sales.
+                </p>
+              </div>
+            )}
             <ScrollArea className="flex-1 pr-4">
               <div className="space-y-4">
                 {payments.map((p, index) => (
@@ -337,7 +388,17 @@ export const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
                             📱 Mobile
                           </SelectItem>
                           <SelectItem value="bank_transfer">🏦 Bank</SelectItem>
-                          <SelectItem value="emi">📅 EMI</SelectItem>
+                          <SelectItem
+                            value="emi"
+                            disabled={!isAllEmiEligible}
+                            title={
+                              !isAllEmiEligible
+                                ? "Some items in cart are not eligible for EMI"
+                                : ""
+                            }
+                          >
+                            📅 EMI {!isAllEmiEligible && " (Ineligible)"}
+                          </SelectItem>
                         </SelectContent>
                       </Select>
 
@@ -376,7 +437,7 @@ export const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
                             <SelectContent>
                               {emiPlans?.map((plan: any) => (
                                 <SelectItem key={plan.id} value={plan.id}>
-                                  {plan.name} ({plan.duration_months}m)
+                                  {plan.name} ({plan.tenure_months}m)
                                 </SelectItem>
                               ))}
                             </SelectContent>
@@ -389,7 +450,7 @@ export const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
                                 );
                                 if (!plan) return "";
                                 const rate = Number(plan.interest_rate) / 100;
-                                const months = plan.duration_months;
+                                const months = plan.tenure_months;
                                 const monthly =
                                   (p.amount * (1 + rate)) / months;
                                 return `$${monthly.toFixed(2)} / mo`;
