@@ -39,6 +39,11 @@ class CustomerViewSet(viewsets.ModelViewSet):
         if branch_id:
             queryset = queryset.filter(branch_id=branch_id)
             
+        start_date = self.request.query_params.get('start_date')
+        end_date = self.request.query_params.get('end_date')
+        if start_date and end_date:
+            queryset = queryset.filter(created_at__date__range=[start_date, end_date])
+
         return queryset
 
     @action(detail=True, methods=['post'])

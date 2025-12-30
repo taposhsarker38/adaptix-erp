@@ -86,9 +86,14 @@ class Customer(SoftDeleteModel):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=['phone'], 
+                fields=['company_uuid', 'phone'], 
                 name='unique_active_customer_phone', 
                 condition=Q(is_deleted=False)
+            ),
+            models.UniqueConstraint(
+                fields=['company_uuid', 'email'], 
+                name='unique_active_customer_email', 
+                condition=Q(is_deleted=False) & Q(email__isnull=False)
             )
         ] 
 

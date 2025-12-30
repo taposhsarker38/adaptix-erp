@@ -47,26 +47,22 @@ export interface ProductionOrder {
 export const manufacturingApi = {
   // Work Centers
   getWorkCenters: async () => {
-    const response = await axiosInstance.get<WorkCenter[]>(
+    const response = await axiosInstance.get<any>(
       "/manufacturing/work-centers/"
     );
-    return response.data;
+    return response.data.results || response.data;
   },
 
   // BOMs
   getBOMs: async () => {
-    const response = await axiosInstance.get<BillOfMaterial[]>(
-      "/manufacturing/boms/"
-    );
-    return response.data;
+    const response = await axiosInstance.get<any>("/manufacturing/boms/");
+    return response.data.results || response.data;
   },
 
   // Production Orders
   getOrders: async () => {
-    const response = await axiosInstance.get<ProductionOrder[]>(
-      "/manufacturing/orders/"
-    );
-    return response.data;
+    const response = await axiosInstance.get<any>("/manufacturing/orders/");
+    return response.data.results || response.data;
   },
 
   createOrder: async (data: Partial<ProductionOrder>) => {

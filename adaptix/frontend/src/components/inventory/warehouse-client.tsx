@@ -30,7 +30,9 @@ export const WarehouseClient: React.FC = () => {
     try {
       setLoading(true);
       const res = await api.get("/inventory/warehouses/");
-      const items = Array.isArray(res.data.data)
+      const items = Array.isArray(res.data.results)
+        ? res.data.results
+        : Array.isArray(res.data.data)
         ? res.data.data
         : Array.isArray(res.data)
         ? res.data

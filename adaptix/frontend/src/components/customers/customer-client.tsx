@@ -26,6 +26,14 @@ import {
 } from "@/components/ui/sheet";
 import api from "@/lib/api";
 import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { CustomerForm } from "./customer-form";
 import { LoyaltyView } from "./loyalty-view";
 import { DataTable } from "@/components/ui/data-table";
@@ -47,6 +55,11 @@ export function CustomerClient() {
 
   const [openAlert, setOpenAlert] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+
+  // Advanced Filters
+  const [selectedBranch, setSelectedBranch] = useState("all");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   // Permission Logic
   const [canCreateCustomer, setCanCreateCustomer] = useState(false);
@@ -91,9 +104,16 @@ export function CustomerClient() {
   const fetchCustomers = async () => {
     try {
       setLoading(true);
+      const params: any = { search: searchTerm };
+      if (selectedBranch !== "all") params.branch_id = selectedBranch;
+      if (startDate && endDate) {
+        params.start_date = startDate;
+        params.end_date = endDate;
+      }
+
       const [customersRes, attrSetsRes, companiesRes, wingsRes] =
         await Promise.all([
-          api.get("/customer/customers/", { params: { search: searchTerm } }),
+          api.get("/customer/customers/", { params }),
           api.get("/customer/attribute-sets/"),
           api.get("/company/companies/"),
           api.get("/company/wings/"),
@@ -127,7 +147,7 @@ export function CustomerClient() {
       fetchCustomers();
     }, 500);
     return () => clearTimeout(timer);
-  }, [searchTerm]);
+  }, [searchTerm, selectedBranch, startDate, endDate]);
 
   const onDelete = (id: string) => {
     setDeleteId(id);
@@ -278,9 +298,70 @@ export function CustomerClient() {
       />
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Customers</h2>
-        {canCreateCustomer && (
-          <Button onClick={openCreate}>
-            <Plus className="mr-2 h-4 w-4" /> Add Customer
+        <div className="flex items-center gap-2">
+          {canCreateCustomer && (
+            <Button onClick={openCreate}>
+              <Plus className="mr-2 h-4 w-4" /> Add Customer
+            </Button>
+          )}
+        </div>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-4 bg-slate-50 dark:bg-slate-900 p-4 rounded-lg border">
+        <div className="relative flex-1 min-w-[250px]">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search name, phone or email..."
+            className="pl-8 bg-white dark:bg-slate-950"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+
+        <div className="w-[200px]">
+          <Select value={selectedBranch} onValueChange={setSelectedBranch}>
+            <SelectTrigger className="bg-white dark:bg-slate-950">
+              <SelectValue placeholder="All Branches" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Branches</SelectItem>
+              {branches.map((b) => (
+                <SelectItem key={b.uuid} value={b.uuid}>
+                  {b.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Input
+            type="date"
+            className="w-[150px] bg-white dark:bg-slate-950"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+          />
+          <span className="text-muted-foreground text-sm">to</span>
+          <Input
+            type="date"
+            className="w-[150px] bg-white dark:bg-slate-950"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+          />
+        </div>
+
+        {(searchTerm || selectedBranch !== "all" || startDate || endDate) && (
+          <Button
+            variant="ghost"
+            onClick={() => {
+              setSearchTerm("");
+              setSelectedBranch("all");
+              setStartDate("");
+              setEndDate("");
+            }}
+            className="text-muted-foreground"
+          >
+            Clear
           </Button>
         )}
       </div>
@@ -289,9 +370,10 @@ export function CustomerClient() {
         <DataTable
           columns={columns}
           data={customers}
-          searchKey="name"
+          pdfTitle="Customer Information Master Report"
           enableExport={true}
           exportFileName="customer_list"
+          isLoading={loading}
         />
       </div>
 

@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/select";
 import api from "@/lib/api";
 import { toast } from "sonner";
+import { handleApiError, handleApiSuccess } from "@/lib/api-handler";
 import { DynamicAttributeRenderer } from "@/components/shared/DynamicAttributeRenderer";
 
 const formSchema = z.object({
@@ -135,19 +136,14 @@ export function EmployeeForm({
     try {
       if (initialData) {
         await api.put(`/hrms/employees/list/${initialData.id}/`, values);
-        toast.success("Employee updated");
+        handleApiSuccess("Employee updated");
       } else {
         await api.post("/hrms/employees/list/", values);
-        toast.success("Employee created");
+        handleApiSuccess("Employee created");
       }
       onSuccess();
     } catch (error: any) {
-      console.error(error);
-      if (error.response?.data?.email) {
-        toast.error("Email already exists");
-      } else {
-        toast.error("Failed to save employee");
-      }
+      handleApiError(error, form);
     }
   };
 

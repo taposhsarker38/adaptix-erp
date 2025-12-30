@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import api from "@/lib/api";
 import { toast } from "sonner";
+import { handleApiError, handleApiSuccess } from "@/lib/api-handler";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -65,15 +66,14 @@ export function AccountForm({
       setLoading(true);
       if (initialData) {
         await api.patch(`/accounting/accounts/${initialData.id}/`, values);
-        toast.success("Account updated");
+        handleApiSuccess("Account updated");
       } else {
         await api.post("/accounting/accounts/", values);
-        toast.success("Account created");
+        handleApiSuccess("Account created");
       }
       onSuccess();
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to save account");
+    } catch (error: any) {
+      handleApiError(error, form);
     } finally {
       setLoading(false);
     }
