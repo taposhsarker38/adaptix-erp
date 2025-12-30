@@ -7,6 +7,7 @@ import * as z from "zod";
 import api from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { handleApiError, handleApiSuccess } from "@/lib/api-handler";
 
 import {
   Dialog,
@@ -161,12 +162,11 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 
       await method(url, payload);
 
-      toast.success(initialData ? "Product updated" : "Product created");
+      handleApiSuccess(initialData ? "Product updated" : "Product created");
       router.refresh();
       onClose();
     } catch (error: any) {
-      console.error(error);
-      toast.error(error.response?.data?.detail || "Something went wrong.");
+      handleApiError(error, form);
     } finally {
       setLoading(false);
     }

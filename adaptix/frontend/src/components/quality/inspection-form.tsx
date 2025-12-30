@@ -22,6 +22,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import api from "@/lib/api";
+import { handleApiError, handleApiSuccess } from "@/lib/api-handler";
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 
@@ -54,10 +55,10 @@ export function InspectionForm({ onSuccess, onCancel }: InspectionFormProps) {
     try {
       setLoading(true);
       await api.post("/quality/inspections/", values);
+      handleApiSuccess("Inspection created");
       onSuccess();
-    } catch (error) {
-      console.error("Failed to create inspection", error);
-      // In a real app, use toast here
+    } catch (error: any) {
+      handleApiError(error, form);
     } finally {
       setLoading(false);
     }

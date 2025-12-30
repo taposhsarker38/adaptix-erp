@@ -39,12 +39,16 @@ interface Wing {
   id: string;
   name: string;
   code: string;
+  address?: string;
+  logo?: string;
 }
 
 interface OrgNode {
   id: string;
   name: string;
   code: string;
+  address?: string;
+  logo?: string;
   is_group: boolean;
   type: "GROUP" | "HOLDING" | "UNIT";
   subsidiaries: OrgNode[];
@@ -62,10 +66,16 @@ export default function OrganizationHub() {
     parentId?: string;
     parentName?: string;
     type: "GROUP" | "HOLDING" | "UNIT" | "BRANCH";
+    initialData?: any;
   }>({ type: "UNIT" });
 
-  const openWizard = (type: any, parentId?: string, parentName?: string) => {
-    setWizardConfig({ type, parentId, parentName });
+  const openWizard = (
+    type: any,
+    parentId?: string,
+    parentName?: string,
+    initialData?: any
+  ) => {
+    setWizardConfig({ type, parentId, parentName, initialData });
     setWizardOpen(true);
   };
 
@@ -192,6 +202,7 @@ export default function OrganizationHub() {
         type={wizardConfig.type}
         parentId={wizardConfig.parentId}
         parentName={wizardConfig.parentName}
+        initialData={wizardConfig.initialData}
         onSuccess={fetchTree}
       />
     </div>
@@ -209,7 +220,7 @@ function NodeView({
   level: number;
   expandedNodes: Set<string>;
   onToggle: (id: string) => void;
-  onAdd: (type: any, id: string, name: string) => void;
+  onAdd: (type: any, id?: string, name?: string, initialData?: any) => void;
 }) {
   const isExpanded = expandedNodes.has(node.id);
   const hasChildren = node.subsidiaries.length > 0 || node.wings.length > 0;
@@ -311,6 +322,12 @@ function NodeView({
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="gap-2"
+                onClick={() => onAdd(node.type, undefined, undefined, node)}
+              >
+                <Settings2 className="h-4 w-4" /> Edit Details
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="gap-2"
                 onClick={(e) => {
                   e.stopPropagation();
                   window.location.href = "/dashboard/settings";
@@ -361,6 +378,23 @@ function NodeView({
                     </p>
                   </div>
                 </div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-6 w-6">
+                      <MoreVertical className="h-3 w-3" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem
+                      className="gap-2"
+                      onClick={() =>
+                        onAdd("BRANCH", undefined, undefined, wing)
+                      }
+                    >
+                      <Settings2 className="h-4 w-4" /> Edit Branch
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
                 <Badge className="text-[10px] bg-slate-200 text-slate-700 hover:bg-slate-200">
                   BRANCH
                 </Badge>

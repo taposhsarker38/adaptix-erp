@@ -22,6 +22,41 @@ class CustomerSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ('id', 'created_at', 'updated_at', 'loyalty_points', 'tier', 'company_uuid', 'is_email_verified', 'is_phone_verified', 'email_otp', 'phone_otp')
 
+    def validate(self, data):
+        phone = data.get('phone')
+        email = data.get('email')
+        request = self.context.get('request')
+        company_uuid = getattr(request, 'company_uuid', None) if request else None
+        instance = self.instance
+
+        # 1. Phone Uniqueness within Company
+        if phone and company_uuid:
+            queryset = Customer.objects.filter(
+                company_uuid=company_uuid,
+                phone=phone,
+                is_deleted=False
+            )
+            if instance:
+                queryset = queryset.exclude(pk=instance.pk)
+            
+            if queryset.exists():
+                raise serializers.ValidationError({"phone": "A customer with this phone number already exists in this company."})
+
+        # 2. Email Uniqueness within Company
+        if email and company_uuid:
+            queryset = Customer.objects.filter(
+                company_uuid=company_uuid,
+                email=email,
+                is_deleted=False
+            )
+            if instance:
+                queryset = queryset.exclude(pk=instance.pk)
+            
+            if queryset.exists():
+                raise serializers.ValidationError({"email": "A customer with this email already exists in this company."})
+        
+        return data
+
     def get_branch_name(self, obj):
         if not obj.branch_id:
             return "General"

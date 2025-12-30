@@ -35,6 +35,7 @@ import { useState, useEffect } from "react";
 import api from "@/lib/api";
 import { toast } from "sonner";
 import { DynamicAttributeRenderer } from "../shared/DynamicAttributeRenderer";
+import { handleApiError, handleApiSuccess } from "@/lib/api-handler";
 
 const customerSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -181,15 +182,14 @@ export function CustomerForm({
 
       if (initialData) {
         await api.put(`/customer/customers/${initialData.id}/`, payload);
-        toast.success("Customer updated");
+        handleApiSuccess("Customer updated");
       } else {
         await api.post("/customer/customers/", payload);
-        toast.success("Customer created");
+        handleApiSuccess("Customer created");
       }
       onSuccess();
     } catch (error: any) {
-      console.error(error);
-      toast.error("Failed to save customer");
+      handleApiError(error, form);
     }
   };
 
