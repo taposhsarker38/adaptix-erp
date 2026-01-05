@@ -27,7 +27,7 @@ interface CartProps {
   onCheckoutSuccess: () => void;
   checkoutOpen: boolean;
   onCheckoutOpenChange: (open: boolean) => void;
-  onLoadAICart: (items: any[]) => void;
+  onLoadAICart: (items: any[], sessionId: string) => void;
   onQuickCheckout: (amount: number) => void;
   quickPayAmount?: number | null;
   selectedCustomer: any;
@@ -59,7 +59,7 @@ export const Cart: React.FC<CartProps> = ({
         "intelligence/vision/cart-sync/?terminal_id=TERM_001"
       );
       if (res.data?.items) {
-        onLoadAICart(res.data.items);
+        onLoadAICart(res.data.items, res.data.session_id);
         toast.success("AI Visual Cart Loaded!");
       }
     } catch (e) {

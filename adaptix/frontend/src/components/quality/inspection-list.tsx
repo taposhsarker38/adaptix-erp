@@ -17,8 +17,7 @@ import {
 } from "@/components/ui/dialog";
 import { InspectionForm } from "./inspection-form";
 import { QCInspectionDialog } from "./qc-inspection-dialog";
-import { QCAnalytics } from "./qc-analytics";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { InspectionDetailsDialog } from "./inspection-details-dialog";
 import { BarChart3, List } from "lucide-react";
 
 export function InspectionList() {
@@ -29,6 +28,10 @@ export function InspectionList() {
     string | null
   >(null);
   const [isQCDialogOpen, setIsQCDialogOpen] = useState(false);
+  const [isViewDetailsOpen, setIsViewDetailsOpen] = useState(false);
+  const [viewingInspectionId, setViewingInspectionId] = useState<string | null>(
+    null
+  );
 
   const fetchData = async () => {
     try {
@@ -143,7 +146,14 @@ export function InspectionList() {
                 <CheckCircle className="mr-2 h-4 w-4" /> Inspect
               </Button>
             )}
-            <Button size="sm" variant="ghost">
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => {
+                setViewingInspectionId(inspection.id.toString());
+                setIsViewDetailsOpen(true);
+              }}
+            >
               <Eye className="h-4 w-4" />
             </Button>
           </div>
@@ -154,42 +164,21 @@ export function InspectionList() {
 
   return (
     <div className="space-y-4">
-      <Tabs defaultValue="list" className="w-full">
-        <div className="flex justify-between items-center mb-4">
-          <TabsList>
-            <TabsTrigger value="list" className="flex items-center gap-2">
-              <List className="h-4 w-4" /> Inspections
-            </TabsTrigger>
-            <TabsTrigger value="analytics" className="flex items-center gap-2">
-              <BarChart3 className="h-4 w-4" /> Analytics
-            </TabsTrigger>
-          </TabsList>
-          <Button onClick={() => setIsDialogOpen(true)}>
-            <Plus className="mr-2 h-4 w-4" /> New Inspection
-          </Button>
-        </div>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-lg font-semibold tracking-tight">
+          Inspection Records
+        </h2>
+        <Button onClick={() => setIsDialogOpen(true)}>
+          <Plus className="mr-2 h-4 w-4" /> New Inspection
+        </Button>
+      </div>
 
-        <TabsContent value="list" className="mt-0">
-          <DataTable
-            columns={columns}
-            data={data}
-            searchKey="reference_uuid"
-            isLoading={loading}
-          />
-        </TabsContent>
-
-        <TabsContent value="analytics" className="mt-0">
-          {!loading && data.length > 0 ? (
-            <QCAnalytics data={data} />
-          ) : (
-            <div className="h-[200px] flex items-center justify-center border rounded-lg bg-muted/20">
-              <p className="text-muted-foreground">
-                Insufficient data for analytics
-              </p>
-            </div>
-          )}
-        </TabsContent>
-      </Tabs>
+      <DataTable
+        columns={columns}
+        data={data}
+        searchKey="reference_uuid"
+        isLoading={loading}
+      />
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
@@ -214,6 +203,12 @@ export function InspectionList() {
           onSuccess={() => fetchData()}
         />
       )}
+
+      <InspectionDetailsDialog
+        inspectionId={viewingInspectionId}
+        open={isViewDetailsOpen}
+        onOpenChange={setIsViewDetailsOpen}
+      />
     </div>
   );
 }

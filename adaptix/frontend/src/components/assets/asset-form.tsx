@@ -29,12 +29,15 @@ import { handleApiError, handleApiSuccess } from "@/lib/api-handler";
 const assetSchema = z.object({
   name: z.string().min(2, "Name required"),
   code: z.string().optional(),
+  company_uuid: z.string().min(1, "Company required"),
   category: z.string().min(1, "Category required"),
   purchase_date: z.string(),
   purchase_cost: z.coerce.number().min(0),
+  current_value: z.coerce.number().min(0).optional(),
   status: z.enum(["draft", "active", "maintenance", "retired", "disposed"]),
   notes: z.string().optional(),
-  company_uuid: z.string().optional(),
+  location_type: z.enum(["factory", "branch", "headoffice", "corporate"]),
+  wing_uuid: z.string().optional(),
 });
 
 type AssetFormValues = z.infer<typeof assetSchema>;
@@ -51,36 +54,45 @@ export function AssetForm({
   onCancel,
 }: AssetFormProps) {
   const [categories, setCategories] = useState<any[]>([]);
+  const [companies, setCompanies] = useState<any[]>([]);
 
   const form = useForm<AssetFormValues>({
     resolver: zodResolver(assetSchema) as any, // Cast to any to bypass strict resolver type mismatch
     defaultValues: {
-      name: "",
-      code: "",
-      category: "",
-      purchase_date: new Date().toISOString().split("T")[0],
-      purchase_cost: 0,
-      status: "draft",
-      notes: "",
-      company_uuid: "dummy",
+      name: initialData?.name || "",
+      code: initialData?.code || "",
+      category: initialData?.category ? String(initialData.category) : "",
+      purchase_date:
+        initialData?.purchase_date || new Date().toISOString().split("T")[0],
+      purchase_cost: initialData?.purchase_cost
+        ? Number(initialData.purchase_cost)
+        : 0,
+      current_value: initialData?.current_value
+        ? Number(initialData.current_value)
+        : 0,
+      status: initialData?.status || "draft",
+      notes: initialData?.notes || "",
+      company_uuid: initialData?.company_uuid
+        ? String(initialData.company_uuid)
+        : "",
+      location_type: initialData?.location_type || "headoffice",
+      wing_uuid: initialData?.wing_uuid ? String(initialData.wing_uuid) : "",
     },
   });
 
-  // Auto-generate code from name if code is empty
-  const nameValue = form.watch("name");
+  const [wings, setWings] = useState<any[]>([]);
+
+  const [isCurrentValueManuallyEdited, setIsCurrentValueManuallyEdited] =
+    useState(false);
+
+  const purchaseCostValue = form.watch("purchase_cost");
+
+  // Sync Current Value with Purchase Cost for new assets until manually edited
   useEffect(() => {
-    if (!initialData && nameValue) {
-      const currentCode = form.getValues("code");
-      if (!currentCode) {
-        const generatedCode = nameValue
-          .toUpperCase()
-          .replace(/[^A-Z0-9]+/g, "_")
-          .replace(/^_+|_+$/g, "")
-          .substring(0, 50);
-        form.setValue("code", generatedCode);
-      }
+    if (!initialData && !isCurrentValueManuallyEdited) {
+      form.setValue("current_value", purchaseCostValue);
     }
-  }, [nameValue, form, initialData]);
+  }, [purchaseCostValue, form, initialData, isCurrentValueManuallyEdited]);
 
   useEffect(() => {
     // Fetch Categories
@@ -88,25 +100,33 @@ export function AssetForm({
       setCategories(res.data.results || res.data);
     });
 
+    // Fetch Companies
+    api.get("/company/companies/").then((res) => {
+      setCompanies(res.data.results || res.data);
+    });
+
+    // Fetch Wings (Branches/Units)
+    api.get("/company/wings/").then((res) => {
+      setWings(res.data.results || res.data);
+    });
+  }, []); // Fetch only once on mount
+
+  useEffect(() => {
     if (initialData) {
-      form.reset({
-        name: initialData.name,
-        code: initialData.code || "",
-        category: initialData.category, // assuming ID
-        purchase_date: initialData.purchase_date,
-        purchase_cost: Number(initialData.purchase_cost),
-        status: initialData.status,
-        notes: initialData.notes || "",
-        company_uuid: initialData.company_uuid,
-      });
+      setIsCurrentValueManuallyEdited(true);
     }
-  }, [initialData, form]);
+  }, [initialData]);
+
+  const locationTypeValue = form.watch("location_type");
 
   const onSubmit = async (values: AssetFormValues) => {
     try {
       const payload = {
         ...values,
-        company_uuid: "dummy", // Middleware handles this usually, but model requires it
+        wing_uuid:
+          values.location_type === "branch" && values.wing_uuid
+            ? values.wing_uuid
+            : null,
       };
 
       if (initialData) {
@@ -145,8 +165,14 @@ export function AssetForm({
               <FormItem>
                 <FormLabel>Asset Tag / Code</FormLabel>
                 <FormControl>
-                  <Input placeholder="AST-001" {...field} />
+                  <Input
+                    placeholder="System Generated (e.g. AST-0001)"
+                    {...field}
+                  />
                 </FormControl>
+                <p className="text-[10px] text-muted-foreground mt-1 italic">
+                  * Leaves blank for auto-generation.
+                </p>
                 <FormMessage />
               </FormItem>
             )}
@@ -154,6 +180,30 @@ export function AssetForm({
         </div>
 
         <div className="grid grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="company_uuid"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Company / Organization</FormLabel>
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Company" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {companies.map((c) => (
+                      <SelectItem key={c.id} value={c.id}>
+                        {c.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <FormField
             control={form.control}
             name="category"
@@ -178,6 +228,9 @@ export function AssetForm({
               </FormItem>
             )}
           />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
           <FormField
             control={form.control}
             name="status"
@@ -202,9 +255,61 @@ export function AssetForm({
               </FormItem>
             )}
           />
+          <FormField
+            control={form.control}
+            name="location_type"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Location Type</FormLabel>
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Location Type" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="headoffice">Head Office</SelectItem>
+                    <SelectItem value="branch">Branch</SelectItem>
+                    <SelectItem value="factory">Factory</SelectItem>
+                    <SelectItem value="corporate">Corporate</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        {locationTypeValue === "branch" && (
+          <div className="grid grid-cols-1 gap-4">
+            <FormField
+              control={form.control}
+              name="wing_uuid"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Branch / Unit</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select Branch" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {wings.map((w) => (
+                        <SelectItem key={w.id} value={w.id}>
+                          {w.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        )}
+
+        <div className="grid grid-cols-3 gap-4">
           <FormField
             control={form.control}
             name="purchase_date"
@@ -225,7 +330,33 @@ export function AssetForm({
               <FormItem>
                 <FormLabel>Cost ($)</FormLabel>
                 <FormControl>
-                  <Input type="number" step="0.01" {...field} />
+                  <Input
+                    type="number"
+                    step="0.01"
+                    {...field}
+                    onFocus={(e) => e.target.select()}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="current_value"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Current Value ($)</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    {...field}
+                    onChange={(e) => {
+                      field.onChange(e);
+                      setIsCurrentValueManuallyEdited(true);
+                    }}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

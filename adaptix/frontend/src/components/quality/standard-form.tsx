@@ -42,16 +42,30 @@ interface StandardFormProps {
 
 export function StandardForm({ onSuccess, onCancel }: StandardFormProps) {
   const [loading, setLoading] = useState(false);
+  const [loadingProducts, setLoadingProducts] = useState(false);
   const [products, setProducts] = useState<any[]>([]);
 
   useEffect(() => {
     // Fetch products for dropdown
+    setLoadingProducts(true);
     api
       .get("/product/products/")
       .then((res) => {
-        setProducts(res.data.results || []);
+        const data = res.data.results || res.data;
+        if (Array.isArray(data)) {
+          setProducts(data);
+        } else {
+          console.warn("Product API returned non-array data:", data);
+          setProducts([]);
+        }
       })
-      .catch(console.error);
+      .catch((err) => {
+        console.error("Failed to fetch products:", err);
+        setProducts([]);
+      })
+      .finally(() => {
+        setLoadingProducts(false);
+      });
   }, []);
 
   const form = useForm<FormValues>({
@@ -102,11 +116,21 @@ export function StandardForm({ onSuccess, onCancel }: StandardFormProps) {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {products.map((p) => (
-                    <SelectItem key={p.id} value={p.id}>
-                      {p.name}
-                    </SelectItem>
-                  ))}
+                  {loadingProducts ? (
+                    <div className="flex items-center justify-center p-4">
+                      <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                    </div>
+                  ) : products.length === 0 ? (
+                    <div className="p-4 text-sm text-muted-foreground text-center">
+                      No products found
+                    </div>
+                  ) : (
+                    products.map((p) => (
+                      <SelectItem key={p.id} value={p.id}>
+                        {p.name}
+                      </SelectItem>
+                    ))
+                  )}
                 </SelectContent>
               </Select>
               <FormMessage />

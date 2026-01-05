@@ -26,7 +26,7 @@ class AssetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Asset
         fields = '__all__'
-        read_only_fields = ['current_value']
+        read_only_fields = []
 
     def get_last_telemetry(self, obj):
         last = obj.telemetry.first()

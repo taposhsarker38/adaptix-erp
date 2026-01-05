@@ -32,9 +32,9 @@ urlpatterns = [
     path('api/intelligence/customers/', include('apps.crm_opt.urls')),
     path('api/intelligence/hr/', include('apps.hr_opt.urls')),
     path('api/intelligence/automation/', include('apps.automation.urls')),
-    path('api/intelligence/financial-anomalies/', include('apps.financial_anomalies.urls')),
     path('api/intelligence/sales-trends/', include('apps.sales_trends.urls')),
     path('api/intelligence/vision/', include('apps.vision.urls')),
+    path('api/intelligence/', include('apps.financial_anomalies.urls')),
     path('api/intelligence/', include('apps.assistant.urls')),
     
     # OpenAPI

@@ -8,7 +8,16 @@ import {
   Trash2,
   Calculator,
   Monitor,
+  X,
+  Filter,
 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -40,10 +49,20 @@ export function AssetClient() {
 
   const [openAlert, setOpenAlert] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [companies, setCompanies] = useState<any[]>([]);
+  const [wings, setWings] = useState<any[]>([]);
+  const [filterCompany, setFilterCompany] = useState<string>("");
+  const [filterDate, setFilterDate] = useState<string>("");
 
   const fetchAssets = async () => {
     try {
-      const response = await api.get("/asset/assets/");
+      const params = new URLSearchParams();
+      if (filterCompany && filterCompany !== "all")
+        params.append("company_uuid", filterCompany);
+      if (filterDate) params.append("purchase_date", filterDate);
+      params.append("t", Date.now().toString());
+
+      const response = await api.get(`/asset/assets/?${params.toString()}`);
       setAssets(response.data.results || response.data);
     } catch (error) {
       console.error(error);
@@ -54,7 +73,13 @@ export function AssetClient() {
 
   useEffect(() => {
     fetchAssets();
-  }, []);
+    api.get("/company/companies/").then((res) => {
+      setCompanies(res.data.results || res.data);
+    });
+    api.get("/company/wings/").then((res) => {
+      setWings(res.data.results || res.data);
+    });
+  }, [filterCompany, filterDate]); // Re-fetch when filters change
 
   const onDelete = (id: string) => {
     setDeleteId(id);
@@ -111,9 +136,46 @@ export function AssetClient() {
       />
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Asset Management</h2>
-        <Button onClick={openCreate}>
-          <Plus className="mr-2 h-4 w-4" /> Add Asset
-        </Button>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 bg-white dark:bg-slate-900 border rounded-md px-2 py-1">
+            <Filter className="h-4 w-4 text-muted-foreground" />
+            <Select value={filterCompany} onValueChange={setFilterCompany}>
+              <SelectTrigger className="w-[180px] border-none shadow-none focus:ring-0">
+                <SelectValue placeholder="All Organizations" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Organizations</SelectItem>
+                {companies.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>
+                    {c.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Input
+              type="date"
+              className="w-[150px] border-none shadow-none focus-visible:ring-0"
+              value={filterDate}
+              onChange={(e) => setFilterDate(e.target.value)}
+            />
+            {(filterCompany || filterDate) && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setFilterCompany("");
+                  setFilterDate("");
+                }}
+                className="h-8 px-2 hover:bg-slate-100"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+          <Button onClick={openCreate}>
+            <Plus className="mr-2 h-4 w-4" /> Add Asset
+          </Button>
+        </div>
       </div>
 
       <div className="rounded-md border bg-white dark:bg-slate-950">
@@ -122,8 +184,10 @@ export function AssetClient() {
             <TableRow>
               <TableHead>Code</TableHead>
               <TableHead>Name</TableHead>
+              <TableHead>Organization</TableHead>
               <TableHead>Category</TableHead>
               <TableHead>Purchased</TableHead>
+              <TableHead>Location</TableHead>
               <TableHead className="text-right">Cost</TableHead>
               <TableHead className="text-right">Current Value</TableHead>
               <TableHead>Status</TableHead>
@@ -133,13 +197,13 @@ export function AssetClient() {
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center py-4">
+                <TableCell colSpan={10} className="text-center py-4">
                   Loading...
                 </TableCell>
               </TableRow>
             ) : assets.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center py-4">
+                <TableCell colSpan={10} className="text-center py-4">
                   No assets found.
                 </TableCell>
               </TableRow>
@@ -150,9 +214,35 @@ export function AssetClient() {
                     {item.code}
                   </TableCell>
                   <TableCell className="font-medium">{item.name}</TableCell>
+                  <TableCell>
+                    {companies.find((c) => c.id === item.company_uuid)
+                      ?.name || (
+                      <span className="text-muted-foreground text-[10px italic]">
+                        {item.company_uuid?.substring(0, 8)}...
+                      </span>
+                    )}
+                  </TableCell>
                   <TableCell>{item.category_name || "N/A"}</TableCell>
                   <TableCell>
                     {format(new Date(item.purchase_date), "MMM d, yyyy")}
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex flex-col">
+                      <span className="capitalize text-xs font-semibold">
+                        {item.location_type}
+                      </span>
+                      {item.wing_uuid && (
+                        <span className="text-[10px] text-blue-600 font-medium">
+                          {wings.find((w) => w.id === item.wing_uuid)?.name ||
+                            "Unknown Branch"}
+                        </span>
+                      )}
+                      {item.location && (
+                        <span className="text-[10px] text-muted-foreground">
+                          {item.location}
+                        </span>
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell className="text-right">
                     ${item.purchase_cost}
@@ -209,6 +299,7 @@ export function AssetClient() {
             </DialogTitle>
           </DialogHeader>
           <AssetForm
+            key={editingAsset?.id || "new"}
             initialData={editingAsset}
             onSuccess={handleSuccess}
             onCancel={() => setIsDialogOpen(false)}

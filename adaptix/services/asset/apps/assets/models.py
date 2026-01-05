@@ -29,6 +29,13 @@ class Asset(models.Model):
         ('retired', 'Retired'),
         ('disposed', 'Disposed'),
     )
+
+    LOCATION_TYPE_CHOICES = (
+        ('factory', 'Factory'),
+        ('branch', 'Branch'),
+        ('headoffice', 'Head Office'),
+        ('corporate', 'Corporate'),
+    )
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     company_uuid = models.UUIDField(db_index=True)
@@ -43,6 +50,8 @@ class Asset(models.Model):
     current_value = models.DecimalField(max_digits=12, decimal_places=2)
     
     location = models.CharField(max_length=255, blank=True)
+    location_type = models.CharField(max_length=20, choices=LOCATION_TYPE_CHOICES, default='headoffice')
+    wing_uuid = models.UUIDField(null=True, blank=True, help_text="Branch/Unit UUID from Company Service")
     assigned_to = models.UUIDField(null=True, blank=True, help_text="Employee UUID")
     
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')
@@ -50,6 +59,20 @@ class Asset(models.Model):
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def save(self, *args, **kwargs):
+        if not self.code:
+            # Generate sequential code: AST-0001, AST-0002, etc.
+            last_asset = Asset.objects.filter(code__startswith='AST-').order_by('-created_at').first()
+            if last_asset:
+                try:
+                    last_num = int(last_asset.code.split('-')[1])
+                    self.code = f"AST-{str(last_num + 1).zfill(4)}"
+                except (ValueError, IndexError):
+                    self.code = "AST-0001"
+            else:
+                self.code = "AST-0001"
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.code or 'No Code'} - {self.name}"

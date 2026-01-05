@@ -5,6 +5,7 @@ import { DataTable } from "@/components/ui/data-table";
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
+import { qualityApi } from "@/lib/api/quality";
 import api from "@/lib/api";
 import {
   Dialog,
@@ -21,13 +22,16 @@ export function QualityStandardList() {
   const fetchData = async () => {
     try {
       const [stdRes, prodRes] = await Promise.all([
-        api.get("/quality/standards/"),
-        api.get("/product/products/"), // Assuming product service access
+        qualityApi.getStandards(),
+        api.get("/product/products/"),
       ]);
-      setData(stdRes.data);
+      setData(stdRes);
 
       const prodMap: Record<string, string> = {};
-      prodRes.data.results?.forEach((p: any) => (prodMap[p.id] = p.name));
+      const productList = prodRes.data.results || prodRes.data;
+      if (Array.isArray(productList)) {
+        productList.forEach((p: any) => (prodMap[p.id] = p.name));
+      }
       setProducts(prodMap);
     } catch (error) {
       console.error("Failed to fetch standards", error);

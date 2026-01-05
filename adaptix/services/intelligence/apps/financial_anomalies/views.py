@@ -1,4 +1,4 @@
-from rest_framework import viewsets, permissions, status
+from rest_framework import viewsets, permissions, status, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.utils import timezone
@@ -13,7 +13,10 @@ class FinancialAnomalySerializer(serializers.ModelSerializer):
 
 class FinancialAnomalyViewSet(viewsets.ModelViewSet):
     serializer_class = FinancialAnomalySerializer
-    filterset_fields = ['anomaly_type', 'severity', 'is_resolved']
+    filter_backends = [filters.SearchFilter]
+    # Keep filterset_fields for documentation/future, but it might only work with DjangoFilterBackend
+    # For now, priority is fixing the crash and enabling search.
+    search_fields = ['journal_reference', 'category', 'reasoning']
 
     def get_queryset(self):
         # Multi-tenant filtering via JWT claims
@@ -37,6 +40,24 @@ class FinancialAnomalyViewSet(viewsets.ModelViewSet):
         anomaly.save()
         
         return Response({'status': 'resolved'})
+        
+    @action(detail=True, methods=['post'])
+    def mark_as_fraud(self, request, pk=None):
+        anomaly = self.get_object()
+        anomaly.is_fraud = True
+        anomaly.save()
+        return Response({'status': 'marked_as_fraud'})
+
+    @action(detail=True, methods=['post'])
+    def unmark_as_fraud(self, request, pk=None):
+        claims = getattr(request, 'user_claims', {})
+        if not claims.get('is_superuser'):
+            return Response({'error': 'Only superusers can unmark fraud'}, status=status.HTTP_403_FORBIDDEN)
+            
+        anomaly = self.get_object()
+        anomaly.is_fraud = False
+        anomaly.save()
+        return Response({'status': 'unmarked_as_fraud'})
 
     @action(detail=False, methods=['get'])
     def summary(self, request):

@@ -20,6 +20,7 @@ export interface Inspection {
   results: TestResult[];
   defect_category?: string;
   defect_category_name?: string;
+  notes?: string;
 }
 
 export interface DefectCategory {
@@ -30,7 +31,7 @@ export interface DefectCategory {
 }
 
 export interface QCPhoto {
-  id: number;
+  id: string;
   inspection: number;
   photo_url: string;
   caption?: string;
@@ -48,18 +49,23 @@ export interface TestResult {
 export const qualityApi = {
   // Standards
   getStandards: async () => {
-    const response = await api.get<QualityStandard[]>("/quality/standards/");
-    return response.data;
+    const response = await api.get<any>("/quality/standards/");
+    return response.data.results || response.data;
   },
 
   // Inspections
   getInspections: async () => {
-    const response = await api.get<Inspection[]>("/quality/inspections/");
-    return response.data;
+    const response = await api.get<any>("/quality/inspections/");
+    return response.data.results || response.data;
   },
 
   createInspection: async (data: Partial<Inspection>) => {
     const response = await api.post<Inspection>("/quality/inspections/", data);
+    return response.data;
+  },
+
+  getInspectionDetail: async (id: string) => {
+    const response = await api.get<Inspection>(`/quality/inspections/${id}/`);
     return response.data;
   },
 
@@ -78,10 +84,8 @@ export const qualityApi = {
 
   // Defect Categories
   getDefectCategories: async () => {
-    const response = await api.get<DefectCategory[]>(
-      "/quality/defect-categories/"
-    );
-    return response.data;
+    const response = await api.get<any>("/quality/defect-categories/");
+    return response.data.results || response.data;
   },
 
   // Photos
@@ -91,9 +95,9 @@ export const qualityApi = {
   },
 
   getPhotos: async (inspectionId: string) => {
-    const response = await api.get<QCPhoto[]>(
+    const response = await api.get<any>(
       `/quality/photos/?inspection=${inspectionId}`
     );
-    return response.data;
+    return response.data.results || response.data;
   },
 };

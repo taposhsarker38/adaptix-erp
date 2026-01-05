@@ -12,6 +12,7 @@ export default function POSPage() {
   const [selectedCustomer, setSelectedCustomer] = React.useState<any>(null);
   const [checkoutOpen, setCheckoutOpen] = React.useState(false);
   const [isUpdatingPrices, setIsUpdatingPrices] = React.useState(false);
+  const [aiSessionId, setAiSessionId] = React.useState<string | null>(null);
 
   // Recalculate all item prices when customer changes
   const updateCartPrices = React.useCallback(
@@ -145,14 +146,27 @@ export default function POSPage() {
           onUpdateQuantity={updateQuantity}
           onClear={clearCart}
           onCheckoutSuccess={() => {
+            // If it was an AI cart, mark it as converted in the backend
+            if (aiSessionId) {
+              api
+                .post("intelligence/vision/cart-sync/", {
+                  session_id: aiSessionId,
+                })
+                .then(() => toast.success("AI Cart converted successfully"))
+                .catch((err) =>
+                  console.error("Failed to convert AI cart:", err)
+                );
+            }
             setCartItems([]);
             setSelectedCustomer(null);
             setQuickPayAmount(null);
+            setAiSessionId(null);
           }}
           checkoutOpen={checkoutOpen}
           onCheckoutOpenChange={setCheckoutOpen}
-          onLoadAICart={(newItems) => {
+          onLoadAICart={(newItems, sessionId) => {
             setCartItems((prev) => [...prev, ...newItems]);
+            setAiSessionId(sessionId);
           }}
           onQuickCheckout={handleQuickCheckout}
           quickPayAmount={quickPayAmount}

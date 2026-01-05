@@ -1,7 +1,16 @@
-from django.urls import path
-from .views import CCTVEventReceiver, PresenceAnalytics, VisualCartSync, VisionStatsView, FootfallAnalyticsView, ManualVisionEntry, MovementTrackingView
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import (
+    CCTVEventReceiver, PresenceAnalytics, VisualCartSync, 
+    VisionStatsView, FootfallAnalyticsView, ManualVisionEntry, 
+    MovementTrackingView, CameraViewSet
+)
+
+router = DefaultRouter()
+router.register('cameras', CameraViewSet, basename='camera')
 
 urlpatterns = [
+    path('', include(router.urls)),
     path('receive/', CCTVEventReceiver.as_view(), name='cctv_event_receiver'),
     path('presence-analytics/', PresenceAnalytics.as_view(), name='presence_analytics'),
     path('cart-sync/', VisualCartSync.as_view(), name='visual_cart_sync'),
