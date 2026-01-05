@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Plus, FileEdit, Trash2, CheckCircle } from "lucide-react";
+import { Plus, FileEdit, Trash2, CheckCircle, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -88,6 +88,32 @@ export function ProductionOrderList() {
   };
 
   const columns: ColumnDef<any>[] = [
+    {
+      accessorKey: "uuid",
+      header: "UUID",
+      cell: ({ row }) => {
+        const uuid = row.original.uuid;
+        return (
+          <div className="flex items-center gap-2">
+            <code className="text-[10px] bg-slate-50 px-1 py-0.5 rounded border font-mono">
+              {uuid.substring(0, 8)}...
+            </code>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6"
+              onClick={() => {
+                navigator.clipboard.writeText(uuid);
+                toast.success("UUID Copied!");
+              }}
+              title="Copy Full UUID"
+            >
+              <Copy className="h-3 w-3" />
+            </Button>
+          </div>
+        );
+      },
+    },
     {
       accessorKey: "product_uuid",
       header: "Product",

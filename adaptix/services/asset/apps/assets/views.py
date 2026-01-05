@@ -15,9 +15,27 @@ class AssetViewSet(viewsets.ModelViewSet):
     queryset = Asset.objects.all()
     serializer_class = AssetSerializer
 
+    def get_queryset(self):
+        queryset = Asset.objects.all()
+        company_uuid = self.request.query_params.get('company_uuid')
+        purchase_date = self.request.query_params.get('purchase_date')
+
+        if company_uuid:
+            queryset = queryset.filter(company_uuid=company_uuid)
+        if purchase_date:
+            queryset = queryset.filter(purchase_date=purchase_date)
+            
+        return queryset.order_by('-created_at')
+
     def perform_create(self, serializer):
-        # Initial value is purchase cost
-        serializer.save(current_value=serializer.validated_data['purchase_cost'])
+        # Use provided current_value or fallback to purchase_cost
+        purchase_cost = serializer.validated_data.get('purchase_cost', 0)
+        current_value = serializer.validated_data.get('current_value')
+        
+        if current_value is None:
+            current_value = purchase_cost
+            
+        serializer.save(current_value=current_value)
 
     @action(detail=True, methods=['get'], url_path='health-metrics')
     def health_metrics(self, request, pk=None):

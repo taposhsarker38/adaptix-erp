@@ -19,11 +19,15 @@ import {
   FileText,
   BadgeAlert,
   ArrowRight,
+  ShieldOff,
 } from "lucide-react";
 import api from "@/lib/api";
+import { JournalEntryForm } from "@/components/accounting/journal-form";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
+import { isSuperUser } from "@/lib/auth";
 import {
   Card,
   CardContent,
@@ -60,12 +64,22 @@ export function FinanceAnomalyDashboard() {
   const [selectedAnomaly, setSelectedAnomaly] = React.useState<any>(null);
   const [resolutionNote, setResolutionNote] = React.useState("");
   const [isResolveDialogOpen, setIsResolveDialogOpen] = React.useState(false);
+  const [searchQuery, setSearchQuery] = React.useState("");
 
-  const fetchData = async () => {
+  const [isJournalDialogOpen, setIsJournalDialogOpen] = React.useState(false);
+  const [selectedJournal, setSelectedJournal] = React.useState<any>(null);
+  const [entities, setEntities] = React.useState<any[]>([]);
+  const [loadingJournal, setLoadingJournal] = React.useState(false);
+  const [currentUserIsSuperUser, setCurrentUserIsSuperUser] =
+    React.useState(false);
+
+  const fetchData = async (query = searchQuery) => {
     try {
       setLoading(true);
       const [anomaliesRes, summaryRes] = await Promise.all([
-        api.get("/intelligence/anomalies/"),
+        api.get("/intelligence/anomalies/", {
+          params: { search: query },
+        }),
         api.get("/intelligence/anomalies/summary/"),
       ]);
       setAnomalies(anomaliesRes.data.results || anomaliesRes.data);
@@ -79,7 +93,77 @@ export function FinanceAnomalyDashboard() {
 
   React.useEffect(() => {
     fetchData();
+    setCurrentUserIsSuperUser(isSuperUser());
   }, []);
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchData(searchQuery);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  React.useEffect(() => {
+    // Fetch entities for JournalEntryForm
+    const fetchEntities = async () => {
+      try {
+        const [orgRes, wingsRes] = await Promise.all([
+          api.get("/company/companies/"),
+          api.get("/company/wings/"),
+        ]);
+        const companies = (orgRes.data.results || orgRes.data).map(
+          (c: any) => ({ ...c, type: "unit" })
+        );
+        const wings = (wingsRes.data.results || wingsRes.data).map(
+          (w: any) => ({ ...w, type: "branch" })
+        );
+        setEntities([...companies, ...wings]);
+      } catch (err) {
+        console.error("Failed to load entities", err);
+      }
+    };
+    fetchEntities();
+  }, []);
+
+  const handleMarkAsFraud = async (anomaly: any) => {
+    try {
+      await api.post(`/intelligence/anomalies/${anomaly.id}/mark_as_fraud/`);
+      toast.success("Anomaly marked as fraud");
+      fetchData();
+    } catch (error) {
+      toast.error("Failed to mark as fraud");
+    }
+  };
+
+  const handleUnmarkAsFraud = async (anomaly: any) => {
+    if (!currentUserIsSuperUser) {
+      toast.error("Only superusers can unmark fraud");
+      return;
+    }
+    try {
+      await api.post(`/intelligence/anomalies/${anomaly.id}/unmark_as_fraud/`);
+      toast.success("Anomaly unmarked as fraud");
+      fetchData();
+    } catch (error) {
+      toast.error("Failed to unmark as fraud");
+    }
+  };
+
+  const handleViewJournal = async (anomaly: any) => {
+    try {
+      setLoadingJournal(true);
+      setIsJournalDialogOpen(true);
+      const res = await api.get(
+        `/accounting/journals/${anomaly.journal_entry_id}/`
+      );
+      setSelectedJournal(res.data);
+    } catch (error) {
+      toast.error("Failed to load journal entry");
+      setIsJournalDialogOpen(false);
+    } finally {
+      setLoadingJournal(false);
+    }
+  };
 
   const handleResolve = async () => {
     if (!selectedAnomaly) return;
@@ -238,6 +322,8 @@ export function FinanceAnomalyDashboard() {
                   <Input
                     className="pl-9 bg-background"
                     placeholder="Filter by reference..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </div>
                 <Button variant="outline" size="icon">
@@ -274,6 +360,11 @@ export function FinanceAnomalyDashboard() {
                           <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">
                             {anomaly.anomaly_type.replace(/_/g, " ")}
                           </span>
+                          {anomaly.is_fraud && (
+                            <Badge className="bg-rose-600 hover:bg-rose-700 text-white border-none text-[10px] font-black heartbeat shadow-lg shadow-rose-500/20">
+                              FRAUD FLAG
+                            </Badge>
+                          )}
                         </div>
                         <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
                           {anomaly.category}
@@ -342,14 +433,32 @@ export function FinanceAnomalyDashboard() {
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                              <DropdownMenuItem className="text-xs">
+                              <DropdownMenuItem
+                                className="text-xs"
+                                onClick={() => handleViewJournal(anomaly)}
+                              >
                                 <FileText className="mr-2 h-3 w-3" /> View
                                 Journal Entry
                               </DropdownMenuItem>
-                              <DropdownMenuItem className="text-xs text-rose-500">
-                                <AlertCircle className="mr-2 h-3 w-3" /> Mark as
-                                Fraud
-                              </DropdownMenuItem>
+                              {anomaly.is_fraud ? (
+                                currentUserIsSuperUser && (
+                                  <DropdownMenuItem
+                                    className="text-xs text-amber-600 font-bold"
+                                    onClick={() => handleUnmarkAsFraud(anomaly)}
+                                  >
+                                    <ShieldOff className="mr-2 h-3 w-3" />{" "}
+                                    Unmark as Fraud
+                                  </DropdownMenuItem>
+                                )
+                              ) : (
+                                <DropdownMenuItem
+                                  className="text-xs text-rose-500"
+                                  onClick={() => handleMarkAsFraud(anomaly)}
+                                >
+                                  <AlertCircle className="mr-2 h-3 w-3" /> Mark
+                                  as Fraud
+                                </DropdownMenuItem>
+                              )}
                             </DropdownMenuContent>
                           </DropdownMenu>
                         </div>
@@ -411,6 +520,54 @@ export function FinanceAnomalyDashboard() {
                 className="bg-primary shadow-lg shadow-primary/20"
               >
                 Confirm Resolution
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* View Journal Dialog */}
+        <Dialog
+          open={isJournalDialogOpen}
+          onOpenChange={setIsJournalDialogOpen}
+        >
+          <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5 text-primary" />
+                Journal Entry Details
+              </DialogTitle>
+              <DialogDescription>
+                Reference: {selectedJournal?.reference || "N/A"} | Date:{" "}
+                {selectedJournal?.date}
+              </DialogDescription>
+            </DialogHeader>
+
+            {loadingJournal ? (
+              <div className="flex flex-col items-center justify-center py-20 gap-4">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <p className="text-sm text-muted-foreground">
+                  Fetching journal details...
+                </p>
+              </div>
+            ) : selectedJournal ? (
+              <div className="mt-4 pointer-events-none opacity-80 scale-[0.98]">
+                <JournalEntryForm
+                  initialData={selectedJournal}
+                  entities={entities}
+                  onSuccess={() => {}}
+                />
+              </div>
+            ) : (
+              <div className="py-10 text-center text-muted-foreground">
+                Could not load journal data.
+              </div>
+            )}
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setIsJournalDialogOpen(false)}
+              >
+                Close
               </Button>
             </DialogFooter>
           </DialogContent>

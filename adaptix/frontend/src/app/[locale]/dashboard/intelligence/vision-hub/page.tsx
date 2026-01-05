@@ -65,6 +65,7 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import api from "@/lib/api";
 
 interface Branch {
   id: string;
@@ -139,6 +140,14 @@ export default function VisionHubPage() {
   const [envType, setEnvType] = useState<string>("OFFICE");
   const [isLoading, setIsLoading] = useState(true);
   const [isManualModalOpen, setIsManualModalOpen] = useState(false);
+  const [isCameraModalOpen, setIsCameraModalOpen] = useState(false);
+  const [branchCameras, setBranchCameras] = useState<any[]>([]);
+  const [isCameraSubmitting, setIsCameraSubmitting] = useState(false);
+  const [newCamera, setNewCamera] = useState({
+    name: "",
+    environment_type: "RETAIL",
+    location_description: "",
+  });
 
   // Dynamic Label Generation
   const visitorLabel = envType === "RETAIL" ? "Customer" : "Visitor";
@@ -159,11 +168,14 @@ export default function VisionHubPage() {
 
   // 1. Fetch Branches
   useEffect(() => {
-    fetch("/api/company/wings/")
-      .then((res) => res.json())
-      .then((data) => {
-        setBranches(data);
-        if (data.length > 0) setSelectedBranch(data[0].id);
+    api
+      .get("/company/wings/")
+      .then((res) => {
+        const data = res.data;
+        // Handle both paginated and non-paginated results
+        const branchList = Array.isArray(data) ? data : data.results || [];
+        setBranches(branchList);
+        if (branchList.length > 0) setSelectedBranch(branchList[0].id);
       })
       .catch((err) => console.error("Error fetching branches:", err));
   }, []);
@@ -177,51 +189,57 @@ export default function VisionHubPage() {
       : "";
 
     setIsLoading(true);
-    const statsUrl = `/api/intelligence/vision/stats/?branch_uuid=${selectedBranch}`;
-    const trafficUrl = `/api/intelligence/vision/traffic/?branch_uuid=${selectedBranch}&date=${formattedDate}`;
-    const logsUrl = `/api/intelligence/vision/presence-analytics/?branch_uuid=${selectedBranch}`;
-    const movementsUrl = `/api/intelligence/vision/movement-tracking/?branch_uuid=${selectedBranch}`;
+    const statsUrl = `/intelligence/vision/stats/?branch_uuid=${selectedBranch}`;
+    const trafficUrl = `/intelligence/vision/traffic/?branch_uuid=${selectedBranch}&date=${formattedDate}`;
+    const logsUrl = `/intelligence/vision/presence-analytics/?branch_uuid=${selectedBranch}`;
+    const movementsUrl = `/intelligence/vision/movement-tracking/?branch_uuid=${selectedBranch}`;
     // Using hardcoded terminal ID for demo sync
-    const cartUrl = `/api/intelligence/vision/cart-sync/?terminal_id=TERM_001`;
+    const cartUrl = `/intelligence/vision/cart-sync/?terminal_id=TERM_001`;
 
     Promise.all([
-      fetch(statsUrl).then((r) => r.json()),
-      fetch(trafficUrl).then((r) => r.json()),
-      fetch(logsUrl).then((r) => r.json()),
-      fetch(movementsUrl).then((r) => r.json()),
-      fetch(cartUrl).then((r) => r.json()),
+      api.get(statsUrl),
+      api.get(trafficUrl),
+      api.get(logsUrl),
+      api.get(movementsUrl),
+      api.get(cartUrl),
     ])
-      .then(
-        ([statsData, trafficData, logsResponse, movementsData, cartData]: [
-          VisionStats,
-          TrafficPoint[],
-          PresenceResponse,
-          MovementSession[],
-          CartResponse
-        ]) => {
-          setStats(statsData);
-          setTraffic(trafficData);
-          setLogs(logsResponse.logs);
-          setMovements(movementsData);
+      .then(([statsRes, trafficRes, logsRes, movementsRes, cartRes]) => {
+        const statsData = statsRes.data;
+        const trafficData = trafficRes.data;
+        const logsResponse = logsRes.data;
+        const movementsData = movementsRes.data;
+        const cartData = cartRes.data;
+        setStats(statsData);
+        setTraffic(trafficData);
+        setLogs(logsResponse.logs);
+        setMovements(movementsData);
 
-          if (cartData && cartData.items) {
-            setLiveCartItems(cartData.items);
-          } else {
-            setLiveCartItems([]);
-          }
-
-          setEnvType(statsData.env_type || logsResponse.env_type || "OFFICE");
-          setIsLoading(false);
+        if (cartData && cartData.items) {
+          setLiveCartItems(cartData.items);
+        } else {
+          setLiveCartItems([]);
         }
-      )
+
+        setEnvType(statsData.env_type || logsResponse.env_type || "OFFICE");
+        setIsLoading(false);
+      })
       .catch((err) => {
         console.error("Error fetching vision data:", err);
         setIsLoading(false);
       });
   };
 
+  const fetchCameras = () => {
+    if (selectedBranch === "all") return;
+    api
+      .get(`/intelligence/vision/cameras/?branch_uuid=${selectedBranch}`)
+      .then((res) => setBranchCameras(res.data))
+      .catch((err) => console.error("Error fetching cameras:", err));
+  };
+
   useEffect(() => {
     refreshData();
+    fetchCameras();
   }, [selectedBranch, filterDate]);
 
   const handleManualSubmit = async () => {
@@ -241,13 +259,12 @@ export default function VisionHubPage() {
         payload.person_type = "CUSTOMER";
       }
 
-      const response = await fetch("/api/intelligence/vision/manual-entry/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      const response = await api.post(
+        "/intelligence/vision/manual-entry/",
+        payload
+      );
 
-      if (response.ok) {
+      if (response.status === 200 || response.status === 201) {
         toast.success(`Manual ${manualType} entry saved`);
         setIsManualModalOpen(false);
         refreshData();
@@ -274,6 +291,165 @@ export default function VisionHubPage() {
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
+          <Dialog open={isCameraModalOpen} onOpenChange={setIsCameraModalOpen}>
+            <DialogTrigger asChild>
+              <Button
+                variant="outline"
+                className="bg-primary/10 text-primary border-primary/20 hover:bg-primary/20 flex items-center gap-2"
+              >
+                <Camera className="h-4 w-4" />
+                Manage Cameras
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Branch Camera Management</DialogTitle>
+                <DialogDescription>
+                  Register and manage AI cameras for the selected branch.
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="space-y-6 py-4">
+                {/* Camera List */}
+                <div className="space-y-3">
+                  <h3 className="text-sm font-semibold flex items-center gap-2">
+                    <Users className="h-4 w-4 text-blue-500" />
+                    Active Cameras ({branchCameras.length})
+                  </h3>
+                  <div className="border rounded-xl divide-y bg-muted/30">
+                    {branchCameras.length > 0 ? (
+                      branchCameras.map((cam: any) => (
+                        <div
+                          key={cam.id}
+                          className="p-3 flex items-center justify-between"
+                        >
+                          <div>
+                            <p className="font-medium text-sm">{cam.name}</p>
+                            <div className="flex items-center gap-2 mt-0.5">
+                              <Badge
+                                variant="outline"
+                                className="text-[10px] h-4"
+                              >
+                                {cam.environment_type}
+                              </Badge>
+                              <span className="text-[10px] text-muted-foreground">
+                                {cam.location_description}
+                              </span>
+                            </div>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-rose-500 h-8 w-8 hover:bg-rose-50 hover:text-rose-600"
+                            onClick={async () => {
+                              if (confirm("Delete this camera?")) {
+                                await api.delete(
+                                  `/intelligence/vision/cameras/${cam.id}/`
+                                );
+                                fetchCameras();
+                                refreshData();
+                              }
+                            }}
+                          >
+                            <Plus className="h-4 w-4 rotate-45" />
+                          </Button>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="p-8 text-center text-sm text-muted-foreground italic">
+                        No cameras registered for this branch.
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="h-px bg-border" />
+
+                {/* Add Form */}
+                <div className="space-y-4">
+                  <h3 className="text-sm font-semibold flex items-center gap-2">
+                    <Plus className="h-4 w-4 text-emerald-500" />
+                    Register New AI Camera
+                  </h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2 col-span-2">
+                      <Label>Camera Name</Label>
+                      <Input
+                        value={newCamera.name}
+                        onChange={(e) =>
+                          setNewCamera({ ...newCamera, name: e.target.value })
+                        }
+                        placeholder="e.g. Warehouse Entrance Nord"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Environment Type</Label>
+                      <Select
+                        value={newCamera.environment_type}
+                        onValueChange={(v) =>
+                          setNewCamera({ ...newCamera, environment_type: v })
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="RETAIL">Retail Store</SelectItem>
+                          <SelectItem value="FACTORY">Factory Floor</SelectItem>
+                          <SelectItem value="OFFICE">Head Office</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Location / IP</Label>
+                      <Input
+                        value={newCamera.location_description}
+                        onChange={(e) =>
+                          setNewCamera({
+                            ...newCamera,
+                            location_description: e.target.value,
+                          })
+                        }
+                        placeholder="Optional details..."
+                      />
+                    </div>
+                  </div>
+                  <Button
+                    className="w-full bg-emerald-600 hover:bg-emerald-700"
+                    disabled={isCameraSubmitting}
+                    onClick={async () => {
+                      if (!newCamera.name)
+                        return toast.error("Name is required");
+
+                      setIsCameraSubmitting(true);
+                      try {
+                        await api.post("/intelligence/vision/cameras/", {
+                          ...newCamera,
+                          branch_uuid: selectedBranch,
+                          is_active: true,
+                        });
+                        toast.success("Camera registered successfully");
+                        fetchCameras();
+                        refreshData();
+                        setNewCamera({
+                          name: "",
+                          environment_type: "RETAIL",
+                          location_description: "",
+                        });
+                      } catch (e) {
+                        toast.error("Failed to register camera");
+                      } finally {
+                        setIsCameraSubmitting(false);
+                      }
+                    }}
+                  >
+                    {isCameraSubmitting ? "Processing..." : "Register Camera"}
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+
           <Dialog open={isManualModalOpen} onOpenChange={setIsManualModalOpen}>
             <DialogTrigger asChild>
               <Button

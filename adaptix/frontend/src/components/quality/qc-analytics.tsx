@@ -38,7 +38,11 @@ export function QCAnalytics({ data }: QCAnalyticsProps) {
   const defectData = useMemo(() => {
     const counts: Record<string, number> = {};
     data.forEach((item) => {
-      if (item.status === "REJECTED" || item.status === "REWORK") {
+      if (
+        item.status === "REJECTED" ||
+        item.status === "REWORK" ||
+        item.status === "FAILED"
+      ) {
         const cat = item.defect_category_name || "Uncategorized";
         counts[cat] = (counts[cat] || 0) + 1;
       }
@@ -92,15 +96,25 @@ export function QCAnalytics({ data }: QCAnalyticsProps) {
         </CardHeader>
         <CardContent>
           <div className="h-[250px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={defectData}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="name" fontSize={12} />
-                <YAxis fontSize={12} />
-                <Tooltip />
-                <Bar dataKey="count" fill="#ef4444" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+            {defectData.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={defectData}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="name" fontSize={12} />
+                  <YAxis fontSize={12} />
+                  <Tooltip />
+                  <Bar dataKey="count" fill="#ef4444" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-full flex flex-col items-center justify-center text-muted-foreground bg-slate-50 dark:bg-slate-900/50 rounded-lg border border-dashed">
+                <p className="text-xs">No defects recorded yet.</p>
+                <p className="text-[10px] opacity-60 mt-1">
+                  This chart will show common failure reasons once you have
+                  Rejected/Failed units.
+                </p>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>

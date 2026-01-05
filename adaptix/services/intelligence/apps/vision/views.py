@@ -1,9 +1,24 @@
+from rest_framework import viewsets, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
 from django.utils import timezone
 from .models import Camera, FootfallStats, PresenceLog, VisualCart
+from .serializers import CameraSerializer
 import logging
+
+class CameraViewSet(viewsets.ModelViewSet):
+    """
+    CRUD for AI Cameras.
+    """
+    queryset = Camera.objects.all()
+    serializer_class = CameraSerializer
+
+    def get_queryset(self):
+        branch_uuid = self.request.query_params.get('branch_uuid')
+        queryset = Camera.objects.all()
+        if branch_uuid:
+            queryset = queryset.filter(branch_uuid=branch_uuid)
+        return queryset
 
 logger = logging.getLogger(__name__)
 
@@ -288,10 +303,7 @@ class FootfallAnalyticsView(APIView):
                 "exits": s.exits
             })
 
-        return Response({
-            "env_type": env_type,
-            "logs": data
-        })
+        return Response(data)
 
 class MovementTrackingView(APIView):
     """

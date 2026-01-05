@@ -28,6 +28,10 @@ class QualityStandardViewSet(viewsets.ModelViewSet):
     permission_classes = [HasPermission]
     required_permission = "quality.standard"
 
+import traceback
+from rest_framework import viewsets, permissions
+from rest_framework.response import Response
+# ...
 class InspectionViewSet(viewsets.ModelViewSet):
     queryset = Inspection.objects.all()
     serializer_class = InspectionSerializer

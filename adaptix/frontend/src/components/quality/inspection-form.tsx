@@ -99,6 +99,10 @@ export function InspectionForm({ onSuccess, onCancel }: InspectionFormProps) {
               <FormControl>
                 <Input placeholder="e.g. PO-123 UUID" {...field} />
               </FormControl>
+              <p className="text-[11px] text-muted-foreground mt-1">
+                Tip: Copy UUID from <strong>Shop Floor Control</strong> or{" "}
+                <strong>Production Orders</strong> page.
+              </p>
               <FormMessage />
             </FormItem>
           )}

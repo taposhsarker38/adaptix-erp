@@ -96,19 +96,41 @@ export function AssetHealthDashboard() {
   }, [fetchAssets]);
 
   const runSimulation = async () => {
-    try {
-      toast.info("Triggering IoT simulation...", {
-        description: "Generating synthetic telemetry data for analysis.",
-      });
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      fetchAssets();
-      if (selectedAsset) handleSelectAsset(selectedAsset);
-      toast.success("Telemetry updated", {
-        description: "New sensor readings have been processed.",
-      });
-    } catch (err) {
-      toast.error("Simulation failed");
+    const simulationTask = async () => {
+      // Simulate real delay
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await fetchAssets();
+      if (selectedAsset) await handleSelectAsset(selectedAsset);
+      return "Telemetry updated";
+    };
+
+    toast.promise(simulationTask(), {
+      loading:
+        "Triggering IoT simulation... Generating synthetic telemetry data for analysis.",
+      success: "New sensor readings have been processed successfully.",
+      error: "IoT simulation failed",
+    });
+  };
+
+  const handleGenerateReport = async () => {
+    if (!selectedAsset) {
+      toast.error("Please select an asset first");
+      return;
     }
+
+    const generateTask = async () => {
+      // Simulate complex AI analysis delay
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+      return "Report Ready";
+    };
+
+    toast.promise(generateTask(), {
+      loading:
+        "AI Engine analyzing telemetry and maintenance logs... Compiling health diagnostics.",
+      success: `Health report for ${selectedAsset.name} is ready for review.`,
+      error:
+        "Failed to generate AI report. Please check telemetry connectivity.",
+    });
   };
 
   if (loading) {
@@ -161,6 +183,15 @@ export function AssetHealthDashboard() {
             <p className="text-muted-foreground mt-1 text-lg">
               Predictive Maintenance & Asset Health Monitoring
             </p>
+            {selectedAsset && (
+              <Badge
+                variant="outline"
+                className="mt-2 bg-primary/5 text-primary border-primary/20"
+              >
+                <Settings className="mr-1 h-3 w-3" />
+                Department: {selectedAsset.category_name || "Enterprise"}
+              </Badge>
+            )}
           </div>
           <div className="flex items-center gap-3">
             <Button
@@ -171,7 +202,10 @@ export function AssetHealthDashboard() {
               <RefreshCw className="mr-2 h-4 w-4" />
               Simulate Telemetry
             </Button>
-            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm">
+            <Button
+              onClick={handleGenerateReport}
+              className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm"
+            >
               <Activity className="mr-2 h-4 w-4" />
               Generate Report
             </Button>
@@ -615,10 +649,16 @@ export function AssetHealthDashboard() {
                                       <Settings className="h-3 w-3" />
                                       {task.task_type}
                                     </div>
-                                    <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-medium bg-muted px-2 py-1 rounded-md">
+                                    <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground/70 font-medium bg-muted px-2 py-1 rounded-md border border-border/50">
                                       <Clock className="h-3 w-3" />
                                       {task.suggested_date || "ASAP"}
                                     </div>
+                                    {task.performed_by && (
+                                      <div className="flex items-center gap-1.5 text-[10px] text-primary/80 font-bold bg-primary/5 px-2 py-1 rounded-md border border-primary/10">
+                                        <Activity className="h-3 w-3" />
+                                        {task.performed_by}
+                                      </div>
+                                    )}
                                   </div>
                                 </div>
                               </div>

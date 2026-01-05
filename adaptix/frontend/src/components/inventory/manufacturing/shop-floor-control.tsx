@@ -9,6 +9,7 @@ import {
   Clock,
   UserPlus,
   ArrowRight,
+  Copy,
 } from "lucide-react";
 import api from "@/lib/api";
 import { toast } from "sonner";
@@ -176,10 +177,25 @@ export function ShopFloorControl() {
           <>
             <div className="p-4 border-b bg-primary/5 flex justify-between items-center">
               <div>
-                <h3 className="font-bold">
+                <h3 className="font-bold flex items-center gap-2">
                   Execution Plan: PO-{selectedOrder.id}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6"
+                    onClick={() => {
+                      navigator.clipboard.writeText(selectedOrder.uuid);
+                      toast.success("UUID Copied!");
+                    }}
+                    title="Copy UUID for Inspection"
+                  >
+                    <Copy className="h-3 w-3" />
+                  </Button>
                 </h3>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-[10px] text-muted-foreground font-mono">
+                  UUID: {selectedOrder.uuid}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
                   {selectedOrder.source_order_number
                     ? `Project Link: ${selectedOrder.source_order_number}`
                     : "Internal Production"}

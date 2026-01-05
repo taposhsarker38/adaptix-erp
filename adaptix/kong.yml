@@ -322,7 +322,7 @@ services:
               run_on_preflight: false
 
   - name: quality-service
-    url: http://quality-service:8000
+    url: http://adaptix-quality-service:8000
     routes:
       - id: 885767ba-4dc4-4c97-b9ff-76eccee23999
         name: quality-health-route
@@ -372,7 +372,7 @@ services:
               run_on_preflight: false
 
   - name: intelligence-service
-    url: http://intelligence-service:8000
+    url: http://adaptix-ai-service:8000
     routes:
       - id: d6ddc7b4-ae94-4c97-b9ff-76eccee23999
         name: intelligence-health-route

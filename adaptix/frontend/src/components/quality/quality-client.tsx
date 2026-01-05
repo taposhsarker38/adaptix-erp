@@ -11,9 +11,31 @@ import {
 } from "@/components/ui/card";
 import { InspectionList } from "./inspection-list";
 import { QualityStandardList } from "./standard-list";
-import { WorkflowAnalytics } from "@/components/analytics/workflow-analytics";
+import { QCAnalytics } from "./qc-analytics";
+import { qualityApi } from "@/lib/api/quality";
+import { useEffect } from "react";
+import { Loader2 } from "lucide-react";
 
 export function QualityClient() {
+  const [inspections, setInspections] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const data = await qualityApi.getInspections();
+      setInspections(data);
+    } catch (e) {
+      console.error("Failed to fetch inspections for analytics");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
@@ -61,7 +83,23 @@ export function QualityClient() {
         </TabsContent>
 
         <TabsContent value="analytics" className="space-y-4">
-          <WorkflowAnalytics />
+          <Card>
+            <CardHeader>
+              <CardTitle>Continuous Improvement Metrics</CardTitle>
+              <CardDescription>
+                Real-time quality performance and defect analysis.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {loading ? (
+                <div className="h-[300px] flex items-center justify-center">
+                  <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                </div>
+              ) : (
+                <QCAnalytics data={inspections} />
+              )}
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>

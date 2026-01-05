@@ -36,9 +36,10 @@ class FinancialAnomaly(models.Model):
     
     reasoning = models.TextField()
     is_resolved = models.BooleanField(default=False)
+    is_fraud = models.BooleanField(default=False)
     resolution_note = models.TextField(blank=True)
     resolved_at = models.DateTimeField(null=True, blank=True)
-    resolved_by = models.UUIDField(null=True, blank=True)
+    resolved_by = models.CharField(max_length=100, null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
