@@ -8,6 +8,9 @@ class Warehouse(SoftDeleteModel):
     
     # Optional: Warehouse Type (e.g. 'Store', 'Main', 'Van')
     type = models.CharField(max_length=50, default='main')
+    
+    # Branch Linkage
+    branch_uuid = models.UUIDField(db_index=True, null=True, blank=True)
 
     def __str__(self):
         return self.name

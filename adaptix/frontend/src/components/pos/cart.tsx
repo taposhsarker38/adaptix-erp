@@ -9,6 +9,7 @@ import {
   Keyboard,
   Wand2,
   Banknote,
+  ArrowLeft,
 } from "lucide-react";
 import api from "@/lib/api";
 import { toast } from "sonner";
@@ -33,6 +34,7 @@ interface CartProps {
   selectedCustomer: any;
   onCustomerSelect: (customer: any) => void;
   isUpdatingPrices?: boolean;
+  onBack?: () => void;
 }
 
 export const Cart: React.FC<CartProps> = ({
@@ -48,6 +50,7 @@ export const Cart: React.FC<CartProps> = ({
   selectedCustomer,
   onCustomerSelect,
   isUpdatingPrices = false,
+  onBack,
 }) => {
   const [loadingAI, setLoadingAI] = React.useState(false);
 
@@ -83,9 +86,21 @@ export const Cart: React.FC<CartProps> = ({
     <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-900/50">
       <div className="p-4 border-b space-y-3 bg-white dark:bg-slate-950">
         <div className="flex justify-between items-center">
-          <h2 className="font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
-            <ShoppingCart className="h-5 w-5 text-primary" /> Active Order
-          </h2>
+          <div className="flex items-center gap-2">
+            {onBack && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="lg:hidden h-8 w-8 -ml-2"
+                onClick={onBack}
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+            )}
+            <h2 className="font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+              <ShoppingCart className="h-5 w-5 text-primary" /> Active Order
+            </h2>
+          </div>
           <Button
             variant="ghost"
             size="sm"
@@ -124,7 +139,7 @@ export const Cart: React.FC<CartProps> = ({
         )}
       </div>
 
-      <ScrollArea className="flex-1 px-4 py-2">
+      <ScrollArea className="flex-1 min-h-0 px-4 py-2">
         {items.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full min-h-75 text-muted-foreground opacity-40">
             <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4">
@@ -210,13 +225,13 @@ export const Cart: React.FC<CartProps> = ({
             </span>
           </div>
         </div>
-        <div className="pt-2 flex gap-2">
+        <div className="pt-2 flex flex-wrap gap-2">
           {[50, 100, 500, 1000].map((amt) => (
             <Button
               key={amt}
               variant="outline"
               size="sm"
-              className="flex-1 h-10 font-bold border-emerald-100 bg-emerald-50/50 text-emerald-700 hover:bg-emerald-100 hover:border-emerald-200"
+              className="flex-1 min-w-16 h-10 font-bold border-emerald-100 bg-emerald-50/50 text-emerald-700 hover:bg-emerald-100 hover:border-emerald-200"
               onClick={() => onQuickCheckout(amt)}
               disabled={items.length === 0}
             >

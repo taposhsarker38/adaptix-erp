@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import Link from "next/link";
 
 import { motion, AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
@@ -26,6 +27,14 @@ import {
   Plus,
   Coffee,
   Plane,
+  Server,
+  Cloud,
+  Network,
+  Activity,
+  Database,
+  Terminal,
+  RefreshCw,
+  LayoutDashboard,
 } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -118,6 +127,16 @@ interface CartResponse {
   updated_at: string;
 }
 
+interface FaceSyncStatus {
+  branch_uuid: string;
+  biometric_stats: {
+    total: number;
+    synced: number;
+    pending: number;
+  };
+  last_global_update: string;
+}
+
 interface MovementSession {
   person_id: string;
   out_time: string;
@@ -143,6 +162,9 @@ export default function VisionHubPage() {
   const [isCameraModalOpen, setIsCameraModalOpen] = useState(false);
   const [branchCameras, setBranchCameras] = useState<any[]>([]);
   const [isCameraSubmitting, setIsCameraSubmitting] = useState(false);
+  const [faceSyncStatus, setFaceSyncStatus] = useState<FaceSyncStatus | null>(
+    null
+  );
   const [newCamera, setNewCamera] = useState({
     name: "",
     environment_type: "RETAIL",
@@ -213,6 +235,16 @@ export default function VisionHubPage() {
         setTraffic(trafficData);
         setLogs(logsResponse.logs);
         setMovements(movementsData);
+
+        // Fetch Face Sync Status
+        api
+          .get(
+            `/intelligence/vision/face-sync-status/?branch_uuid=${selectedBranch}`
+          )
+          .then((res) => setFaceSyncStatus(res.data))
+          .catch((err) =>
+            console.error("Error fetching face sync status:", err)
+          );
 
         if (cartData && cartData.items) {
           setLiveCartItems(cartData.items);
@@ -449,6 +481,16 @@ export default function VisionHubPage() {
               </div>
             </DialogContent>
           </Dialog>
+
+          <Link href="/dashboard/intelligence/vision-hub/simulator">
+            <Button
+              variant="outline"
+              className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 hover:bg-emerald-500/20 flex items-center gap-2 font-semibold"
+            >
+              <Terminal className="h-4 w-4" />
+              Webcam Simulator
+            </Button>
+          </Link>
 
           <Dialog open={isManualModalOpen} onOpenChange={setIsManualModalOpen}>
             <DialogTrigger asChild>
@@ -703,6 +745,13 @@ export default function VisionHubPage() {
             >
               <FileText className="h-4 w-4" />
               Intelligence Reports
+            </TabsTrigger>
+            <TabsTrigger
+              value="architecture"
+              className="flex items-center gap-2 py-2 px-4 bg-primary/5 hover:bg-primary/10 text-primary data-[state=active]:bg-primary data-[state=active]:text-white"
+            >
+              <Server className="h-4 w-4" />
+              Edge Architecture
             </TabsTrigger>
           </TabsList>
 
@@ -1266,6 +1315,274 @@ export default function VisionHubPage() {
               </p>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="architecture" className="space-y-6">
+          <div className="grid grid-cols-1 gap-6">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="relative min-h-[600px] p-8 rounded-3xl bg-slate-900 border border-slate-800 shadow-2xl overflow-hidden"
+            >
+              {/* Background Glows */}
+              <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
+              <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-[120px] pointer-events-none" />
+
+              {/* Cloud Layer */}
+              <div className="flex justify-center mb-16 relative z-10">
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  className="w-full max-w-2xl p-6 rounded-2xl bg-slate-800/50 border border-primary/20 backdrop-blur-md shadow-lg"
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="p-3 bg-primary/10 rounded-xl">
+                        <Cloud className="h-8 w-8 text-primary shadow-glow" />
+                      </div>
+                      <div>
+                        <h2 className="text-xl font-bold text-white">
+                          Central Cloud Server
+                        </h2>
+                        <p className="text-xs text-slate-400 uppercase tracking-widest font-bold">
+                          Global Master Node
+                        </p>
+                      </div>
+                    </div>
+                    <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20">
+                      Operational
+                    </Badge>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="p-3 bg-slate-900/50 rounded-lg border border-slate-700/50 flex items-center gap-2">
+                      <Database className="h-4 w-4 text-blue-400" />
+                      <span className="text-xs font-medium text-slate-300">
+                        Central DB
+                      </span>
+                    </div>
+                    <div className="p-3 bg-slate-900/50 rounded-lg border border-slate-700/50 flex items-center gap-2">
+                      <Users className="h-4 w-4 text-primary" />
+                      <span className="text-xs font-medium text-slate-300">
+                        Global Customer IDs
+                      </span>
+                    </div>
+                    <div className="p-3 bg-slate-900/50 rounded-lg border border-slate-700/50 flex items-center gap-2">
+                      <LayoutDashboard className="h-4 w-4 text-amber-400" />
+                      <span className="text-xs font-medium text-slate-300">
+                        HQ Dashboard
+                      </span>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {faceSyncStatus && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="absolute right-8 top-8 z-30"
+                  >
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        api
+                          .get(
+                            `/intelligence/vision/face-sync-status/?branch_uuid=${selectedBranch}`
+                          )
+                          .then((res) => {
+                            setFaceSyncStatus(res.data);
+                            toast.success("Biometric Sync Updated");
+                          });
+                      }}
+                      className="bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 shadow-xl gap-2"
+                    >
+                      <RefreshCw className="h-4 w-4" />
+                      Refresh Sync
+                    </Button>
+                  </motion.div>
+                )}
+              </div>
+
+              {/* Connecting Lines & Flow Labels */}
+              <div className="absolute left-1/2 top-[180px] bottom-[300px] w-px bg-gradient-to-b from-primary/50 via-slate-700 to-transparent z-0" />
+              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 space-y-24 z-20">
+                <motion.div
+                  animate={{ y: [0, 40, 0] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                  className="px-4 py-1.5 rounded-full bg-slate-800 border border-slate-600 text-[10px] font-bold text-slate-400 shadow-xl flex items-center gap-2"
+                >
+                  <RefreshCw className="h-3 w-3 animate-spin-slow" />
+                  SYNC VIA CLOUD RELAY
+                </motion.div>
+
+                {faceSyncStatus && (
+                  <motion.div
+                    animate={{ scale: [1, 1.05, 1] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    className="flex flex-col items-center gap-1"
+                  >
+                    <Badge
+                      variant="outline"
+                      className="bg-primary/10 text-primary border-primary/30 px-3 py-1 text-xs shadow-glow"
+                    >
+                      {faceSyncStatus.biometric_stats.synced} Global IDs Active
+                    </Badge>
+                    <span className="text-[10px] text-slate-500 font-mono">
+                      Last Update:{" "}
+                      {format(
+                        new Date(faceSyncStatus.last_global_update),
+                        "HH:mm:ss"
+                      )}
+                    </span>
+                  </motion.div>
+                )}
+              </div>
+
+              {/* Stores Layer */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-12 relative z-10">
+                {/* Store Card Macro */}
+                {["DHANMONDI", "UTTARA"].map((store, idx) => (
+                  <motion.div
+                    key={store}
+                    initial={{ x: idx === 0 ? -20 : 20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    className="p-6 rounded-3xl bg-slate-800/40 border border-slate-700/50 backdrop-blur-sm"
+                  >
+                    <div className="flex items-center justify-between mb-8 border-b border-slate-700/50 pb-4">
+                      <div>
+                        <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                          <MapPin className="h-5 w-5 text-rose-500" />
+                          STORE {String.fromCharCode(65 + idx)} - {store}
+                        </h3>
+                        <p className="text-[10px] text-slate-500 mt-1 uppercase tracking-widest font-bold">
+                          Edge Processing Unit Active
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                        <span className="text-[10px] font-bold text-emerald-500">
+                          LIVE
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-6">
+                      {/* Step 1: Cameras */}
+                      <div className="relative pl-8 before:absolute before:left-3 before:top-2 before:bottom-0 before:w-px before:bg-slate-700">
+                        <div className="flex items-center gap-4 mb-4">
+                          <div className="h-8 w-8 rounded-lg bg-slate-900 border border-slate-700 flex items-center justify-center relative shadow-inner">
+                            <Camera className="h-4 w-4 text-slate-400" />
+                            <div className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
+                          </div>
+                          <div>
+                            <p className="text-xs font-bold text-slate-300">
+                              CCTV Cameras (IP Cam)
+                            </p>
+                            <p className="text-[10px] text-slate-500">
+                              Multistreaming active...
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Step 2: Edge Server */}
+                        <motion.div
+                          whileHover={{
+                            scale: 1.02,
+                            backgroundColor: "rgba(30, 41, 59, 0.8)",
+                          }}
+                          className="flex items-center gap-4 p-4 rounded-2xl bg-slate-900 border border-primary/20 shadow-lg relative cursor-default"
+                        >
+                          <div className="p-3 bg-primary/10 rounded-xl">
+                            <Server className="h-6 w-6 text-primary" />
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-sm font-black text-white uppercase italic tracking-tighter">
+                              Local Edge Server
+                            </p>
+                            <div className="flex gap-2 mt-1">
+                              <Badge className="bg-primary/20 text-[9px] h-4 text-primary border-none">
+                                YOLO v8
+                              </Badge>
+                              <Badge className="bg-blue-500/20 text-[9px] h-4 text-blue-400 border-none">
+                                Tracking
+                              </Badge>
+                            </div>
+                          </div>
+                          <motion.div
+                            animate={{ opacity: [0.4, 1, 0.4] }}
+                            transition={{ duration: 2, repeat: Infinity }}
+                            className="text-[9px] font-mono text-primary"
+                          >
+                            98.2% FPS
+                          </motion.div>
+                        </motion.div>
+
+                        {/* Step 3: Local DB */}
+                        <div className="mt-4 grid grid-cols-1 gap-3">
+                          <div className="flex items-center gap-4 p-3 rounded-xl bg-slate-900/50 border border-slate-800">
+                            <Database className="h-4 w-4 text-slate-500" />
+                            <div>
+                              <p className="text-xs font-semibold text-slate-400">
+                                Local DB (Temp Cache)
+                              </p>
+                              <p className="text-[9px] text-slate-600">
+                                Syncing every 2s...
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-4 p-3 rounded-xl bg-slate-900/50 border border-slate-800">
+                            <Terminal className="h-4 w-4 text-slate-500" />
+                            <div>
+                              <p className="text-xs font-semibold text-slate-400">
+                                Auto-Invoice Generator
+                              </p>
+                              <p className="text-[9px] text-slate-600">
+                                POS Integrator module ready
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-4 p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/30">
+                            <ShoppingCart className="h-4 w-4 text-indigo-400" />
+                            <div>
+                              <p className="text-xs font-semibold text-indigo-300">
+                                POS Kiosk (Payment)
+                              </p>
+                              <p className="text-[9px] text-indigo-500/70 font-bold uppercase">
+                                Ready for Sync
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Legend/Footer */}
+              <div className="mt-12 flex justify-center gap-8 border-t border-slate-800 pt-8 relative z-10">
+                <div className="flex items-center gap-2">
+                  <div className="h-2 w-2 rounded-full bg-primary shadow-[0_0_8px_rgba(var(--primary),0.5)]" />
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                    Edge Compute
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="h-2 w-2 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                    Cloud Relay
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                    Global Sync
+                  </span>
+                </div>
+              </div>
+            </motion.div>
+          </div>
         </TabsContent>
       </Tabs>
     </div>

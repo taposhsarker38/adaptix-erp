@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { Search, Keyboard } from "lucide-react";
+import { format } from "date-fns";
 import api from "@/lib/api";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -29,6 +30,8 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ onAddToCart }) => {
   const [search, setSearch] = React.useState("");
   const [categoryFilter, setCategoryFilter] = React.useState("all");
   const [selectedIndex, setSelectedIndex] = React.useState(0);
+  const [lastUpdated, setLastUpdated] = React.useState<Date | null>(null);
+  const [isOfflineData, setIsOfflineData] = React.useState(false);
 
   const searchRef = React.useRef<HTMLInputElement>(null);
   const scrollRef = React.useRef<HTMLDivElement>(null);
@@ -36,6 +39,22 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ onAddToCart }) => {
   const fetchData = React.useCallback(async () => {
     try {
       setLoading(true);
+
+      if (!navigator.onLine) {
+        console.info("ProductGrid: Offline detected, loading from local DB");
+        const { getLocalProducts, getLocalCategories } = await import(
+          "@/lib/offline/CatalogSync"
+        );
+        const prods = await getLocalProducts();
+        const cats = await getLocalCategories();
+
+        setProducts(prods);
+        setCategories(cats);
+        setIsOfflineData(true);
+        setLastUpdated(new Date()); // Best guess for current view
+        return;
+      }
+
       const [prodRes, catRes] = await Promise.all([
         api.get("product/products/"),
         api.get("product/categories/"),
@@ -55,9 +74,19 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ onAddToCart }) => {
 
       setProducts(prods);
       setCategories(cats);
+      setIsOfflineData(false);
+      setLastUpdated(new Date());
     } catch (error) {
       console.error(error);
       toast.error("Failed to load products");
+
+      // Fallback to local on error if possible
+      const { getLocalProducts, getLocalCategories } = await import(
+        "@/lib/offline/CatalogSync"
+      );
+      const prods = await getLocalProducts();
+      setProducts(prods);
+      setIsOfflineData(true);
     } finally {
       setLoading(false);
     }
@@ -117,37 +146,56 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ onAddToCart }) => {
 
   return (
     <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-900/10">
-      <div className="p-3 border-b bg-white dark:bg-slate-950 flex items-center justify-between gap-4">
-        <div className="flex-1 relative">
+      <div className="p-3 border-b bg-white dark:bg-slate-950 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="w-full sm:flex-1 relative">
           <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
           <Input
             ref={searchRef}
             placeholder="Search SKU or Name... [/]"
-            className="pl-9 bg-slate-50 border-slate-200 focus:bg-white transition-all h-9"
+            className="pl-9 bg-slate-50 border-slate-200 focus:bg-white transition-all h-9 w-full"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
 
-        <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-          <SelectTrigger className="w-[160px] h-9">
-            <SelectValue placeholder="Category" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Items</SelectItem>
-            {categories.map((c) => (
-              <SelectItem key={c.id} value={String(c.id)}>
-                {c.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+            <SelectTrigger className="w-full sm:w-40 h-9">
+              <SelectValue placeholder="Category" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Items</SelectItem>
+              {categories.map((c) => (
+                <SelectItem key={c.id} value={String(c.id)}>
+                  {c.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-        <div className="hidden lg:flex items-center gap-2 text-xs text-muted-foreground whitespace-nowrap">
-          <Badge variant="secondary" className="font-mono px-1 h-5 text-[10px]">
-            ALT+S
-          </Badge>{" "}
-          Search
+          <div className="hidden lg:flex items-center gap-2 text-xs text-muted-foreground whitespace-nowrap">
+            {isOfflineData && (
+              <Badge
+                variant="outline"
+                className="bg-orange-50 text-orange-600 border-orange-200 gap-1 h-6"
+              >
+                <div className="w-1.5 h-1.5 rounded-full bg-orange-600 animate-pulse" />
+                OFFLINE CACHE
+              </Badge>
+            )}
+            {lastUpdated && !isOfflineData && (
+              <span className="text-[10px] text-slate-400">
+                Updated: {format(lastUpdated, "HH:mm")}
+              </span>
+            )}
+            <Badge
+              variant="secondary"
+              className="font-mono px-1 h-5 text-[10px]"
+            >
+              ALT+S
+            </Badge>{" "}
+            Search
+          </div>
         </div>
       </div>
 
@@ -160,7 +208,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ onAddToCart }) => {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
             {filteredProducts.map((product, idx) => (
               <div
                 key={product.id}

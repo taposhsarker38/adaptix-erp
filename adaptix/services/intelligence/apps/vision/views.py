@@ -2,9 +2,10 @@ from rest_framework import viewsets, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.utils import timezone
-from .models import Camera, FootfallStats, PresenceLog, VisualCart
+from .models import Camera, FootfallStats, PresenceLog, VisualCart, FaceEmbedding
 from .serializers import CameraSerializer
 import logging
+import uuid
 
 class CameraViewSet(viewsets.ModelViewSet):
     """
@@ -122,6 +123,9 @@ class PresenceAnalytics(APIView):
             "logs": data
         }, status=status.HTTP_200_OK)
 
+import json
+import urllib.request
+
 class VisualCartSync(APIView):
     """
     Endpoint for POS terminals to claim visual carts.
@@ -134,50 +138,54 @@ class VisualCartSync(APIView):
         if session_id:
             try:
                 cart = VisualCart.objects.get(session_id=session_id)
-                # Allow retrieving already converted carts for review
             except VisualCart.DoesNotExist:
                 return Response({"error": "Cart not found"}, status=404)
         elif terminal_id:
             # Fetch latest unconverted cart for this terminal
             cart = VisualCart.objects.filter(pos_terminal_id=terminal_id, is_converted=False).order_by('-updated_at').first()
             if not cart:
-                # Create a specific mock cart for demo if none exists
+                # Create a specific mock cart for demo if none exists using a valid UUID if possible 
+                # or just use a placeholder if the DB is empty.
                 cart = VisualCart.objects.create(
                      session_id=f"demo-{uuid.uuid4()}",
                      pos_terminal_id=terminal_id,
-                     detected_items=["smart-water-500ml", "lays-classic-small"]
+                     detected_items=[] # Start empty for demo
                 )
         else:
             return Response({"error": "Terminal or Session ID required"}, status=400)
 
-        # Enrich items (Mocking Product Service lookup for Demo)
+        # Enrichment logic: Map detected UUIDs to real product details
         enriched_items = []
-        for item_id in cart.detected_items:
-            # In production, call Product Service via gRPC/HTTP
-            if "water" in item_id:
-                 enriched_items.append({
-                     "id": "prod-uuid-water-123",
-                     "name": "Smart Water 500ml",
-                     "sku": "SW-500",
-                     "sales_price": 1.50,
-                     "quantity": 1
-                 })
-            elif "lays" in item_id:
-                 enriched_items.append({
-                     "id": "prod-uuid-lays-456",
-                     "name": "Lays Classic Small",
-                     "sku": "LAY-S",
-                     "sales_price": 0.80,
-                     "quantity": 2 # AI detected 2 bags
-                 })
-            else:
-                 enriched_items.append({
-                     "id": f"prod-{uuid.uuid4()}",
-                     "name": "Unknown Item",
-                     "sku": "UNKNOWN",
-                     "sales_price": 5.00,
-                     "quantity": 1
-                 })
+        
+        # Count occurrences for quantity
+        from collections import Counter
+        item_counts = Counter(cart.detected_items)
+
+        for item_id, count in item_counts.items():
+            try:
+                # Internal cluster-local call to Product Service
+                # Service name is 'product' in docker-compose
+                url = f"http://product:8000/api/product/variants/{item_id}/"
+                with urllib.request.urlopen(url, timeout=2) as response:
+                    data = json.loads(response.read().decode())
+                    enriched_items.append({
+                        "id": str(data['id']),
+                        "name": data.get('product_name', 'Product'),
+                        "variant_name": data.get('name', ''),
+                        "sku": data.get('sku', 'N/A'),
+                        "sales_price": float(data.get('price', 0)),
+                        "quantity": count
+                    })
+            except Exception as e:
+                logger.error(f"Failed to enrich AI item {item_id}: {e}")
+                # Fallback for demo/missing products
+                enriched_items.append({
+                    "id": item_id,
+                    "name": f"Unknown Item ({item_id[:8]})",
+                    "sku": "UNKNOWN",
+                    "sales_price": 0.0,
+                    "quantity": count
+                })
 
         return Response({
             "session_id": cart.session_id,
@@ -404,3 +412,66 @@ class ManualVisionEntry(APIView):
             return Response({"status": "presence_logged_manually"})
 
         return Response({"error": "Invalid entry type"}, status=400)
+
+class FaceRegistrationView(APIView):
+    """
+    Local registration endpoint for biometric data.
+    When a customer is registered, the local edge server sends the embedding here.
+    """
+    def post(self, request):
+        customer_uuid = request.data.get('customer_uuid')
+        embedding = request.data.get('embedding')
+        branch_uuid = request.data.get('branch_uuid')
+        version = request.data.get('version', 'v1')
+
+        if not embedding or not branch_uuid:
+            return Response({"error": "embedding and branch_uuid are required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        face = FaceEmbedding.objects.create(
+            customer_uuid=customer_uuid,
+            embedding=embedding,
+            branch_uuid=branch_uuid,
+            version=version
+        )
+
+        # Trigger Global Sync Event via RabbitMQ Relay
+        try:
+            from adaptix_core.messaging import publish_event
+            publish_event("events", "face.registered", {
+                "face_uuid": str(face.uuid),
+                "customer_uuid": str(face.customer_uuid) if face.customer_uuid else None,
+                "embedding": face.embedding,
+                "branch_uuid": str(face.branch_uuid),
+                "version": face.version
+            })
+            face.is_synced = True
+            face.save()
+        except Exception as e:
+            logger.error(f"Failed to publish face registration event: {e}")
+
+        return Response({
+            "status": "face_registered", 
+            "face_uuid": str(face.uuid),
+            "synced_to_cloud": face.is_synced
+        }, status=status.HTTP_201_CREATED)
+
+class FaceSyncView(APIView):
+    """
+    Utility view to check sync status for a branch.
+    """
+    def get(self, request):
+        branch_uuid = request.query_params.get('branch_uuid')
+        if not branch_uuid:
+            return Response({"error": "branch_uuid is required"}, status=400)
+            
+        stats = FaceEmbedding.objects.filter(branch_uuid=branch_uuid).aggregate(
+            total=Count('id'),
+            synced=Count('id', filter=Q(is_synced=True)),
+            pending=Count('id', filter=Q(is_synced=False))
+        )
+        
+        return Response({
+            "branch_uuid": branch_uuid,
+            "biometric_stats": stats,
+            "last_global_update": timezone.now() # Mocked timestamp
+        })

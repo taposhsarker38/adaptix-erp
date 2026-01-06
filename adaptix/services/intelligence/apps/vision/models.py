@@ -56,3 +56,17 @@ class VisualCart(models.Model):
     is_converted = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+class FaceEmbedding(models.Model):
+    """Mathematical representation of a customer's face for global recognition."""
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    customer_uuid = models.UUIDField(db_index=True, null=True, blank=True)
+    embedding = models.JSONField() # Mathematical vector [0.1, -0.2, ...]
+    version = models.CharField(max_length=50, default="v1") # model version
+    branch_uuid = models.UUIDField(db_index=True) # Where it was originally registered
+    is_synced = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Face {self.uuid} (Customer: {self.customer_uuid})"
