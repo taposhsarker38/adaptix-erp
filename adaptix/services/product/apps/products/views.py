@@ -89,10 +89,21 @@ class ProductViewSet(BaseCompanyViewSet):
             )
 
 
+from rest_framework.permissions import AllowAny
+
 class ProductVariantViewSet(BaseCompanyViewSet):
     queryset = ProductVariant.objects.all()
     serializer_class = ProductVariantSerializer
+    permission_classes = [AllowAny] # Allowed for AI enrichment lookups
     required_permission = "view_product"
+
+    def get_queryset(self):
+        ctx = super().get_queryset()
+        if ctx.exists():
+            return ctx
+        # Fallback for internal lookups without company context
+        return self.queryset
+
     search_fields = ['name', 'sku', 'product__name']
     ordering_fields = ['price', 'quantity']
 

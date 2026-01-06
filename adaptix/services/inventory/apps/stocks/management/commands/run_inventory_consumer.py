@@ -51,6 +51,7 @@ class Command(BaseCommand):
 
             product_uuid = data.get("product_uuid")
             company_uuid = data.get("company_uuid")
+            branch_id = data.get("branch_id")
             quantity = Decimal(str(data.get("quantity", 0)))
             action = data.get("action")
             reason = data.get("reason", "Event Update")
@@ -60,14 +61,30 @@ class Command(BaseCommand):
                 message.ack()
                 return
 
-            # Find Stock (Assuming Warehouse 'Main' or default)
-            # In V1, we might need to find ANY warehouse or a specific one.
-            # Let's assume a default warehouse exists for the company or create one.
-            warehouse, _ = Warehouse.objects.get_or_create(
-                company_uuid=company_uuid, 
-                name="Main Warehouse",
-                defaults={"is_active": True}
-            )
+            # Find or Create Branch-Specific Warehouse
+            if branch_id:
+                # Try to find existing warehouse for this branch
+                warehouse = Warehouse.objects.filter(
+                    company_uuid=company_uuid, 
+                    branch_uuid=branch_id
+                ).first()
+                
+                if not warehouse:
+                    # Create a new warehouse for this branch
+                    warehouse = Warehouse.objects.create(
+                        company_uuid=company_uuid,
+                        branch_uuid=branch_id,
+                        name=f"Warehouse Branch-{str(branch_id)[:8]}",
+                        type="store",
+                        is_active=True
+                    )
+            else:
+                # Fallback to Main Warehouse
+                warehouse, _ = Warehouse.objects.get_or_create(
+                    company_uuid=company_uuid, 
+                    name="Main Warehouse",
+                    defaults={"is_active": True}
+                )
 
             stock, created = Stock.objects.get_or_create(
                 company_uuid=company_uuid,

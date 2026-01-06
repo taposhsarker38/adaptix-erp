@@ -4,6 +4,9 @@ import * as React from "react";
 import { ProductGrid } from "@/components/pos/product-grid";
 import { Cart } from "@/components/pos/cart";
 import { usePOSShortcuts } from "@/hooks/usePOSShortcuts";
+import { LayoutGrid, ShoppingCart as CartIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import api from "@/lib/api";
 
@@ -13,6 +16,32 @@ export default function POSPage() {
   const [checkoutOpen, setCheckoutOpen] = React.useState(false);
   const [isUpdatingPrices, setIsUpdatingPrices] = React.useState(false);
   const [aiSessionId, setAiSessionId] = React.useState<string | null>(null);
+  const [isOnline, setIsOnline] = React.useState(true);
+  const [activeTab, setActiveTab] = React.useState<"products" | "cart">(
+    "products"
+  );
+
+  React.useEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsOnline(navigator.onLine);
+      const hOnline = () => setIsOnline(true);
+      const hOffline = () => setIsOnline(false);
+      window.addEventListener("online", hOnline);
+      window.addEventListener("offline", hOffline);
+
+      // Perform initial catalog sync to ensure local DB is fresh
+      if (navigator.onLine) {
+        import("@/lib/offline/CatalogSync").then(({ syncProductCatalog }) => {
+          syncProductCatalog();
+        });
+      }
+
+      return () => {
+        window.removeEventListener("online", hOnline);
+        window.removeEventListener("offline", hOffline);
+      };
+    }
+  }, []);
 
   // Recalculate all item prices when customer changes
   const updateCartPrices = React.useCallback(
@@ -110,10 +139,11 @@ export default function POSPage() {
   };
 
   const clearCart = () => {
-    if (cartItems.length > 0) {
-      setCartItems([]);
-      toast.info("Cart cleared");
-    }
+    setCartItems([]);
+    setSelectedCustomer(null);
+    setQuickPayAmount(null);
+    setAiSessionId(null);
+    toast.info("POS state reset");
   };
 
   // Keyboard Shortcuts Integration
@@ -136,44 +166,115 @@ export default function POSPage() {
   });
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] gap-0 p-0 overflow-hidden bg-slate-100 dark:bg-black">
-      <div className="flex-1 overflow-hidden border-r bg-white dark:bg-slate-950 shadow-xl z-0">
-        <ProductGrid onAddToCart={addToCart} />
+    <div className="flex flex-col h-[calc(100vh-4rem)] bg-slate-100 dark:bg-black overflow-hidden relative">
+      {!isOnline && (
+        <div className="bg-orange-500 text-white text-[11px] font-bold py-1 px-4 flex items-center justify-between shadow-md z-50">
+          <div className="flex items-center gap-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+            <span>OFFLINE MODE ACTIVE - Using local data cache</span>
+          </div>
+          <span className="opacity-80 md:block hidden">
+            Orders will sync automatically when connection returns
+          </span>
+        </div>
+      )}
+
+      {/* Main Content Area */}
+      <div className="flex flex-1 overflow-hidden relative">
+        {/* Products Section - Visible on desktop orb active tab on mobile */}
+        <div
+          className={cn(
+            "flex-1 h-full overflow-hidden border-r bg-white dark:bg-slate-950 shadow-xl z-0 transition-all duration-300",
+            activeTab !== "products" && "hidden lg:block"
+          )}
+        >
+          <ProductGrid onAddToCart={addToCart} />
+        </div>
+
+        {/* Cart Section - Visible on desktop or active tab on mobile */}
+        <div
+          className={cn(
+            "w-full lg:w-[380px] xl:w-[420px] h-full bg-white dark:bg-slate-950 shadow-2xl z-10 overflow-hidden flex flex-col transition-all duration-300",
+            activeTab !== "cart" && "hidden lg:flex"
+          )}
+        >
+          <Cart
+            items={cartItems}
+            onUpdateQuantity={updateQuantity}
+            onClear={clearCart}
+            onCheckoutSuccess={() => {
+              if (aiSessionId) {
+                api
+                  .post("intelligence/vision/cart-sync/", {
+                    session_id: aiSessionId,
+                  })
+                  .then(() => toast.success("AI Cart converted successfully"))
+                  .catch((err) =>
+                    console.error("Failed to convert AI cart:", err)
+                  );
+              }
+              setCartItems([]);
+              setSelectedCustomer(null);
+              setQuickPayAmount(null);
+              setAiSessionId(null);
+              // Switch back to products after success if on mobile
+              if (window.innerWidth < 1024) setActiveTab("products");
+            }}
+            checkoutOpen={checkoutOpen}
+            onCheckoutOpenChange={setCheckoutOpen}
+            onLoadAICart={(newItems, sessionId) => {
+              setCartItems((prev) => [...prev, ...newItems]);
+              setAiSessionId(sessionId);
+              if (window.innerWidth < 1024) setActiveTab("cart");
+            }}
+            onQuickCheckout={handleQuickCheckout}
+            quickPayAmount={quickPayAmount}
+            selectedCustomer={selectedCustomer}
+            onCustomerSelect={handleCustomerSelect}
+            isUpdatingPrices={isUpdatingPrices}
+            onBack={() => setActiveTab("products")}
+          />
+        </div>
       </div>
-      <div className="w-[380px] xl:w-[420px] flex-none bg-white dark:bg-slate-950 shadow-2xl z-10 overflow-hidden flex flex-col">
-        <Cart
-          items={cartItems}
-          onUpdateQuantity={updateQuantity}
-          onClear={clearCart}
-          onCheckoutSuccess={() => {
-            // If it was an AI cart, mark it as converted in the backend
-            if (aiSessionId) {
-              api
-                .post("intelligence/vision/cart-sync/", {
-                  session_id: aiSessionId,
-                })
-                .then(() => toast.success("AI Cart converted successfully"))
-                .catch((err) =>
-                  console.error("Failed to convert AI cart:", err)
-                );
-            }
-            setCartItems([]);
-            setSelectedCustomer(null);
-            setQuickPayAmount(null);
-            setAiSessionId(null);
-          }}
-          checkoutOpen={checkoutOpen}
-          onCheckoutOpenChange={setCheckoutOpen}
-          onLoadAICart={(newItems, sessionId) => {
-            setCartItems((prev) => [...prev, ...newItems]);
-            setAiSessionId(sessionId);
-          }}
-          onQuickCheckout={handleQuickCheckout}
-          quickPayAmount={quickPayAmount}
-          selectedCustomer={selectedCustomer}
-          onCustomerSelect={handleCustomerSelect}
-          isUpdatingPrices={isUpdatingPrices}
-        />
+
+      {/* Mobile Tab Bar */}
+      <div className="lg:hidden flex border-t bg-white dark:bg-slate-950 h-16 shrink-0 z-50">
+        <button
+          onClick={() => setActiveTab("products")}
+          className={cn(
+            "flex-1 flex flex-col items-center justify-center gap-1 transition-all",
+            activeTab === "products"
+              ? "text-primary font-bold bg-primary/5"
+              : "text-slate-500"
+          )}
+        >
+          <LayoutGrid className="h-5 w-5" />
+          <span className="text-[10px] uppercase tracking-tighter">
+            Products
+          </span>
+        </button>
+        <button
+          onClick={() => setActiveTab("cart")}
+          className={cn(
+            "flex-1 flex flex-col items-center justify-center gap-1 transition-all relative",
+            activeTab === "cart"
+              ? "text-primary font-bold bg-primary/5"
+              : "text-slate-500"
+          )}
+        >
+          <div className="relative">
+            <CartIcon className="h-5 w-5" />
+            {cartItems.length > 0 && (
+              <Badge
+                className="absolute -top-2 -right-3 h-5 min-w-5 px-1 flex items-center justify-center text-[10px] bg-red-500 border-white"
+                variant="destructive"
+              >
+                {cartItems.reduce((acc, item) => acc + item.quantity, 0)}
+              </Badge>
+            )}
+          </div>
+          <span className="text-[10px] uppercase tracking-tighter">Cart</span>
+        </button>
       </div>
     </div>
   );

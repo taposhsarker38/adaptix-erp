@@ -14,7 +14,7 @@ export const usePOSShortcuts = (handlers: POSShortcuts) => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Search: Alt + S or /
       if (
-        (e.altKey && e.key === "s") ||
+        (e.altKey && e.key.toLowerCase() === "s") ||
         (e.key === "/" && (e.target as HTMLElement).tagName !== "INPUT")
       ) {
         e.preventDefault();
@@ -22,19 +22,19 @@ export const usePOSShortcuts = (handlers: POSShortcuts) => {
       }
 
       // Checkout: Alt + X or Enter (if not in input)
-      if (e.altKey && e.key === "x") {
+      if (e.altKey && e.key.toLowerCase() === "x") {
         e.preventDefault();
         handlers.onCheckout?.();
       }
 
       // Clear Cart: Alt + C
-      if (e.altKey && e.key === "c") {
+      if (e.altKey && e.key.toLowerCase() === "c") {
         e.preventDefault();
         handlers.onClearCart?.();
       }
 
       // Focus Grid: Alt + G
-      if (e.altKey && e.key === "g") {
+      if (e.altKey && e.key.toLowerCase() === "g") {
         e.preventDefault();
         handlers.onFocusGrid?.();
       }

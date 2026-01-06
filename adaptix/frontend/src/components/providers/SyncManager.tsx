@@ -26,6 +26,11 @@ export function SyncManager() {
     const handleOnline = () => {
       setIsOnline(true);
       processSyncQueue();
+
+      // Sync inventory catalog on reconnection
+      import("@/lib/offline/CatalogSync").then(({ syncProductCatalog }) => {
+        syncProductCatalog();
+      });
     };
     const handleOffline = () => setIsOnline(false);
 

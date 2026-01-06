@@ -40,7 +40,8 @@ class InventoryService:
                         "quantity": float(item.get('quantity')),
                         "action": "decrease",
                         "reason": f"Sale #{sale_uuid}",
-                        "company_uuid": str(company_uuid)
+                        "company_uuid": str(company_uuid),
+                        "branch_id": str(sale_data.get('branch_id')) if sale_data.get('branch_id') else None
                     }
                     
                     producer.publish(
