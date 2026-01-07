@@ -42,16 +42,24 @@ def analyze_stockout_risk(company_uuid=None):
         prod_id = row['product_uuid']
         qty = float(row['current_stock'])
         
-        # Get future forecasts for this product
+        # Get product name from any available forecast
+        any_forecast = Forecast.objects.filter(
+            company_uuid=comp_id,
+            product_uuid=prod_id
+        ).first()
+        
+        if not any_forecast:
+            continue
+            
+        product_name = any_forecast.product_name
+            
+        # Get future forecasts for risk calculation
         forecasts = Forecast.objects.filter(
             company_uuid=comp_id,
             product_uuid=prod_id,
             forecast_date__gte=today
         ).order_by('forecast_date')
         
-        if not forecasts.exists():
-            continue
-            
         # Cumulative demand vs current stock
         cumulative_demand = 0
         stockout_date = None
@@ -82,6 +90,7 @@ def analyze_stockout_risk(company_uuid=None):
             company_uuid=comp_id,
             product_uuid=prod_id,
             defaults={
+                'product_name': product_name,
                 'current_stock': int(qty),
                 'avg_daily_consumption': cumulative_demand / 30, # Approx
                 'suggested_reorder_point': int(cumulative_demand / 30 * 10), # 10 days safety

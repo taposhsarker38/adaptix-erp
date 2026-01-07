@@ -68,7 +68,32 @@ export function AIClient() {
   const fetchForecast = async () => {
     try {
       const res = await api.get("/intelligence/forecast/predictions/");
-      setData(res.data);
+      // Aggregate data by date
+      const aggregated: Record<string, any> = {};
+      res.data.forEach((item: any) => {
+        const date = item.forecast_date;
+        if (!aggregated[date]) {
+          aggregated[date] = {
+            date,
+            predicted_sales: 0,
+            confidence_upper: 0,
+            confidence_lower: 0,
+            count: 0,
+          };
+        }
+        aggregated[date].predicted_sales += parseFloat(item.predicted_quantity);
+        // Confidence calculation: naive sum/avg or just use max
+        aggregated[date].confidence_upper +=
+          parseFloat(item.predicted_quantity) * 1.2;
+        aggregated[date].confidence_lower +=
+          parseFloat(item.predicted_quantity) * 0.8;
+      });
+
+      const chartArray = Object.values(aggregated).sort(
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+      );
+
+      setData(chartArray);
     } catch (e) {
       console.error(e);
     }
@@ -333,7 +358,7 @@ export function AIClient() {
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-slate-50/50 dark:bg-slate-900/50">
-                      <TableHead>Product UUID</TableHead>
+                      <TableHead>Product</TableHead>
                       <TableHead>Risk Score</TableHead>
                       <TableHead>Est. Stockout</TableHead>
                       <TableHead className="text-right">
@@ -349,8 +374,8 @@ export function AIClient() {
                           key={item.id}
                           className="group hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors"
                         >
-                          <TableCell className="font-mono text-xs">
-                            {item.product_uuid}
+                          <TableCell className="font-semibold text-slate-900 dark:text-slate-100">
+                            {item.product_name || item.product_uuid}
                           </TableCell>
                           <TableCell>
                             <div className="flex items-center gap-2">
@@ -397,9 +422,14 @@ export function AIClient() {
                           </TableCell>
                           <TableCell className="text-right">
                             <Button
-                              variant="ghost"
+                              variant="outline"
                               size="sm"
-                              className="opacity-0 group-hover:opacity-100 transition-opacity"
+                              className="transition-colors text-violet-600 hover:text-violet-700 hover:bg-violet-50 dark:hover:bg-violet-900/20 border-violet-200 dark:border-violet-800"
+                              onClick={() => {
+                                router.push(
+                                  `/dashboard/purchase?create=true&product_uuid=${item.product_uuid}&qty=${item.suggested_reorder_qty}`
+                                );
+                              }}
                             >
                               Create PO <ArrowRight className="ml-2 h-4 w-4" />
                             </Button>

@@ -62,7 +62,13 @@ class StockTransferSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         items_data = validated_data.pop('items')
+        company_uuid = validated_data.get('company_uuid')
         transfer = StockTransfer.objects.create(**validated_data)
         for item_data in items_data:
-            StockTransferItem.objects.create(transfer=transfer, **item_data)
+            StockTransferItem.objects.create(
+                transfer=transfer, 
+                company_uuid=company_uuid,
+                **item_data
+            )
         return transfer
+

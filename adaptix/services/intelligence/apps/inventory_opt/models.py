@@ -3,6 +3,7 @@ from django.db import models
 class InventoryOptimization(models.Model):
     company_uuid = models.UUIDField(null=True, blank=True)
     product_uuid = models.UUIDField()
+    product_name = models.CharField(max_length=255, null=True, blank=True)
     branch_id = models.UUIDField(null=True, blank=True)
     current_stock = models.IntegerField()
     avg_daily_consumption = models.FloatField()

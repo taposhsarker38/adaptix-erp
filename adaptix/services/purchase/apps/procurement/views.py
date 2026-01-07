@@ -183,6 +183,7 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
                 "wing_uuid": str(order.branch_id) if order.branch_id else None,
                 "amount": str(amount),
                 "method": method,
+                "payment_account_uuid": request.data.get('payment_account_uuid'),
                 "vendor_uuid": str(order.vendor.id)
             }
             publish_event("events", "purchase.payment.recorded", event_payload)

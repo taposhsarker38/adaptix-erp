@@ -41,6 +41,7 @@ const formSchema = z.object({
     message: "Amount must be a positive number",
   }),
   method: z.string().min(1, "Payment method is required"),
+  payment_account_uuid: z.string().min(1, "Payment account is required"),
   note: z.string().optional(),
 });
 
@@ -58,15 +59,31 @@ export const VendorPaymentDialog: React.FC<VendorPaymentDialogProps> = ({
   onSuccess,
 }) => {
   const [loading, setLoading] = useState(false);
+  const [accounts, setAccounts] = useState<any[]>([]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       amount: "",
       method: "bank_transfer",
+      payment_account_uuid: "",
       note: "",
     },
   });
+
+  useEffect(() => {
+    const fetchAccounts = async () => {
+      try {
+        const res = await api.get("/accounting/accounts/");
+        setAccounts(res.data.results || res.data);
+      } catch (e) {
+        console.error("Failed to fetch accounts", e);
+      }
+    };
+    if (isOpen) {
+      fetchAccounts();
+    }
+  }, [isOpen]);
 
   // Reset form when order changes
   useEffect(() => {
@@ -76,6 +93,7 @@ export const VendorPaymentDialog: React.FC<VendorPaymentDialogProps> = ({
       form.reset({
         amount: due > 0 ? due.toFixed(2) : "0",
         method: "bank_transfer",
+        payment_account_uuid: "",
         note: "",
       });
     }
@@ -88,6 +106,7 @@ export const VendorPaymentDialog: React.FC<VendorPaymentDialogProps> = ({
       await api.post(`/purchase/orders/${order.id}/record-payment/`, {
         amount: parseFloat(values.amount),
         method: values.method,
+        payment_account_uuid: values.payment_account_uuid,
         note: values.note,
       });
       toast.success("Payment recorded successfully");
@@ -157,35 +176,65 @@ export const VendorPaymentDialog: React.FC<VendorPaymentDialogProps> = ({
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="method"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Payment Method</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select method" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="bank_transfer">
-                        Bank Transfer
-                      </SelectItem>
-                      <SelectItem value="check">Check</SelectItem>
-                      <SelectItem value="cash">Cash</SelectItem>
-                      <SelectItem value="wallet">Digital Wallet</SelectItem>
-                      <SelectItem value="card">Credit Card</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="method"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Payment Method</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select method" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="bank_transfer">
+                          Bank Transfer
+                        </SelectItem>
+                        <SelectItem value="check">Check</SelectItem>
+                        <SelectItem value="cash">Cash</SelectItem>
+                        <SelectItem value="wallet">Digital Wallet</SelectItem>
+                        <SelectItem value="card">Credit Card</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="payment_account_uuid"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Payment Account</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Account" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {accounts.map((acc: any) => (
+                          <SelectItem key={acc.id} value={acc.id}>
+                            {acc.code} - {acc.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
             <FormField
               control={form.control}

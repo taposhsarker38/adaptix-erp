@@ -89,8 +89,9 @@ def run_forecasts(company_uuid=None):
             company_uuid=comp_id
         ).order_by('date')
         
-        if history_data.count() < 7:
-            continue # Need at least a week of data for a reliable trend
+        if history_data.count() < 2:
+            logger.info(f"Skipping {name}: Only {history_data.count()} data points found.")
+            continue # Need at least two data points for a trend
             
         import numpy as np
         from sklearn.linear_model import LinearRegression
@@ -106,7 +107,7 @@ def run_forecasts(company_uuid=None):
         model.fit(X, y)
         
         # Calculate daily trend (slope)
-        slope = model.coeff_[0] if hasattr(model, 'coef_') else 0
+        slope = model.coef_[0] if hasattr(model, 'coef_') else 0
         
         # Generate 7 days of forecast
         for i in range(1, 8):

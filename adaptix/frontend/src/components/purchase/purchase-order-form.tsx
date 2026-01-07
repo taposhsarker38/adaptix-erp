@@ -137,8 +137,18 @@ export const PurchaseOrderForm: React.FC<PurchaseOrderFormProps> = ({
         : "/purchase/orders/";
 
       const method = initialData ? api.put : api.post;
-      // Filter any extra data if needed, but schema handles it.
-      await method(url, values);
+
+      // Transform data for backend (vendor -> vendor_id)
+      const payload = {
+        ...values,
+        vendor_id: values.vendor,
+      };
+      // We don't delete values.vendor because typically extra fields are ignored or handled gracefully,
+      // but to be clean we could. Serializer might complain if 'vendor' is passed to a read-only nested serializer input?
+      // Actually DRF typically ignores read-only fields in input.
+      // But let's be safe and clean.
+
+      await method(url, payload);
 
       toast.success(initialData ? "Order updated" : "Order created");
       router.refresh();

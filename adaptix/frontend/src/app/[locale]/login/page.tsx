@@ -221,8 +221,11 @@ export default function LoginPage() {
           <CardTitle className="text-2xl font-bold text-emerald-600 dark:text-emerald-500">
             Adaptix
           </CardTitle>
-          <CardDescription>
-            Enter your credentials to access the workspace
+          <CardDescription className="flex flex-col gap-1">
+            <span className="font-medium text-slate-700 dark:text-slate-300">
+              Intelligent Business OS
+            </span>
+            <span>Enter your credentials to access the workspace</span>
           </CardDescription>
         </CardHeader>
         <CardContent>

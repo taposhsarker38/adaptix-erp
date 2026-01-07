@@ -34,8 +34,8 @@ urlpatterns = [
     path('api/intelligence/automation/', include('apps.automation.urls')),
     path('api/intelligence/sales-trends/', include('apps.sales_trends.urls')),
     path('api/intelligence/vision/', include('apps.vision.urls')),
-    path('api/intelligence/', include('apps.financial_anomalies.urls')),
     path('api/intelligence/', include('apps.assistant.urls')),
+    path('api/intelligence/', include('apps.financial_anomalies.urls')),
     
     # OpenAPI
     path('api/intelligence/schema/', SpectacularAPIView.as_view(), name='schema'),

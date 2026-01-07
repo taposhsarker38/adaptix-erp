@@ -18,9 +18,12 @@ class ForecastViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['post'])
     def trigger(self, request):
         company_uuid = getattr(request, 'company_uuid', None)
-        # Trigger async task
-        run_forecasts.delay(company_uuid=company_uuid)
-        return Response({"status": "Forecast job triggered"}, status=status.HTTP_202_ACCEPTED)
+        # Import inside to avoid circular deps if any
+        from .tasks import sync_sales_history, run_forecasts
+        # Chain them: sync then run
+        chain = sync_sales_history.s(company_uuid=company_uuid) | run_forecasts.si(company_uuid=company_uuid)
+        chain.apply_async()
+        return Response({"status": "AI Training started in background"}, status=status.HTTP_202_ACCEPTED)
 
 class SalesHistoryViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = SalesHistorySerializer

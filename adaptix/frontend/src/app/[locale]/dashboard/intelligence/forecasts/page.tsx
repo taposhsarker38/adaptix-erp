@@ -60,6 +60,7 @@ export default function ForecastingDashboard() {
   const [chartData, setChartData] = useState<any[]>([]);
   const [search, setSearch] = useState("");
   const [syncing, setSyncing] = useState(false);
+  const [currentStock, setCurrentStock] = useState<number | null>(null);
   const { socket } = useWebSockets();
 
   const fetchData = async () => {
@@ -109,12 +110,13 @@ export default function ForecastingDashboard() {
 
   const loadChartData = async (productId: string) => {
     try {
-      // Get History (last 14 days) and Predictions (next 7 days)
-      const [historyRes, predRes] = await Promise.all([
+      // Get History, Predictions, and Current Stock
+      const [historyRes, predRes, stockRes] = await Promise.all([
         api.get(`/intelligence/forecast/history/?product_uuid=${productId}`),
         api.get(
           `/intelligence/forecast/predictions/?product_uuid=${productId}`
         ),
+        api.get(`/inventory/stocks/?product=${productId}`),
       ]);
 
       const history = historyRes.data.map((h: any) => ({
@@ -129,16 +131,29 @@ export default function ForecastingDashboard() {
         type: "forecast",
       }));
 
-      // Merge and sort
+      // Sum current stock across all warehouses (Handle pagination results)
+      const stockItems = Array.isArray(stockRes.data)
+        ? stockRes.data
+        : stockRes.data.results || [];
+      const totalStock = stockItems.reduce(
+        (acc: number, item: any) => acc + parseFloat(item.quantity),
+        0
+      );
+      setCurrentStock(totalStock);
+
       const merged = [...history, ...preds].sort(
         (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
       );
 
       setChartData(merged);
     } catch (error) {
-      toast.error("Failed to load chart data");
+      toast.error("Failed to load data");
     }
   };
+
+  const totalPredictedDemand = chartData
+    .filter((d) => d.type === "forecast")
+    .reduce((acc, curr) => acc + curr.forecast, 0);
 
   const syncData = async () => {
     if (syncing) return;
@@ -304,12 +319,34 @@ export default function ForecastingDashboard() {
             <Card className="bg-card/50 backdrop-blur-sm border-border/40 shadow-sm hover:shadow-md transition-shadow">
               <CardContent className="p-4 flex items-center gap-4">
                 <div className="p-3 bg-amber-100 dark:bg-amber-900/30 rounded-lg">
-                  <AlertTriangle className="text-amber-600 dark:text-amber-400" />
+                  <AlertTriangle
+                    className={cn(
+                      "transition-colors",
+                      (currentStock ?? 0) < totalPredictedDemand
+                        ? "text-rose-600 dark:text-rose-400"
+                        : (currentStock ?? 0) < totalPredictedDemand * 1.5
+                        ? "text-amber-600 dark:text-amber-400"
+                        : "text-emerald-600 dark:text-emerald-400"
+                    )}
+                  />
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Risk Level</p>
-                  <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300 border-none">
-                    Medium
+                  <Badge
+                    className={cn(
+                      "border-none",
+                      (currentStock ?? 0) < totalPredictedDemand
+                        ? "bg-rose-100 text-rose-700 dark:bg-rose-900/50 dark:text-rose-300"
+                        : (currentStock ?? 0) < totalPredictedDemand * 1.5
+                        ? "bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300"
+                        : "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300"
+                    )}
+                  >
+                    {(currentStock ?? 0) < totalPredictedDemand
+                      ? "High"
+                      : (currentStock ?? 0) < totalPredictedDemand * 1.5
+                      ? "Medium"
+                      : "Low"}
                   </Badge>
                 </div>
               </CardContent>
@@ -321,7 +358,11 @@ export default function ForecastingDashboard() {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Current Stock</p>
-                  <p className="text-2xl font-bold text-foreground">--</p>
+                  <p className="text-2xl font-bold text-foreground">
+                    {currentStock !== null
+                      ? `${currentStock.toLocaleString()} items`
+                      : "--"}
+                  </p>
                 </div>
               </CardContent>
             </Card>

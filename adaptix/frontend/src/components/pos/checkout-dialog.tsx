@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 import usePOSSettings from "@/hooks/use-pos-settings";
 import { useCompany } from "@/hooks/use-company";
 
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -387,6 +387,7 @@ export const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
       <DialogContent className="max-w-lg p-0 overflow-hidden border-none shadow-2xl">
+        <DialogTitle className="sr-only">Checkout Payment</DialogTitle>
         <div className="p-6 bg-slate-900 text-white flex items-center justify-between">
           <div>
             <h2 className="text-xl font-bold">
@@ -470,6 +471,7 @@ export const CheckoutDialog: React.FC<CheckoutDialogProps> = ({
             {/* Receipt Preview Dialog */}
             <Dialog open={showPreview} onOpenChange={setShowPreview}>
               <DialogContent className="max-w-[400px] p-0 bg-slate-100 border-none shadow-2xl overflow-hidden">
+                <DialogTitle className="sr-only">Receipt Preview</DialogTitle>
                 <ScrollArea className="max-h-[80vh] w-full">
                   <div className="p-4 bg-white shadow-[0_0_20px_rgba(0,0,0,0.1)] mx-auto my-4 w-[90%] border-t-4 border-slate-900 animate-in zoom-in-95 duration-300">
                     <Receipt data={successData} />

@@ -194,6 +194,11 @@ const routes: SidebarRoute[] = [
         permission: "view_forecast",
       },
       {
+        label: "demandForecasting",
+        href: "/dashboard/intelligence/forecasts",
+        permission: "view_forecast",
+      },
+      {
         label: "financialIntelligence",
         href: "/dashboard/intelligence/finance",
         permission: "view_forecast",
@@ -384,11 +389,11 @@ export function Sidebar({ className }: SidebarProps) {
             <Shield className="h-6 w-6 text-white" />
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-white group-hover:text-violet-400 transition-colors">
+            <h1 className="text-lg font-bold tracking-tight text-white group-hover:text-violet-400 transition-colors">
               Adaptix
             </h1>
-            <p className="text-[10px] uppercase tracking-widest text-slate-500 font-bold">
-              {t("enterpriseSuite")}
+            <p className="text-[10px] uppercase tracking-widest text-slate-500 font-bold whitespace-nowrap">
+              Intelligent Business OS
             </p>
           </div>
         </Link>

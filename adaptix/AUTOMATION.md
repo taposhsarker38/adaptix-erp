@@ -8,18 +8,42 @@ Adaptix includes comprehensive automation for CI/CD, monitoring, security, and b
 
 ## 📋 Automation Summary
 
-| Category         | Automation           | Schedule       |
-| ---------------- | -------------------- | -------------- |
-| **CI/CD**        | Build, Test, Deploy  | On push/PR     |
-| **Backup**       | Database backup      | Daily 2 AM     |
-| **Monitoring**   | Health checks        | Every 5 min    |
-| **Security**     | Vulnerability scan   | Weekly         |
-| **Dependencies** | Update check         | Weekly         |
-| **Business**     | Sales reports        | Daily 6 AM     |
-| **Business**     | Low stock alerts     | Every 30 min   |
-| **Billing**      | Subscription renewal | Daily midnight |
-| **Maintenance**  | Data cleanup         | Daily 3 AM     |
-| **Maintenance**  | DB optimization      | Weekly         |
+| Category         | Automation            | Schedule           |
+| ---------------- | --------------------- | ------------------ |
+| **Intelligence** | AI Sales Forecasting  | Every 6 hours      |
+| **Intelligence** | Stockout Predictions  | Every 30 min       |
+| **Intelligence** | Vision Hub Processing | Real-time / Stream |
+| **CI/CD**        | Build, Test, Deploy   | On push/PR         |
+| **Finance**      | Journal Auto-Posting  | Real-time          |
+
+---
+
+## 🔄 Intelligent Workflows
+
+Adaptix natively supports proactive automation:
+
+1.  **Auto-Procurement**: The system monitors inventory consumption rates and automatically suggests Purchase Orders (POs) when stock dips below AI-predicted safety thresholds.
+2.  **Visual Checkout Sync**: Items detected in the Vision Hub (AI Cart) are automatically synchronized with the POS transaction state.
+3.  **Smart Accounting**: Transactions in the POS, Purchase, or Manufacturing modules trigger non-blocking events that are consumed by the Accounting service to generate compliant Journal Entries.
+
+---
+
+## 🛠️ Operational Commands
+
+### 🚀 System Lifecycle
+
+```bash
+./scripts/up.sh      # Start the Intelligent OS
+./scripts/down.sh    # Stop the system
+./scripts/logs.sh    # View live service logs
+```
+
+### 🧪 Quality Assurance
+
+```bash
+make test            # Run all service tests
+make lint            # Run code quality checks
+```
 
 ---
 
@@ -223,20 +247,20 @@ Access Grafana at: `https://your-domain:3000`
 
 ### CI/CD fails
 
-1. Check workflow logs in Actions tab
-2. Common issues: test failures, Docker build errors
+1.  Check workflow logs in Actions tab
+2.  Common issues: test failures, Docker build errors
 
 ### Celery tasks not running
 
-1. Check worker status: `docker-compose logs celery-worker`
-2. Check Redis connection
-3. Verify CELERY_BEAT_SCHEDULE in settings
+1.  Check worker status: `docker-compose logs celery-worker`
+2.  Check Redis connection
+3.  Verify CELERY_BEAT_SCHEDULE in settings
 
 ### Slack notifications not working
 
-1. Verify SLACK_WEBHOOK secret
-2. Test webhook URL manually
+1.  Verify SLACK_WEBHOOK secret
+2.  Test webhook URL manually
 
 ---
 
-_Last Updated: December 2024_
+_Last Updated: January 2026_
