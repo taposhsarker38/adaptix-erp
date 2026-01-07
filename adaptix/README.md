@@ -1,6 +1,6 @@
 # Adaptix | Intelligent Business OS
 
-![Adaptix Hero Banner](file:///home/taposh/.gemini/antigravity/brain/bff95b31-2200-49c0-9397-8f5473bb01a5/adaptix_hero_banner_1767778763203.png)
+![Adaptix Hero Banner](docs/images/hero-banner.png)
 
 **The Next-Generation Intelligence-Driven Business Operating System for the Modern Enterprise.**
 
@@ -12,7 +12,7 @@
 
 Whether you manage a global retail chain, a precision manufacturing plant, or a sports venue, Adaptix adapts its core logic and UI to fit your industry perfectly.
 
-**[Explore the Visual Gallery →](file:///home/taposh/projects/adaptix-erp/adaptix/GALLERY.md)**
+**[Explore the Visual Gallery →](GALLERY.md)**
 
 ## 🌟 Core Pillars of Intelligence
 
