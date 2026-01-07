@@ -24,8 +24,8 @@ const hindSiliguri = Hind_Siliguri({
 });
 
 export const metadata: Metadata = {
-  title: "Adaptix Dashboard",
-  description: "Enterprise Management System",
+  title: "Adaptix | Intelligent Business OS",
+  description: "Next-generation Intelligence-Driven Business Operation System.",
   manifest: "/manifest.json",
 };
 
