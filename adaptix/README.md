@@ -1,46 +1,54 @@
-# Adaptix (Business OS)
+# Adaptix | Intelligent Business OS
 
-**The Adaptive Business Operating System (BOS) for the modern enterprise.**
+![Adaptix Hero Banner](file:///home/taposh/.gemini/antigravity/brain/bff95b31-2200-49c0-9397-8f5473bb01a5/adaptix_hero_banner_1767778763203.png)
+
+**The Next-Generation Intelligence-Driven Business Operating System for the Modern Enterprise.**
 
 ---
 
 ## 🚀 Overview
 
-**Adaptix** is a revolutionary, dynamic platform that adapts to your business—not the other way around. Whether you run a Retail Chain, a High-end Restaurant, or a Manufacturing Plant, Adaptix reshapes its core logic and UI to fit your industry perfectly.
+**Adaptix** is a revolutionary, dynamic platform that evolves alongside your business. Unlike traditional ERPs, Adaptix is built on an **Intelligence-First** architecture, natively integrating AI Vision, Predictive Analytics, and an Autonomous Assistant into the daily operational flow.
 
-Powered by a **Dynamic Configuration Engine**, Adaptix supports **39+ Industry Presets** out of the box.
+Whether you manage a global retail chain, a precision manufacturing plant, or a sports venue, Adaptix adapts its core logic and UI to fit your industry perfectly.
 
-## 🌟 Why Adaptix?
+**[Explore the Visual Gallery →](file:///home/taposh/projects/adaptix-erp/adaptix/GALLERY.md)**
 
-### 1. Intelligent Adaptation
+## 🌟 Core Pillars of Intelligence
 
-- **Vertical-Specific Logic**: A "Fashion Mode" enables variants (Size/Color), while "Restaurant Mode" enables Table Management.
-- **Dynamic UI**: The frontend layout transforms based on the active configuration.
+### 1. Vision Hub (AI Visual Checkout)
 
-### 2. Comprehensive Modules
+- **Object Detection**: Automate checkout by identifying products through camera feeds.
+- **Visual Sync**: Seamlessly sync detected items from the AI Cart to the POS system.
+- **Security Monitoring**: Real-time visual tracking for retail security.
 
-- **Core**: Auth, Multi-Tenancy (Company), Product Catalog.
-- **Operations**: POS (Point of Sale), Inventory, Purchase (Procurement).
-- **People**: HRMS (Payroll, Attendance, Employees).
-- **Finance**: Accounting (Double-Entry Ledger, Tax Engine), Payments.
-- **Growth**: Customer CRM, Promotions, Reviews.
-- **Insights**: Reporting & Analytics Dashboard.
+### 2. Predictive Supply Chain
 
-### 3. Enterprise-Grade Architecture
+- **Stockout Prediction**: AI identifies low-stock items before they run out.
+- **Auto-Procurement**: The system proactively suggests or generates Purchase Orders based on demand forecasts.
+- **Inventory Optimization**: Dynamic reorder points tailored to seasonal trends.
 
-- **Microservices**: 12+ decoupled services built with Django & Node.js.
-- **Scalability**: Dockerized, Event-Driven (RabbitMQ), and API Gateway (Kong).
-- **Observability**: Full system transparency with OpenTelemetry & Jaeger.
+### 3. Financial Excellence
+
+- **Real-time Accounting**: Automatic Journal Entry generation for every sale, purchase, and payment.
+- **Double-Entry Ledger**: Enterprise-grade financial transparency with multi-currency support.
+- **Automated P&L**: Instant insights into business health.
+
+### 4. Human-Centric AI Assistant
+
+- **Bilingual Interface**: Seamlessly switch between English and Bengali.
+- **Smart Queries**: Ask the AI assistant for sales reports, stock status, or employee details in natural language.
 
 ---
 
 ## 🛠 Tech Stack
 
-- **Backend**: Python 3.11 (Django), Node.js
-- **Database**: PostgreSQL (Isolated per service)
-- **Messaging**: RabbitMQ (AMQP)
-- **Gateway**: Kong API Gateway
-- **Infrastructure**: Docker, GitHub Actions CI/CD
+- **Backend**: Microservices architecture using Python 3.12 (Django) and Node.js.
+- **Frontend**: Next.js 14+ with TailwindCSS for a premium, responsive glassmorphism UI.
+- **Database**: PostgreSQL (Service-isolated architecture).
+- **Messaging**: RabbitMQ for event-driven inter-service communication.
+- **AI/ML**: Integrated Vision Processing and Predictive Modeling.
+- **Infrastructure**: Dockerized environment with Kong API Gateway.
 
 ---
 
@@ -48,48 +56,48 @@ Powered by a **Dynamic Configuration Engine**, Adaptix supports **39+ Industry P
 
 ### Prerequisites
 
-- Docker & Docker Compose
+- Docker & Docker Compose (v2.0+)
 
-### Run Adaptix
+### Launch the OS
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/taposhsarker38/POS-Microservices-v1.1.git
-cd dynamic-pos
+git clone https://github.com/taposhsarker38/adaptix-erp.git
+cd adaptix
 
-# 2. Launch the System
-docker-compose up -d --build
+# 2. Run the deployment script
+./scripts/up.sh
 
-# 3. Explore
+# 3. Explore the Dashboard
+# UI: http://localhost:3000
 # API Gateway: http://localhost:8000
-# Tracing UI: http://localhost:16686
 ```
 
 ---
 
-## 📚 API Reference
+## 📚 Ecosystem Architecture
 
-All services are accessible via the central Gateway.
+Adaptix is composed of **15+ decoupled microservices** working in harmony:
 
-| Service            | Endpoint          | Docs                    |
-| :----------------- | :---------------- | :---------------------- |
-| **Auth**           | `/api/auth`       | `/api/auth/docs/`       |
-| **Adaptix Config** | `/api/company`    | `/api/company/docs/`    |
-| **Product**        | `/api/product`    | `/api/product/docs/`    |
-| **POS**            | `/api/pos`        | `/api/pos/docs/`        |
-| **Inventory**      | `/api/inventory`  | `/api/inventory/docs/`  |
-| **HRMS**           | `/api/hrms`       | `/api/hrms/docs/`       |
-| **Accounting**     | `/api/accounting` | `/api/accounting/docs/` |
+| Domain           | Services                       | Responsibilities                            |
+| :--------------- | :----------------------------- | :------------------------------------------ |
+| **Intelligence** | `ai-service`, `vision-hub`     | Forecasting, Object Detection, Assistant.   |
+| **Operations**   | `pos`, `inventory`, `purchase` | Sales, Stock Management, Procurement.       |
+| **Finance**      | `accounting`, `payment`        | Ledger, Journaling, Payment Gateways.       |
+| **People**       | `hrms`, `auth-service`         | Payroll, Identity, RBAC.                    |
+| **Common**       | `notification`, `reporting`    | Multi-channel Alerts, PDF/Excel generation. |
 
 ---
 
-## 🧪 Testing
+## 🧪 Testing & Quality
+
+Quality is built-in with comprehensive test suites for every service.
 
 ```bash
-# Run tests for a specific service (e.g., HRMS)
-docker-compose run --rm hrms pytest
+# Run all service tests
+make test
 ```
 
 ---
 
-**Adaptix — Evolve with your business.**
+**Adaptix — The Intelligent OS for your Business Evolution.**
