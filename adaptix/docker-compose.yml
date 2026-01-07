@@ -849,6 +849,7 @@ services:
       - DEBUG=True
       - SECRET_KEY=${SECRET_KEY:-your-secret-key}
       - RABBITMQ_URL=amqp://${MQ_USER:-adaptix}:${MQ_PASSWORD:-adaptix123}@rabbitmq:5672/
+      - REDIS_URL=redis://redis:6379/1
       - ENABLE_TRACING=False
       - PYTHONPATH=/app:/shared/adaptix_core
     volumes:
@@ -871,6 +872,36 @@ services:
       resources:
         limits:
           memory: 384M
+
+  intelligence-worker:
+    build:
+      context: .
+      dockerfile: services/intelligence/Dockerfile
+    container_name: adaptix-intelligence-worker
+    profiles: ["intelligence"]
+    environment:
+      - DATABASE_URL=postgres://${DB_USER:-adaptix}:${DB_PASSWORD:-adaptix123}@postgres:5432/adaptix
+      - DB_SCHEMA=intelligence
+      - RABBITMQ_URL=amqp://${MQ_USER:-adaptix}:${MQ_PASSWORD:-adaptix123}@rabbitmq:5672/
+      - REDIS_URL=redis://redis:6379/1
+      - PYTHONPATH=/app:/shared/adaptix_core
+    command: celery -A config worker --loglevel=info
+    volumes:
+      - ./services/intelligence:/app
+      - ./shared:/shared
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - backend
+    deploy:
+      resources:
+        limits:
+          memory: 512M
 
 volumes:
   postgres_data:

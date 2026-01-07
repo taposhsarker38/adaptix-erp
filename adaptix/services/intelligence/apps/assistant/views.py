@@ -2,6 +2,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import BasePermission
 from .nlp_engine import NLPEngine
+from apps.financial_anomalies.models import FinancialAnomaly
+from apps.automation.models import ActionLog
+from apps.forecasts.models import Forecast
 import logging
 
 logger = logging.getLogger(__name__)
@@ -35,3 +38,65 @@ class ChatView(APIView):
         response_data = engine.process_message(message)
 
         return Response(response_data)
+
+class IntelligenceFeedView(APIView):
+    permission_classes = [IsJWTAuthenticated]
+
+    def get(self, request):
+        company_uuid = getattr(request, 'company_uuid', None)
+        if not company_uuid:
+            return Response({"error": "Company context missing"}, status=400)
+
+        # 1. Fetch Anomalies
+        anomalies = FinancialAnomaly.objects.filter(company_uuid=company_uuid).order_by('-created_at')[:10]
+        
+        # 2. Fetch Automation logs
+        automation_logs = ActionLog.objects.filter(rule__company_uuid=company_uuid).order_by('-executed_at')[:10]
+
+        # 3. Fetch Forecast events (Aggregated by latest created_at)
+        forecasts = Forecast.objects.filter(company_uuid=company_uuid).order_by('-created_at')[:10]
+
+        feed_items = []
+
+        for a in anomalies:
+            severity_map = {
+                'low': 'info',
+                'medium': 'info',
+                'high': 'warning',
+                'critical': 'error'
+            }
+            feed_items.append({
+                "id": f"anomaly-{a.id}",
+                "type": "Anomaly",
+                "message": f"Potential {a.get_anomaly_type_display()} detected: {a.reasoning[:100]}...",
+                "timestamp": a.created_at,
+                "severity": severity_map.get(a.severity, 'info')
+            })
+
+        for log in automation_logs:
+            feed_items.append({
+                "id": f"auto-{log.id}",
+                "type": "Automation",
+                "message": f"Workflow Rule '{log.rule.name}' triggered.",
+                "timestamp": log.executed_at,
+                "severity": "success" if log.status == 'success' else 'error'
+            })
+
+        # Forecasts don't have a direct "event" model, but we can treat recent generations as events
+        # Unique products from recent forecasts
+        seen_products = set()
+        for f in forecasts:
+            if f.product_uuid not in seen_products:
+                feed_items.append({
+                    "id": f"forecast-{f.id}",
+                    "type": "Forecast",
+                    "message": f"Demand Forecast updated for {f.product_name}.",
+                    "timestamp": f.created_at,
+                    "severity": "success"
+                })
+                seen_products.add(f.product_uuid)
+
+        # Sort combined feed
+        feed_items.sort(key=lambda x: x['timestamp'], reverse=True)
+
+        return Response(feed_items[:50])

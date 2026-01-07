@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Activity, Bell, CheckCircle2, AlertCircle, Zap } from "lucide-react";
 import { format } from "date-fns";
+import api from "@/lib/api";
 
 interface FeedItem {
   id: string;
@@ -18,6 +19,23 @@ interface FeedItem {
 export function LiveFeed() {
   const [items, setItems] = useState<FeedItem[]>([]);
   const { socket } = useWebSockets();
+
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        const res = await api.get("/intelligence/feed/");
+        // Convert ISO strings back to Date objects
+        const historicalItems = res.data.map((item: any) => ({
+          ...item,
+          timestamp: new Date(item.timestamp),
+        }));
+        setItems(historicalItems);
+      } catch (error) {
+        console.error("Failed to fetch feed history", error);
+      }
+    };
+    fetchHistory();
+  }, []);
 
   const addEvent = (
     msg: string,

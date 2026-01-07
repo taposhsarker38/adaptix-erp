@@ -27,7 +27,10 @@ class Command(BaseCommand):
 
     def process_message(self, body, message):
         try:
-            data = json.loads(body)
+            if isinstance(body, dict):
+                data = body
+            else:
+                data = json.loads(body)
             event_type = data.get('event')
             
             if event_type == "pos.sale.closed":

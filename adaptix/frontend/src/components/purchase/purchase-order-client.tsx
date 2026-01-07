@@ -84,8 +84,33 @@ export const PurchaseOrderClient: React.FC = () => {
     }
   }, []);
 
+  const searchParams =
+    typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search)
+      : null;
+  const isCreate = searchParams?.get("create") === "true";
+  const prefillProduct = searchParams?.get("product_uuid");
+  const prefillQty = searchParams?.get("qty");
+
   React.useEffect(() => {
     fetchData();
+
+    if (isCreate && prefillProduct) {
+      setSelectedOrder({
+        items: [
+          {
+            product_uuid: prefillProduct,
+            quantity: parseFloat(prefillQty || "1"),
+            unit_cost: 0,
+            tax_amount: 0,
+          },
+        ],
+      });
+      setOpen(true);
+      // Construct a clean URL without refreshing
+      const newUrl = window.location.pathname;
+      window.history.replaceState({ path: newUrl }, "", newUrl);
+    }
   }, [fetchData]);
 
   const onEdit = (order: any) => {

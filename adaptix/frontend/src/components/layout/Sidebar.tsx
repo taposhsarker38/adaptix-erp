@@ -194,6 +194,11 @@ const routes: SidebarRoute[] = [
         permission: "view_forecast",
       },
       {
+        label: "demandForecasting",
+        href: "/dashboard/intelligence/forecasts",
+        permission: "view_forecast",
+      },
+      {
         label: "financialIntelligence",
         href: "/dashboard/intelligence/finance",
         permission: "view_forecast",
