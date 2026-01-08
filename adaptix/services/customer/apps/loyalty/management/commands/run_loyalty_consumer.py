@@ -1,127 +1,117 @@
-from django.core.management.base import BaseCommand
-from kombu import Connection, Exchange, Queue, Consumer
 import json
+import pika
 import os
-from django.conf import settings
-from apps.loyalty.models import LoyaltyAccount, LoyaltyTransaction, LoyaltyProgram
-from apps.profiles.models import Customer
-from django.db import transaction
+import django
 from decimal import Decimal
 
-class Command(BaseCommand):
-    help = 'Runs the Loyalty Event Consumer'
+# Django setup
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+django.setup()
 
-    def handle(self, *args, **options):
-        rabbitmq_url = os.environ.get('RABBITMQ_URL', 'amqp://guest:guest@rabbitmq:5672/')
-        self.stdout.write(f"Connecting to {rabbitmq_url}...")
+from apps.loyalty.models import LoyaltyAccount, LoyaltyTransaction, LoyaltyProgram
+from apps.profiles.models import Customer
+from django.db import transaction as db_transaction
+
+def process_sale_completed(ch, method, properties, body):
+    """Process sale completed event and award loyalty points"""
+    try:
+        data = json.loads(body)
+        print(f"📦 Received sale event: {data}")
         
-        exchange = Exchange("events", type="topic", durable=True)
-        queue = Queue("loyalty_updates", exchange=exchange, routing_key="pos.sale.closed")
-
-        with Connection(rabbitmq_url) as conn:
-            self.stdout.write("Connected to RabbitMQ. Waiting for events...")
-            
-            with Consumer(conn, queues=queue, callbacks=[self.process_message]):
-                while True:
-                    conn.drain_events()
-
-    def process_message(self, body, message):
-        try:
-            if isinstance(body, dict):
-                data = body
-            else:
-                data = json.loads(body)
-            event_type = data.get('event')
-            
-            if event_type == "pos.sale.closed":
-                self.handle_sale_closed(data)
-            
-            message.ack()
-        except Exception as e:
-            self.stderr.write(f"Error processing message: {e}")
-            # message.reject(requeue=False) # Or requeue=True depending on policy
-
-    def handle_sale_closed(self, data):
-        customer_uuid = data.get('customer_uuid')
-        grand_total = data.get('grand_total')
+        # POS publishes: customer_uuid, grand_total, order_id
+        customer_id = data.get('customer_uuid')
+        total_amount = Decimal(str(data.get('grand_total', 0)))
         order_id = data.get('order_id')
-        company_uuid = data.get('company_uuid') or data.get('tenant_id')
         
-        if not customer_uuid or not grand_total:
+        if not customer_id or total_amount <= 0:
+            print(f"⚠️  Skipping: No customer ('{customer_id}') or invalid amount ({total_amount})")
+            ch.basic_ack(delivery_tag=method.delivery_tag)
             return
-
-        self.stdout.write(f"Processing sale for Customer {customer_uuid}. Total: {grand_total}")
-
+        
+        # Get customer's loyalty account
         try:
-            # Fetch Active Loyalty Program for the Company
-            program = None
-            if company_uuid:
-                # ONLY fetch 'customer' programs for POS sales events
-                program = LoyaltyProgram.objects.filter(company_uuid=company_uuid, is_active=True, target_audience='customer').first()
+            account = LoyaltyAccount.objects.select_related('program', 'customer').get(
+                customer_id=customer_id
+            )
+        except LoyaltyAccount.DoesNotExist:
+            print(f"⚠️  No loyalty account found for customer {customer_id}")
+            ch.basic_ack(delivery_tag=method.delivery_tag)
+            return
+        
+        if not account.program or not account.program.is_active:
+            print(f"⚠️  No active loyalty program for customer {customer_id}")
+            ch.basic_ack(delivery_tag=method.delivery_tag)
+            return
+        
+        # Calculate points earned
+        earn_rate = account.program.earn_rate
+        multiplier = account.current_tier.multiplier if account.current_tier else Decimal('1.0')
+        
+        base_points = int(total_amount * earn_rate)
+        bonus_points = int(base_points * (multiplier - Decimal('1.0')))
+        total_points = base_points + bonus_points
+        
+        print(f"💰 Awarding {total_points} points (base: {base_points}, bonus: {bonus_points})")
+        
+        # Create transaction and update account
+        with db_transaction.atomic():
+            LoyaltyTransaction.objects.create(
+                account=account,
+                transaction_type='earn',
+                points=total_points,
+                description=f"Purchase - Order #{order_id}",
+                reference_id=str(order_id),
+                created_by='system'
+            )
             
-            # If no program found or logic requires default, handle here. 
-            # Impl Plan says: Service Control (Toggle on/off). 
-            # If no active program is found, we assume the service is OFF for this tenant.
-            if not program:
-                self.stdout.write(f"No active loyalty program found for company {company_uuid}. Skipping.")
-                return
-
-            # Logic: Use Program Earn Rate
-            # earn_rate = Points per currency unit. e.g. 0.1 means 1 point per $10.
-            # wait, 0.1 * 10 = 1. So earn_rate is points/currency? 
-            # Model says: "0.1 = 1 point per $10" -> This means 10 * 0.1 = 1. YES.
+            account.balance += total_points
+            account.lifetime_points += total_points
+            account.save()
             
-            points = int(float(grand_total) * float(program.earn_rate))
+            # Check for tier upgrade
+            upgraded, old_tier, new_tier = account.auto_upgrade_tier()
             
-            if points > 0:
-                with transaction.atomic():
-                    # Find Customer
-                    try:
-                        customer = Customer.objects.get(id=customer_uuid)
-                    except Customer.DoesNotExist:
-                        self.stderr.write(f"Customer {customer_uuid} not found")
-                        return
+            if upgraded:
+                print(f"🎉 Customer upgraded from {old_tier} to {new_tier}!")
+        
+        print(f"✅ Successfully awarded {total_points} points to {account.customer.name}")
+        ch.basic_ack(delivery_tag=method.delivery_tag)
+        
+    except Exception as e:
+        print(f"❌ Error processing sale event: {e}")
+        import traceback
+        traceback.print_exc()
+        ch.basic_nack(delivery_tag=method.delivery_tag, requeue=False)
 
-                    # Get/Create Loyalty Account
-                    account, created = LoyaltyAccount.objects.get_or_create(customer=customer)
-                    
-                    # Link program if not set
-                    if not account.program:
-                        account.program = program
-                        account.save(update_fields=['program'])
-                    
-                    # Prevent duplicate processing for same order (Idempotency)
-                    if LoyaltyTransaction.objects.filter(reference_id=order_id, transaction_type='earn').exists():
-                        self.stdout.write(f"Order {order_id} already processed.")
-                        return
+def main():
+    rabbitmq_url = os.environ.get('RABBITMQ_URL', 'amqp://adaptix:adaptix123@localhost:5672/')
+    
+    print(f"🔌 Connecting to RabbitMQ: {rabbitmq_url}")
+    connection = pika.BlockingConnection(pika.URLParameters(rabbitmq_url))
+    channel = connection.channel()
+    
+    # Declare exchange and queue (use existing POS events exchange)
+    channel.exchange_declare(exchange='events', exchange_type='topic', durable=True)
+    channel.queue_declare(queue='loyalty_points_queue', durable=True)
+    channel.queue_bind(
+        exchange='events',
+        queue='loyalty_points_queue',
+        routing_key='pos.sale.closed'
+    )
+    
+    print("👂 Listening for POS sale events on 'pos.sale.closed'...")
+    channel.basic_consume(
+        queue='loyalty_points_queue',
+        on_message_callback=process_sale_completed
+    )
+    
+    try:
+        channel.start_consuming()
+    except KeyboardInterrupt:
+        print("\n🛑 Stopped by user")
+        channel.stop_consuming()
+    finally:
+        connection.close()
 
-                    # Update Balance
-                    account.balance += points
-                    account.lifetime_points += points
-                    # Check for tier update
-                    if account.current_tier and account.lifetime_points >= account.current_tier.min_points:
-                         pass # sophisticated logic would handle upgrades here using generic tier logic
-                         # For now leaving as is, relying on customer.calculate_tier() which uses hardcoded values 
-                         # (user should probably refactor that next, but out of scope for "toggle on/off")
-
-                    account.save()
-                    
-                    # Create Transaction Log
-                    LoyaltyTransaction.objects.create(
-                        account=account,
-                        transaction_type='earn',
-                        points=points,
-                        description=f'Points earned from Order {data.get("order_number")}',
-                        reference_id=order_id,
-                        created_by='system'
-                    )
-                    
-                    # Sync to Customer Profile
-                    customer.loyalty_points = Decimal(account.balance)
-                    customer.calculate_tier() # Alert: This uses hardcoded values in Customer model!
-                    customer.save()
-                    
-                    self.stdout.write(f"Awarded {points} points to {customer.name} (Rate: {program.earn_rate}).")
-
-        except Exception as e:
-            self.stderr.write(f"Failed to award points: {e}")
+if __name__ == '__main__':
+    main()

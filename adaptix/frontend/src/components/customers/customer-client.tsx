@@ -9,6 +9,7 @@ import {
   Award,
   ShieldCheck,
   ShieldAlert,
+  Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -296,31 +297,40 @@ export function CustomerClient() {
         onConfirm={confirmDelete}
         loading={loading}
       />
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Customers</h2>
-        <div className="flex items-center gap-2">
-          {canCreateCustomer && (
-            <Button onClick={openCreate}>
-              <Plus className="mr-2 h-4 w-4" /> Add Customer
-            </Button>
-          )}
+
+      {/* Action Bar - Clean horizontal layout */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+          <span className="font-medium text-slate-900 dark:text-white">
+            {customers.length}
+          </span>
+          <span>customers found</span>
         </div>
+        {canCreateCustomer && (
+          <Button
+            onClick={openCreate}
+            className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white shadow-md shadow-cyan-500/20"
+          >
+            <Plus className="mr-2 h-4 w-4" /> Add Customer
+          </Button>
+        )}
       </div>
 
-      <div className="flex flex-wrap items-center gap-4 bg-slate-50 dark:bg-slate-900 p-4 rounded-lg border">
+      {/* Enhanced Filter Bar */}
+      <div className="flex flex-wrap items-center gap-3 p-4 bg-slate-50/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-lg">
         <div className="relative flex-1 min-w-[250px]">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
           <Input
-            placeholder="Search name, phone or email..."
-            className="pl-8 bg-white dark:bg-slate-950"
+            placeholder="Search by name, phone or email..."
+            className="pl-10 bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-700 focus:ring-cyan-500"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
 
-        <div className="w-[200px]">
+        <div className="w-[180px]">
           <Select value={selectedBranch} onValueChange={setSelectedBranch}>
-            <SelectTrigger className="bg-white dark:bg-slate-950">
+            <SelectTrigger className="bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-700">
               <SelectValue placeholder="All Branches" />
             </SelectTrigger>
             <SelectContent>
@@ -337,14 +347,14 @@ export function CustomerClient() {
         <div className="flex items-center gap-2">
           <Input
             type="date"
-            className="w-[150px] bg-white dark:bg-slate-950"
+            className="w-[140px] bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-700"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
           />
-          <span className="text-muted-foreground text-sm">to</span>
+          <span className="text-slate-400 text-sm">to</span>
           <Input
             type="date"
-            className="w-[150px] bg-white dark:bg-slate-950"
+            className="w-[140px] bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-700"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
           />
@@ -353,15 +363,16 @@ export function CustomerClient() {
         {(searchTerm || selectedBranch !== "all" || startDate || endDate) && (
           <Button
             variant="ghost"
+            size="sm"
             onClick={() => {
               setSearchTerm("");
               setSelectedBranch("all");
               setStartDate("");
               setEndDate("");
             }}
-            className="text-muted-foreground"
+            className="text-slate-500 hover:text-slate-700"
           >
-            Clear
+            Clear filters
           </Button>
         )}
       </div>
@@ -378,21 +389,24 @@ export function CustomerClient() {
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-xl">
           <DialogHeader>
-            <DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <Users className="h-5 w-5 text-cyan-500" />
               {editingCustomer ? "Edit Customer" : "Add New Customer"}
             </DialogTitle>
           </DialogHeader>
-          <CustomerForm
-            key={editingCustomer?.id || "new-customer"}
-            initialData={editingCustomer}
-            attributeSets={attributeSets}
-            branches={branches}
-            userBranchUuid={userBranchUuid}
-            onSuccess={handleSuccess}
-            onCancel={() => setIsDialogOpen(false)}
-          />
+          <div className="px-6 py-4 max-h-[70vh] overflow-y-auto">
+            <CustomerForm
+              key={editingCustomer?.id || "new-customer"}
+              initialData={editingCustomer}
+              attributeSets={attributeSets}
+              branches={branches}
+              userBranchUuid={userBranchUuid}
+              onSuccess={handleSuccess}
+              onCancel={() => setIsDialogOpen(false)}
+            />
+          </div>
         </DialogContent>
       </Dialog>
 

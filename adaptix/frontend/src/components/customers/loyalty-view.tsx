@@ -1,6 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -22,37 +24,58 @@ interface LoyaltyViewProps {
 export function LoyaltyView({ customerId }: LoyaltyViewProps) {
   const [loading, setLoading] = React.useState(true);
   const [data, setData] = React.useState<any>(null);
+  const [adjustPoints, setAdjustPoints] = React.useState("");
+  const [adjustReason, setAdjustReason] = React.useState("");
+  const [adjusting, setAdjusting] = React.useState(false);
+
+  const fetchLoyalty = async () => {
+    try {
+      setLoading(true);
+      const res = await api.get(
+        `/customer/loyalty/accounts/by-customer/${customerId}/`
+      );
+      setData(res.data);
+    } catch (error: any) {
+      console.error(error);
+      if (error.response?.status === 404) {
+        setData(null);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAdjustPoints = async () => {
+    if (!data?.id || !adjustPoints || !adjustReason) return;
+
+    try {
+      setAdjusting(true);
+      const response = await api.post(
+        `/customer/loyalty/accounts/${data.id}/adjust/`,
+        {
+          points: parseInt(adjustPoints),
+          reason: adjustReason,
+        }
+      );
+
+      toast.success("Points adjusted successfully!");
+
+      // Show tier upgrade message if applicable
+      if (response.data.tier_upgraded) {
+        toast.success(`🎉 ${response.data.tier_message}`, { duration: 5000 });
+      }
+
+      setAdjustPoints("");
+      setAdjustReason("");
+      await fetchLoyalty();
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || "Failed to adjust points");
+    } finally {
+      setAdjusting(false);
+    }
+  };
 
   React.useEffect(() => {
-    async function fetchLoyalty() {
-      try {
-        setLoading(true);
-        // Assuming the endpoint we created: GET /api/customer/loyalty/accounts/?customer={id}
-        // Since we didn't implement complex filtering yet, we might need to adjust.
-        // For now, let's assume we can fetch by account ID or filter.
-        // Actually, let's fetch the customer profile which likely includes loyalty summary,
-        // or a dedicated endpoint.
-        // Let's rely on the endpoint we exposed: /api/customer/loyalty/accounts/
-        // We need to find the account for this customer.
-        const res = await api.get(`/customer/loyalty/accounts/`);
-        // Basic match for demo (since we didn't implement exact filter param in backend viewset yet)
-        const account = res.data.results.find(
-          (a: any) => a.customer === customerId
-        ); // This might be weak
-
-        // Better approach: Get profile and see if it has loyalty link?
-        // Or updated the ViewSet to filter.
-        // Let's assume we filter by ?customer_uuid={id} which standard ModelViewSets often support if configured
-        // My implementation of get_queryset didn't explicitly add filter_backends.
-        // So fetching all might be the only way for now (inefficient but works for small data).
-
-        setData(account);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    }
     fetchLoyalty();
   }, [customerId]);
 
@@ -116,6 +139,48 @@ export function LoyaltyView({ customerId }: LoyaltyViewProps) {
           </CardContent>
         </Card>
       </div>
+
+      {/* Manual Point Adjustment */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Award className="h-4 w-4 text-amber-500" />
+            Adjust Points (Admin)
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex-1">
+              <label className="text-sm font-medium mb-1 block">Points</label>
+              <Input
+                type="number"
+                placeholder="e.g. +100 or -50"
+                value={adjustPoints}
+                onChange={(e) => setAdjustPoints(e.target.value)}
+                className="w-full"
+              />
+            </div>
+            <div className="flex-1">
+              <label className="text-sm font-medium mb-1 block">Reason</label>
+              <Input
+                placeholder="e.g. Bonus reward, Correction"
+                value={adjustReason}
+                onChange={(e) => setAdjustReason(e.target.value)}
+                className="w-full"
+              />
+            </div>
+            <div className="flex items-end">
+              <Button
+                onClick={handleAdjustPoints}
+                disabled={!adjustPoints || !adjustReason || adjusting}
+                className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700"
+              >
+                {adjusting ? "Adjusting..." : "Adjust Points"}
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>

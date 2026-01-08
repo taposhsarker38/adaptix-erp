@@ -43,6 +43,31 @@ class LoyaltyAccount(models.Model):
         owner = self.customer if self.customer else f"Emp:{self.employee_uuid}"
         return f"{owner} - {self.balance} pts"
 
+    def auto_upgrade_tier(self):
+        """Automatically upgrade tier based on lifetime points"""
+        if not self.program:
+            return
+        
+        # Get all tiers for this program, ordered by min_points descending
+        tiers = self.program.tiers.all().order_by('-min_points')
+        
+        # Find the highest tier the user qualifies for
+        new_tier = None
+        for tier in tiers:
+            if self.lifetime_points >= tier.min_points:
+                new_tier = tier
+                break
+        
+        # Update tier if it changed
+        if new_tier and new_tier != self.current_tier:
+            old_tier = self.current_tier.name if self.current_tier else 'None'
+            self.current_tier = new_tier
+            self.save()
+            # You could emit an event here or create a notification
+            return True, old_tier, new_tier.name
+        
+        return False, None, None
+
 class LoyaltyTransaction(models.Model):
     TYPE_CHOICES = (
         ('earn', 'Earned'),

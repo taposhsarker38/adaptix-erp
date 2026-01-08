@@ -573,6 +573,34 @@ services:
         limits:
           memory: 384M
 
+  customer-worker:
+    build:
+      context: .
+      dockerfile: services/customer/Dockerfile
+    container_name: adaptix-customer-worker
+    profiles: ["customer", "pos", "sales"]
+    environment:
+      - DATABASE_URL=postgres://${DB_USER:-adaptix}:${DB_PASSWORD:-adaptix123}@postgres:5432/adaptix
+      - DB_SCHEMA=customer
+      - SECRET_KEY=${SECRET_KEY:-your-secret-key}
+      - RABBITMQ_URL=amqp://${MQ_USER:-adaptix}:${MQ_PASSWORD:-adaptix123}@rabbitmq:5672/
+      - PYTHONPATH=/app:/shared/adaptix_core
+    command: python manage.py run_loyalty_consumer
+    volumes:
+      - ./services/customer:/app
+      - ./shared:/shared
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - backend
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
   asset:
     build:
       context: .

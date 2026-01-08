@@ -74,28 +74,43 @@ export function NotificationBell() {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative">
-          <Bell className="h-5 w-5" />
+        <Button
+          variant="ghost"
+          size="icon"
+          className={cn(
+            "relative h-9 w-9 rounded-xl",
+            "bg-slate-100/50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10",
+            "border border-slate-200/50 dark:border-white/10",
+            "transition-all duration-200"
+          )}
+        >
+          <Bell className="h-4 w-4 text-slate-600 dark:text-slate-300" />
           {unreadCount > 0 && (
-            <Badge
-              variant="destructive"
-              className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs rounded-full"
-            >
-              {unreadCount}
-            </Badge>
+            <span className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-[10px] font-bold text-white bg-gradient-to-br from-rose-500 to-pink-600 rounded-full ring-2 ring-white dark:ring-slate-900 animate-pulse">
+              {unreadCount > 9 ? "9+" : unreadCount}
+            </span>
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80 p-0" align="end">
-        <div className="flex items-center justify-between p-4 border-b">
-          <h4 className="font-semibold">Notifications</h4>
+      <PopoverContent
+        className="w-80 p-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-slate-200/50 dark:border-white/10 shadow-xl"
+        align="end"
+      >
+        <div className="flex items-center justify-between p-4 border-b border-slate-200/50 dark:border-white/10">
+          <div className="flex items-center gap-2">
+            <Bell className="h-4 w-4 text-emerald-500" />
+            <h4 className="font-semibold text-slate-900 dark:text-white">
+              Notifications
+            </h4>
+          </div>
           {unreadCount > 0 && (
             <Button
               variant="ghost"
               size="sm"
-              className="text-xs text-muted-foreground h-auto p-1"
+              className="text-xs text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 h-auto px-2 py-1"
               onClick={markAllRead}
             >
+              <Check className="h-3 w-3 mr-1" />
               Mark all read
             </Button>
           )}
